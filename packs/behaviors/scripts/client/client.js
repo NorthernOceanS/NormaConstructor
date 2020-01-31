@@ -96,7 +96,7 @@ clientSystem.initialize = function () {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.position)
             if (generatorArray[generatorIndex].positionArray.length >= generatorArray[generatorIndex].positionArrayLengthRequired) {
-                displayChat("Too many positions.New one is ignored")
+                displayChat("Too many positions!New one is ignored")
             }
             else {
                 generatorArray[generatorIndex].positionArray.push(eventData.data.position)
@@ -108,25 +108,56 @@ clientSystem.initialize = function () {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.blockType)
             if (generatorArray[generatorIndex].blockTypeArray.length >= generatorArray[generatorIndex].blockTypeArrayLengthRequired) {
-                displayChat("Too many blocktypes.New one is ignored")
+                displayChat("Too many blockTypes!New one is ignored")
             }
             else {
                 generatorArray[generatorIndex].blockTypeArray.push(eventData.data.blockType)
             }
         }
     })
+    clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
+        if (playerID == eventData.data.playerID) {
+            switch (eventData.data.command) {
+                case "removeLastPosition": {
+                    displayChat("Removing the last position...")
+                    generatorArray[generatorIndex].positionArray.pop()
+                    displayChat("Current positionArray:")
+                    displayObject(generatorArray[generatorIndex].positionArray)
+                    break;
+                }
+                case "removeLastblockType": {
+                    displayChat("Removing the last blockType...")
+                    generatorArray[generatorIndex].blockTypeArray.pop()
+                    displayChat("Current blockTypeArray:")
+                    displayObject(generatorArray[generatorIndex].blockTypeArray)
+                    break;
+                }
+                case "chooseNextGenerator": {
+                    displayChat("Choosing next generator...")
+                    generatorIndex = (generatorIndex + 1) % generatorArray.length
+                    displayChat("Current generator:")
+                    displayObject(generatorArray[generatorIndex])
+                    break;
+                }
+                case "showSavedData": {
+                    displayChat("Current positionArray:")
+                    displayObject(generatorArray[generatorIndex].positionArray)
+                    displayChat("Current blockTypeArray:")
+                    displayObject(generatorArray[generatorIndex].blockTypeArray)
+                    break;
+                }
+            }
+        }
+    })
     clientSystem.listenForEvent("NormaConstructor:ExecutionRequest", (eventData) => {
         if (playerID == eventData.data.playerID) {
             if (generatorArray[generatorIndex].blockTypeArrayLengthRequired > generatorArray[generatorIndex].blockTypeArray.length)
-                displayChat("Too few blocktypes!Refusing to execute.")
+                displayChat("Too few blockTypes!Refusing to execute.")
             else if (generatorArray[generatorIndex].positionArrayLengthRequired > generatorArray[generatorIndex].positionArray.length)
                 displayChat("Too few positions!Refusing to execute.")
             else {
                 displayChat("Execution started.")
-                displayObject(generatorArray[generatorIndex].blockTypeArray)
-                displayObject(generatorArray[generatorIndex].positionArray)
                 let blockArray = generatorArray[0].generator()
-                //displayObject(blockArray)
                 let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
                 executionResponseEventData.data.blockArray = blockArray
                 clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)

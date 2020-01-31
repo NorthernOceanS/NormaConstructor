@@ -39,6 +39,7 @@ serverSystem.initialize = function () {
             playerID: undefined
         }
     )
+    serverSystem.registerEventData("NormaConstructor:command", { command: undefined, playerID: undefined })
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
@@ -64,62 +65,9 @@ serverSystem.initialize = function () {
         serverSystem.broadcastEvent("NormaConstructor:getBlockType", getblockTypeEventData)
 
     })
-    serverSystem.listenForEvent("minecraft:entity_created", (eventData) => {
-        //displayChat(JSON.stringify(eventData,null,'    '))
-        var entity = eventData.data.entity;
-        if (entity.__identifier__ === "NormaConstructor:select") {
-            var position = serverSystem.getComponent(entity, "minecraft:position").data;
-
-            displayChat(`\nSelecting position:\nx:${position.x}\ny:${position.y}\nz:${position.z}`);
-
-            positionArray.push(position);
-            if (positionArray.length >= 3) {
-                displayChat("\nWarning:Positions exceeded.The first position is ignored.");
-                positionArray.shift();
-            }
-            //serverSystem.destroyEntity(entity);
-        }
-        else if (entity.__identifier__ === "NormaConstructor:execute") {
-            displayChat("§b NZ is JULAO!")
-
-            //displayChat(`/fill ${positionArray[0].x} ${positionArray[0].y} ${positionArray[0].z} ${positionArray[1].x} ${positionArray[1].y} ${positionArray[1].z} ${block.__identifier__.slice("minecraft:".length)}`);
-            //serverSystem.executeCommand(`/fill ${positionArray[0].x} ${positionArray[0].y} ${positionArray[0].z} ${positionArray[1].x} ${positionArray[1].y} ${positionArray[1].z} ${block.__identifier__.slice("minecraft:".length)}`, (commandResultData) => { ; });
-            var minPosition = {
-                x: Math.min(positionArray[0].x, positionArray[1].x),
-                y: Math.min(positionArray[0].y, positionArray[1].y),
-                z: Math.min(positionArray[0].z, positionArray[1].z),
-            }
-            var maxPosition = {
-                x: Math.max(positionArray[0].x, positionArray[1].x),
-                y: Math.max(positionArray[0].y, positionArray[1].y),
-                z: Math.max(positionArray[0].z, positionArray[1].z)
-            }
-
-            displayChat(minPosition.x)
-            displayChat(minPosition.y)
-            displayChat(minPosition.z)
-            displayChat(maxPosition.x)
-            displayChat(maxPosition.y)
-            displayChat(maxPosition.z)
-
-            for (var x = minPosition.x; x <= maxPosition.x; x++) {
-                for (var y = minPosition.y; y <= maxPosition.y; y++) {
-                    for (var z = minPosition.z; z <= maxPosition.z; z++) {
-                        displayChat("Position:")
-                        displayChat(x)
-                        displayChat(y)
-                        displayChat(z)
-                        generate(x, y, z)
-                    }
-                }
-            }
-
-
-            //serverSystem.destroyEntity(entity);
-        }
-    })
 
     serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {
+        let playerID = eventData.data.player.id
         //TODO:Verify whether the player is permitted to use this addon.
         let handContainer = serverSystem.getComponent(eventData.data.player, "minecraft:hand_container").data
         let mainHandItem = handContainer[0].__identifier__
@@ -136,15 +84,47 @@ serverSystem.initialize = function () {
 
                 let getPositionEventData = serverSystem.createEventData("NormaConstructor:getPosition")
                 getPositionEventData.data.position = position
-                getPositionEventData.data.playerID = eventData.data.player.id
+                getPositionEventData.data.playerID = playerID
                 serverSystem.broadcastEvent("NormaConstructor:getPosition", getPositionEventData)
 
                 break;
             }
-            case "minecraft:diamond_axe": {
+            case "minecraft:stone_axe": {
+                //Remove the last position.
+                let commandEventData = serverSystem.createEventData("NormaConstructor:command")
+                commandEventData.data.command = "removeLastPosition"
+                commandEventData.data.playerID = playerID
+                serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
+                break;
+            }
+            case "minecraft:iron_axe": {
+                //Remove the last blockType.
+                let commandEventData = serverSystem.createEventData("NormaConstructor:command")
+                commandEventData.data.command = "removeLastblockType"
+                commandEventData.data.playerID = playerID
+                serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
+                break;
+            }
+            case "minecraft:golden_axe": {
+                //Choose the next generator.
+                let commandEventData = serverSystem.createEventData("NormaConstructor:command")
+                commandEventData.data.command = "chooseNextGenerator"
+                commandEventData.data.playerID = playerID
+                serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
+                break;
+            }
+            case "minecraft:diamond_axe":{
+                //Show currently saved data.
+                let commandEventData = serverSystem.createEventData("NormaConstructor:command")
+                commandEventData.data.command = "showSavedData"
+                commandEventData.data.playerID = playerID
+                serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
+                break;
+            }
+            case "minecraft:stick": {
                 //Execute.
                 let executeRequestEventData = serverSystem.createEventData("NormaConstructor:ExecutionRequest")
-                executeRequestEventData.data.playerID = eventData.data.player.id
+                executeRequestEventData.data.playerID = playerID
                 serverSystem.broadcastEvent("NormaConstructor:ExecutionRequest", executeRequestEventData)
                 break;
             }

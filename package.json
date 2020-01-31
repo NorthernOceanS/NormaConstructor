@@ -1,0 +1,15 @@
+{
+  "name": "normaconstructor",
+  "private": true,
+  "scripts": {
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "installaddon": "gulp install",
+    "uninstalladdon": "gulp uninstall",
+    "packageaddon": "gulp package"
+  },
+  "devDependencies": {
+    "minecraft-addon-toolchain": "^1.0.3",
+    "minecraft-addon-toolchain-browserify": "^1.0.3"
+  }
+}

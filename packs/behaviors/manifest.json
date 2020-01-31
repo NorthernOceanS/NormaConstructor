@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "header": {
+    "name": "NormaConstructor Behaviors",
+    "description": "Speed up your construction.Created by NorthernOceanS.",
+    "uuid": "7ba71189-28c4-47d1-85d3-aae28f4430b1",
+    "version": [
+      1,
+      0,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "description": "behaviours for NormaConstructor",
+      "type": "client_data",
+      "uuid": "6a95ee02-ac8e-456e-9f41-11a39ab3f93d",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "8b9a64ef-054c-4b3f-a247-820b4d0f15b6",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

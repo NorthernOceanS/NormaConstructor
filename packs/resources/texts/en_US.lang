@@ -1,0 +1,12 @@
+﻿## Comments can be added anywhere on a valid line by starting with '##'
+##
+## Note, trailing spaces will NOT be trimmed. If you want room between the end of the string and the start of a
+## comment on the same line, use TABs.
+accessibility.disableTTS=Text To Speech disabled
+accessibility.enableTTS=Text To Speech enabled
+
+entity.worldedit:select.name=select
+item.spawn_egg.entity.worldedit:select.name=select
+
+entity.worldedit:execute.name=execute
+item.spawn_egg.entity.worldedit:execute.name=execute

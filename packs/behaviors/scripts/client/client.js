@@ -80,7 +80,7 @@ generatorArray.push(new Generator("Create a solid rectangle with two points.", [
 
 clientSystem.initialize = function () {
 
-    clientSystem.registerEventData("worldedit:ExecutionResponse", { blockArray: undefined })
+    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { blockArray: undefined })
 
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
         playerID = eventData.data.player.id
@@ -92,7 +92,7 @@ clientSystem.initialize = function () {
         clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
     })
-    clientSystem.listenForEvent("worldedit:getPosition", (eventData) => {
+    clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.position)
             if (generatorArray[generatorIndex].positionArray.length >= generatorArray[generatorIndex].positionArrayLengthRequired) {
@@ -104,7 +104,7 @@ clientSystem.initialize = function () {
         }
 
     })
-    clientSystem.listenForEvent("worldedit:getBlockType", (eventData) => {
+    clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.blockType)
             if (generatorArray[generatorIndex].blockTypeArray.length >= generatorArray[generatorIndex].blockTypeArrayLengthRequired) {
@@ -115,7 +115,7 @@ clientSystem.initialize = function () {
             }
         }
     })
-    clientSystem.listenForEvent("worldedit:ExecutionRequest", (eventData) => {
+    clientSystem.listenForEvent("NormaConstructor:ExecutionRequest", (eventData) => {
         if (playerID == eventData.data.playerID) {
             if (generatorArray[generatorIndex].blockTypeArrayLengthRequired > generatorArray[generatorIndex].blockTypeArray.length)
                 displayChat("Too few blocktypes!Refusing to execute.")
@@ -127,9 +127,9 @@ clientSystem.initialize = function () {
                 displayObject(generatorArray[generatorIndex].positionArray)
                 let blockArray = generatorArray[0].generator()
                 //displayObject(blockArray)
-                let executionResponseEventData = clientSystem.createEventData("worldedit:ExecutionResponse")
+                let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
                 executionResponseEventData.data.blockArray = blockArray
-                clientSystem.broadcastEvent("worldedit:ExecutionResponse", executionResponseEventData)
+                clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
 
                 generatorArray[generatorIndex].blockTypeArray = []
                 generatorArray[generatorIndex].positionArray = []

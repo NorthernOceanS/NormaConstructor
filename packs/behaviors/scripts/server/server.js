@@ -23,7 +23,7 @@ serverSystem.initialize = function () {
     serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
     serverSystem.registerEventData(
-        "worldedit:getPosition",
+        "NormaConstructor:getPosition",
         {
             position: new Position(
                 new Coordinate(undefined, undefined, undefined),
@@ -33,13 +33,13 @@ serverSystem.initialize = function () {
         }
     )
     serverSystem.registerEventData(
-        "worldedit:getBlockType",
+        "NormaConstructor:getBlockType",
         {
             blockType: new BlockType(undefined, undefined),
             playerID: undefined
         }
     )
-    serverSystem.registerEventData("worldedit:ExecutionRequest", { playerID: undefined })
+    serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
 
@@ -58,16 +58,16 @@ serverSystem.initialize = function () {
             blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
         }
 
-        let getblockTypeEventData = serverSystem.createEventData("worldedit:getBlockType")
+        let getblockTypeEventData = serverSystem.createEventData("NormaConstructor:getBlockType")
         getblockTypeEventData.data.blockType = blockType
         getblockTypeEventData.data.playerID = eventData.data.player.id
-        serverSystem.broadcastEvent("worldedit:getBlockType", getblockTypeEventData)
+        serverSystem.broadcastEvent("NormaConstructor:getBlockType", getblockTypeEventData)
 
     })
     serverSystem.listenForEvent("minecraft:entity_created", (eventData) => {
         //displayChat(JSON.stringify(eventData,null,'    '))
         var entity = eventData.data.entity;
-        if (entity.__identifier__ === "worldedit:select") {
+        if (entity.__identifier__ === "NormaConstructor:select") {
             var position = serverSystem.getComponent(entity, "minecraft:position").data;
 
             displayChat(`\nSelecting position:\nx:${position.x}\ny:${position.y}\nz:${position.z}`);
@@ -79,7 +79,7 @@ serverSystem.initialize = function () {
             }
             //serverSystem.destroyEntity(entity);
         }
-        else if (entity.__identifier__ === "worldedit:execute") {
+        else if (entity.__identifier__ === "NormaConstructor:execute") {
             displayChat("§b NZ is JULAO!")
 
             //displayChat(`/fill ${positionArray[0].x} ${positionArray[0].y} ${positionArray[0].z} ${positionArray[1].x} ${positionArray[1].y} ${positionArray[1].z} ${block.__identifier__.slice("minecraft:".length)}`);
@@ -134,25 +134,25 @@ serverSystem.initialize = function () {
                 position.coordinate = eventData.data.block_position
                 position.tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
 
-                let getPositionEventData = serverSystem.createEventData("worldedit:getPosition")
+                let getPositionEventData = serverSystem.createEventData("NormaConstructor:getPosition")
                 getPositionEventData.data.position = position
                 getPositionEventData.data.playerID = eventData.data.player.id
-                serverSystem.broadcastEvent("worldedit:getPosition", getPositionEventData)
+                serverSystem.broadcastEvent("NormaConstructor:getPosition", getPositionEventData)
 
                 break;
             }
             case "minecraft:stone_axe": {
                 //Execute.
-                let executeRequestEventData = serverSystem.createEventData("worldedit:ExecutionRequest")
+                let executeRequestEventData = serverSystem.createEventData("NormaConstructor:ExecutionRequest")
                 executeRequestEventData.data.playerID = eventData.data.player.id
-                serverSystem.broadcastEvent("worldedit:ExecutionRequest", executeRequestEventData)
+                serverSystem.broadcastEvent("NormaConstructor:ExecutionRequest", executeRequestEventData)
                 break;
             }
         }
 
     })
 
-    serverSystem.listenForEvent("worldedit:ExecutionResponse", (eventData) => {
+    serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => {
         //displayObject(eventData)
         for (let block of eventData.data.blockArray) setBlock(block)
     })

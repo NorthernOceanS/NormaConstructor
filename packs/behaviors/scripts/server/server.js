@@ -141,7 +141,7 @@ serverSystem.initialize = function () {
 
                 break;
             }
-            case "minecraft:stone_axe": {
+            case "minecraft:diamond_axe": {
                 //Execute.
                 let executeRequestEventData = serverSystem.createEventData("NormaConstructor:ExecutionRequest")
                 executeRequestEventData.data.playerID = eventData.data.player.id

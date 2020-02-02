@@ -1,17 +1,24 @@
 var serverSystem = server.registerSystem(0, 0);
 
-function Coordinate(x, y, z) {
-    this.x = x
-    this.y = y
-    this.z = z
+//TODO:Wrap up the constructor && find better solution.
+class Coordinate {
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 }
-function Position(coordinate, tickingArea) {
-    this.coordinate = coordinate
-    this.tickingArea = tickingArea
+class Position {
+    constructor(coordinate, tickingArea) {
+        this.coordinate = coordinate;
+        this.tickingArea = tickingArea;
+    }
 }
-function BlockType(blockIdentifier, blockState) {
-    this.blockIdentifier = blockIdentifier
-    this.blockState = blockState
+class BlockType {
+    constructor(blockIdentifier, blockState) {
+        this.blockIdentifier = blockIdentifier;
+        this.blockState = blockState;
+    }
 }
 
 serverSystem.initialize = function () {
@@ -22,23 +29,17 @@ serverSystem.initialize = function () {
     scriptLoggerConfig.data.log_warnings = true;
     serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
-    serverSystem.registerEventData(
-        "NormaConstructor:getPosition",
-        {
+    serverSystem.registerEventData("NormaConstructor:getPosition",{
             position: new Position(
                 new Coordinate(undefined, undefined, undefined),
                 undefined
             ),
             playerID: undefined
-        }
-    )
-    serverSystem.registerEventData(
-        "NormaConstructor:getBlockType",
-        {
+        })
+    serverSystem.registerEventData("NormaConstructor:getBlockType",{
             blockType: new BlockType(undefined, undefined),
             playerID: undefined
-        }
-    )
+        })
     serverSystem.registerEventData("NormaConstructor:command", { command: undefined, playerID: undefined })
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
@@ -65,7 +66,7 @@ serverSystem.initialize = function () {
         serverSystem.broadcastEvent("NormaConstructor:getBlockType", getblockTypeEventData)
 
     })
-
+    //TODO:Consider switching to "minecraft:entity_use_item"
     serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {
         let playerID = eventData.data.player.id
         //TODO:Verify whether the player is permitted to use this addon.
@@ -128,10 +129,15 @@ serverSystem.initialize = function () {
                 serverSystem.broadcastEvent("NormaConstructor:ExecutionRequest", executeRequestEventData)
                 break;
             }
+            case "minecraft:":{
+
+            }
         }
-
     })
-
+    serverSystem.listenForEvent("minecraft:entity_use_item",(eventData)=>{
+        //TODO:Inspect why the log function here doesn't work...properly.(?)
+        server.log("AAAAAAAAAAAAAAAA")
+    })
     serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => {
         //displayObject(eventData)
         for (let block of eventData.data.blockArray) setBlock(block)

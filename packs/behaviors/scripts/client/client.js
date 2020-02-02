@@ -1,42 +1,60 @@
 var clientSystem = client.registerSystem(0, 0);
+
 var playerID = undefined
 var generatorIndex = 0
-// let positionArray = []
-// let blockTypeArray = []
-function Coordinate(x, y, z) {
-    this.x = x
-    this.y = y
-    this.z = z
+
+//TODO:Wrap up the constructor && find better solution.
+class Coordinate {
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 }
-function Position(coordinate, tickingArea) {
-    this.coordinate = coordinate
-    this.tickingArea = tickingArea
+class Position {
+    constructor(coordinate, tickingArea) {
+        this.coordinate = coordinate;
+        this.tickingArea = tickingArea;
+    }
 }
-function BlockType(blockIdentifier, blockState) {
-    this.blockIdentifier = blockIdentifier
-    this.blockState = blockState
+class BlockType {
+    constructor(blockIdentifier, blockState) {
+        this.blockIdentifier = blockIdentifier;
+        this.blockState = blockState;
+    }
 }
-function Block(position, blockType) {
-    this.position = position
-    this.blockType = blockType
+class Block {
+    constructor(position, blockType) {
+        this.position = position;
+        this.blockType = blockType;
+    }
 }
-function Generator(name, positionArray, positionArrayLengthRequired, blockTypeArray, blockTypeArrayLengthRequired, generator) {
-    this.name = name;
-    this.positionArray = positionArray
-    this.positionArrayLengthRequired = positionArrayLengthRequired
-    this.blockTypeArray = blockTypeArray
-    this.blockTypeArrayLengthRequired = blockTypeArrayLengthRequired
-    this.generator = generator
+class LengthRequired {
+    constructor(positionArrayLengthRequired, blockTypeArrayLengthRequired) {
+        this.positionArray = positionArrayLengthRequired;
+        this.blockTypeArray = blockTypeArrayLengthRequired;
+    }
 }
+//TODO:Refactor generator
+class Generator {
+    constructor(name, positionArray, blockTypeArray, lengthRequired, mainGenerator) {
+        this.name = name;
+        this.positionArray = positionArray;
+        this.blockTypeArray = blockTypeArray;
+        this.lengthRequired = lengthRequired;
+        this.mainGenerator = mainGenerator;
+    }
+}
+
 let generatorArray = []
-generatorArray.push(new Generator("Create a solid rectangle with two points.", [], 2, [], 1, function () {
+generatorArray.push(new Generator("Create a solid rectangle with two points.", [], [], new LengthRequired(2, 1), function () {
 
     displayChat("§b NZ is JULAO!")
 
     let positionArray = this.positionArray
     let blockTypeArray = this.blockTypeArray
 
-    if (this.positionArrayLengthRequired != positionArray.length || this.blockTypeArrayLengthRequired != blockTypeArray.length) return [];
+    if (this.lengthRequired.positionArray != positionArray.length || this.lengthRequired.blockTypeArray != blockTypeArray.length) return [];
 
     displayChat("§b Yes, NZ is JULAO!")
 
@@ -53,16 +71,9 @@ generatorArray.push(new Generator("Create a solid rectangle with two points.", [
         Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
     )
 
-    // displayObject(minCoordinate)
-    // displayObject(maxCoordinate)
-
     for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
         for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
             for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
-                // displayChat("Position:")
-                // displayChat(x)
-                // displayChat(y)
-                // displayChat(z)
                 blockArray.push(
                     new Block(
                         new Position(
@@ -91,11 +102,26 @@ clientSystem.initialize = function () {
         scriptLoggerConfig.data.log_warnings = true;
         clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
+        let uiEventData = clientSystem.createEventData("minecraft:load_ui")
+        uiEventData.data.path = "HUD.html"
+        uiEventData.data.options = {
+            absorbs_input: false,
+            always_accepts_input: false,
+            force_render_below: true,
+            is_showing_menu: false,
+            render_game_behind: true,
+            render_only_when_topmost: false,
+            should_steal_mouse: true
+        }
+        clientSystem.broadcastEvent("minecraft:load_ui", uiEventData)
+
+        //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
+        client.log("Logging started")
     })
     clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.position)
-            if (generatorArray[generatorIndex].positionArray.length >= generatorArray[generatorIndex].positionArrayLengthRequired) {
+            if (generatorArray[generatorIndex].positionArray.length >= generatorArray[generatorIndex].lengthRequired.positionArray) {
                 displayChat("Too many positions!New one is ignored")
             }
             else {
@@ -107,7 +133,7 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.blockType)
-            if (generatorArray[generatorIndex].blockTypeArray.length >= generatorArray[generatorIndex].blockTypeArrayLengthRequired) {
+            if (generatorArray[generatorIndex].blockTypeArray.length >= generatorArray[generatorIndex].lengthRequired.blockTypeArray) {
                 displayChat("Too many blockTypes!New one is ignored")
             }
             else {
@@ -151,13 +177,13 @@ clientSystem.initialize = function () {
     })
     clientSystem.listenForEvent("NormaConstructor:ExecutionRequest", (eventData) => {
         if (playerID == eventData.data.playerID) {
-            if (generatorArray[generatorIndex].blockTypeArrayLengthRequired > generatorArray[generatorIndex].blockTypeArray.length)
+            if (generatorArray[generatorIndex].lengthRequired.blockTypeArray > generatorArray[generatorIndex].blockTypeArray.length)
                 displayChat("Too few blockTypes!Refusing to execute.")
-            else if (generatorArray[generatorIndex].positionArrayLengthRequired > generatorArray[generatorIndex].positionArray.length)
+            else if (generatorArray[generatorIndex].lengthRequired.positionArray > generatorArray[generatorIndex].positionArray.length)
                 displayChat("Too few positions!Refusing to execute.")
             else {
                 displayChat("Execution started.")
-                let blockArray = generatorArray[0].generator()
+                let blockArray = generatorArray[0].mainGenerator()
                 let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
                 executionResponseEventData.data.blockArray = blockArray
                 clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)

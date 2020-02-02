@@ -102,17 +102,20 @@ clientSystem.initialize = function () {
         scriptLoggerConfig.data.log_warnings = true;
         clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
+        // let uiEventData = clientSystem.createEventData("minecraft:load_ui")
+        // uiEventData.data.path = "HUD.html"
+        // uiEventData.data.options = {
+        //     absorbs_input: false,
+        //     always_accepts_input: false,
+        //     force_render_below: true,
+        //     is_showing_menu: false,
+        //     render_game_behind: true,
+        //     render_only_when_topmost: false,
+        //     should_steal_mouse: true
+        // }
+        // clientSystem.broadcastEvent("minecraft:load_ui", uiEventData)
         let uiEventData = clientSystem.createEventData("minecraft:load_ui")
-        uiEventData.data.path = "HUD.html"
-        uiEventData.data.options = {
-            absorbs_input: false,
-            always_accepts_input: false,
-            force_render_below: true,
-            is_showing_menu: false,
-            render_game_behind: true,
-            render_only_when_topmost: false,
-            should_steal_mouse: true
-        }
+        uiEventData.data.path = "menu/menu.html"
         clientSystem.broadcastEvent("minecraft:load_ui", uiEventData)
 
         //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
@@ -190,6 +193,22 @@ clientSystem.initialize = function () {
 
                 generatorArray[generatorIndex].blockTypeArray = []
                 generatorArray[generatorIndex].positionArray = []
+            }
+        }
+    })
+    clientSystem.listenForEvent("minecraft:ui_event", (eventData) => {
+        displayChat(eventData)
+        if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
+            let uiData = eventData.data.slice(eventData.data.indexOf(":") + 1)
+            displayObject(uiData)
+            switch (uiData) {
+                case "closeMenu": {
+                    let closeMenuEventData = clientSystem.createEventData("minecraft:unload_ui")
+                    closeMenuEventData.data.path = "menu/menu.html"
+                    displayObject(closeMenuEventData)
+                    clientSystem.broadcastEvent("minecraft:unload_ui", closeMenuEventData)
+                    break;
+                }
             }
         }
     })

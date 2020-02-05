@@ -22,7 +22,7 @@ class BlockType {
 }
 
 serverSystem.initialize = function () {
-
+    
     const scriptLoggerConfig = serverSystem.createEventData("minecraft:script_logger_config");
     scriptLoggerConfig.data.log_errors = true;
     scriptLoggerConfig.data.log_information = true;

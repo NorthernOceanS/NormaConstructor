@@ -29,65 +29,111 @@ class Block {
         this.blockType = blockType;
     }
 }
+class Parameter {
+    constructor(positionArray, blockTypeArray, specialValueArray) {
+        this.positionArray = positionArray;
+        this.blockTypeArray = blockTypeArray;
+        this.specialValueArray = specialValueArray;
+    }
+}
 class LengthRequired {
-    constructor(positionArrayLengthRequired, blockTypeArrayLengthRequired) {
+    constructor(positionArrayLengthRequired, blockTypeArrayLengthRequired, specialValueArrayLengthRequired) {
         this.positionArray = positionArrayLengthRequired;
         this.blockTypeArray = blockTypeArrayLengthRequired;
+        this.specialValueArrayLengthRequired = specialValueArrayLengthRequired
+    }
+}
+class Usage {
+    constructor(positionUsageArray, blockTypeUsageArray, specialValueUsageArray) {
+        this.positionUsageArray = positionUsageArray;
+        this.blockTypeUsageArray = blockTypeUsageArray;
+        this.specialValueUsageArray = specialValueUsageArray;
+    }
+}
+class Description {
+    constructor(name, usage) {
+        this.name = name;
+        this.usage = usage;
     }
 }
 //TODO:Refactor generator
 class Generator {
-    constructor(name, positionArray, blockTypeArray, lengthRequired, mainGenerator) {
-        this.name = name;
-        this.positionArray = positionArray;
-        this.blockTypeArray = blockTypeArray;
+    constructor(description, parameter, lengthRequired, mainGenerator, parameterValidator) {
+        this.description = description;
+        this.parameter = parameter
         this.lengthRequired = lengthRequired;
         this.mainGenerator = mainGenerator;
+        this.parameterValidator = parameterValidator
     }
 }
 
 let generatorArray = []
-generatorArray.push(new Generator("Create a solid rectangle with two points.", [], [], new LengthRequired(2, 1), function () {
+generatorArray.push(
+    new Generator(
+        new Description("Create a solid rectangle with two points.", new Usage(["First point", "Second point"], ["BlockType"], [])),
+        new Parameter([], [], []),
+        new LengthRequired(2, 1, 0),
+        function () {
 
-    displayChat("§b NZ is JULAO!")
+            displayChat("§b NZ is JULAO!")
 
-    let positionArray = this.positionArray
-    let blockTypeArray = this.blockTypeArray
+            let positionArray = this.parameter.positionArray
+            let blockTypeArray = this.parameter.blockTypeArray
 
-    if (this.lengthRequired.positionArray != positionArray.length || this.lengthRequired.blockTypeArray != blockTypeArray.length) return [];
+            displayChat("§b Yes, NZ is JULAO!")
 
-    displayChat("§b Yes, NZ is JULAO!")
+            let blockArray = []
 
-    let blockArray = []
+            let minCoordinate = new Coordinate(
+                Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+                Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+                Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
+            )
+            let maxCoordinate = new Coordinate(
+                Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+                Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+                Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+            )
 
-    let minCoordinate = new Coordinate(
-        Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-        Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-        Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
-    )
-    let maxCoordinate = new Coordinate(
-        Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-        Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-        Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
-    )
-
-    for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
-        for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
-            for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
-                blockArray.push(
-                    new Block(
-                        new Position(
-                            new Coordinate(x, y, z),
-                            positionArray[0].tickingArea
-                        ),
-                        blockTypeArray[0]
-                    )
-                )
+            for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
+                for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
+                    for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
+                        blockArray.push(
+                            new Block(
+                                new Position(
+                                    new Coordinate(x, y, z),
+                                    positionArray[0].tickingArea
+                                ),
+                                blockTypeArray[0]
+                            )
+                        )
+                    }
+                }
             }
+            return blockArray
+        },
+        function () {
+            let result = new String()
+            if (generatorArray[generatorIndex].lengthRequired.blockTypeArray > generatorArray[generatorIndex].parameter.blockTypeArray.length)
+                result += "Too few blockTypes!Refusing to execute.\n"
+            if (generatorArray[generatorIndex].lengthRequired.positionArray > generatorArray[generatorIndex].parameter.positionArray.length)
+                result += "Too few positions!Refusing to execute."
+            if (result == "") result = "success"
+
+            return result;
         }
-    }
-    return blockArray
-}))
+    )
+)
+
+generatorArray.push(
+    new Generator(
+        new Description("test",new Usage([],[],[])),
+        new Parameter([],[],[]),
+        new LengthRequired(0,0,0),
+        function(){},
+        function(){}
+    )
+)
 
 clientSystem.initialize = function () {
 
@@ -102,9 +148,11 @@ clientSystem.initialize = function () {
         scriptLoggerConfig.data.log_warnings = true;
         clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
-        // let uiEventData = clientSystem.createEventData("minecraft:load_ui")
-        // uiEventData.data.path = "HUD.html"
-        // uiEventData.data.options = {
+        //Wait until the mobile version officially support scripting API.
+
+        // let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
+        // loadUIEventData.data.path = "HUD.html"
+        // loadUIEventData.data.options = {
         //     absorbs_input: false,
         //     always_accepts_input: false,
         //     force_render_below: true,
@@ -113,10 +161,21 @@ clientSystem.initialize = function () {
         //     render_only_when_topmost: false,
         //     should_steal_mouse: true
         // }
-        // clientSystem.broadcastEvent("minecraft:load_ui", uiEventData)
-        let uiEventData = clientSystem.createEventData("minecraft:load_ui")
-        uiEventData.data.path = "menu/menu.html"
-        clientSystem.broadcastEvent("minecraft:load_ui", uiEventData)
+        // clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
+        let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
+        loadUIEventData.data.path = "menu/menu.html"
+        //In case of EMERGENCY
+
+        // loadUIEventData.data.options = {
+        //     absorbs_input: false,
+        //     always_accepts_input: false,
+        //     force_render_below: true,
+        //     is_showing_menu: false,
+        //     render_game_behind: true,
+        //     render_only_when_topmost: false,
+        //     should_steal_mouse: true
+        // }
+        clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
 
         //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
         client.log("Logging started")
@@ -124,11 +183,11 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.position)
-            if (generatorArray[generatorIndex].positionArray.length >= generatorArray[generatorIndex].lengthRequired.positionArray) {
+            if (generatorArray[generatorIndex].parameter.positionArray.length >= generatorArray[generatorIndex].lengthRequired.positionArray) {
                 displayChat("Too many positions!New one is ignored")
             }
             else {
-                generatorArray[generatorIndex].positionArray.push(eventData.data.position)
+                generatorArray[generatorIndex].parameter.positionArray.push(eventData.data.position)
             }
         }
 
@@ -136,11 +195,11 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
         if (playerID == eventData.data.playerID) {
             displayObject(eventData.data.blockType)
-            if (generatorArray[generatorIndex].blockTypeArray.length >= generatorArray[generatorIndex].lengthRequired.blockTypeArray) {
+            if (generatorArray[generatorIndex].parameter.blockTypeArray.length >= generatorArray[generatorIndex].lengthRequired.blockTypeArray) {
                 displayChat("Too many blockTypes!New one is ignored")
             }
             else {
-                generatorArray[generatorIndex].blockTypeArray.push(eventData.data.blockType)
+                generatorArray[generatorIndex].parameter.blockTypeArray.push(eventData.data.blockType)
             }
         }
     })
@@ -149,16 +208,16 @@ clientSystem.initialize = function () {
             switch (eventData.data.command) {
                 case "removeLastPosition": {
                     displayChat("Removing the last position...")
-                    generatorArray[generatorIndex].positionArray.pop()
+                    generatorArray[generatorIndex].parameter.positionArray.pop()
                     displayChat("Current positionArray:")
-                    displayObject(generatorArray[generatorIndex].positionArray)
+                    displayObject(generatorArray[generatorIndex].parameter.positionArray)
                     break;
                 }
                 case "removeLastblockType": {
                     displayChat("Removing the last blockType...")
-                    generatorArray[generatorIndex].blockTypeArray.pop()
+                    generatorArray[generatorIndex].parameter.blockTypeArray.pop()
                     displayChat("Current blockTypeArray:")
-                    displayObject(generatorArray[generatorIndex].blockTypeArray)
+                    displayObject(generatorArray[generatorIndex].parameter.blockTypeArray)
                     break;
                 }
                 case "chooseNextGenerator": {
@@ -170,9 +229,9 @@ clientSystem.initialize = function () {
                 }
                 case "showSavedData": {
                     displayChat("Current positionArray:")
-                    displayObject(generatorArray[generatorIndex].positionArray)
+                    displayObject(generatorArray[generatorIndex].parameter.positionArray)
                     displayChat("Current blockTypeArray:")
-                    displayObject(generatorArray[generatorIndex].blockTypeArray)
+                    displayObject(generatorArray[generatorIndex].parameter.blockTypeArray)
                     break;
                 }
             }
@@ -180,10 +239,8 @@ clientSystem.initialize = function () {
     })
     clientSystem.listenForEvent("NormaConstructor:ExecutionRequest", (eventData) => {
         if (playerID == eventData.data.playerID) {
-            if (generatorArray[generatorIndex].lengthRequired.blockTypeArray > generatorArray[generatorIndex].blockTypeArray.length)
-                displayChat("Too few blockTypes!Refusing to execute.")
-            else if (generatorArray[generatorIndex].lengthRequired.positionArray > generatorArray[generatorIndex].positionArray.length)
-                displayChat("Too few positions!Refusing to execute.")
+            let validateResult = generatorArray[generatorIndex].parameterValidator();
+            if (validateResult != "success") displayChat("§c " + validateResult)
             else {
                 displayChat("Execution started.")
                 let blockArray = generatorArray[0].mainGenerator()
@@ -191,22 +248,49 @@ clientSystem.initialize = function () {
                 executionResponseEventData.data.blockArray = blockArray
                 clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
 
-                generatorArray[generatorIndex].blockTypeArray = []
-                generatorArray[generatorIndex].positionArray = []
+                generatorArray[generatorIndex].parameter.blockTypeArray = []
+                generatorArray[generatorIndex].parameter.positionArray = []
             }
         }
     })
     clientSystem.listenForEvent("minecraft:ui_event", (eventData) => {
-        displayChat(eventData)
+        displayObject(eventData)
         if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
-            let uiData = eventData.data.slice(eventData.data.indexOf(":") + 1)
+            let uiData = JSON.parse(eventData.data.slice(eventData.data.indexOf(":") + 1))
             displayObject(uiData)
-            switch (uiData) {
-                case "closeMenu": {
-                    let closeMenuEventData = clientSystem.createEventData("minecraft:unload_ui")
-                    closeMenuEventData.data.path = "menu/menu.html"
-                    displayObject(closeMenuEventData)
-                    clientSystem.broadcastEvent("minecraft:unload_ui", closeMenuEventData)
+            switch (uiData.type) {
+                case "command": {
+                    switch (uiData.data) {
+                        case "closeMenu": {
+                            let closeMenuEventData = clientSystem.createEventData("minecraft:unload_ui")
+                            closeMenuEventData.data.path = "menu/menu.html"
+                            displayObject(closeMenuEventData)
+                            clientSystem.broadcastEvent("minecraft:unload_ui", closeMenuEventData)
+                            break;
+                        }
+                        //Must wait until the UI is loaded
+                        case "loadDescription": {
+                            let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
+                            sendUIEventData.data.eventIdentifier = "NormaConstructor:loadDescription"
+                            sendUIEventData.data.data = JSON.stringify(
+                                (function () {
+                                    let descriptionArray = [];
+                                    generatorArray.forEach(generator => {
+                                        descriptionArray.push(generator.description)
+                                    })
+                                    return descriptionArray
+                                }()), null, '    '
+                            )
+                            displayObject(sendUIEventData)
+                            clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "displayChat": {
+                    displayChat(uiData.data)
                     break;
                 }
             }

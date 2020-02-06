@@ -2,6 +2,8 @@ var clientSystem = client.registerSystem(0, 0);
 
 var playerID = undefined
 var generatorIndex = 0
+var tick = 0
+var blockQuery = []
 
 //TODO:Wrap up the constructor && find better solution.
 class Coordinate {
@@ -95,17 +97,18 @@ generatorArray.push(
                 Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
             )
 
+
+
             for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
                 for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
                     for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
-                        blockArray.push(
-                            new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                blockTypeArray[0]
-                            )
+
+                        blockArray.push(new Block(
+                            new Position(
+                                new Coordinate(x, y, z),
+                                positionArray[0].tickingArea
+                            ),
+                            blockTypeArray[0])
                         )
                     }
                 }
@@ -127,17 +130,18 @@ generatorArray.push(
 
 generatorArray.push(
     new Generator(
-        new Description("test",new Usage([],[],[])),
-        new Parameter([],[],[]),
-        new LengthRequired(0,0,0),
-        function(){},
-        function(){}
+        new Description("test", new Usage([], [], [])),
+        new Parameter([], [], []),
+        new LengthRequired(0, 0, 0),
+        function () { },
+        function () { }
     )
 )
 
 clientSystem.initialize = function () {
 
     clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { blockArray: undefined })
+    clientSystem.registerEventData("NormaConstructor:setBlock", { block: undefined })
 
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
         playerID = eventData.data.player.id
@@ -244,9 +248,12 @@ clientSystem.initialize = function () {
             else {
                 displayChat("Execution started.")
                 let blockArray = generatorArray[0].mainGenerator()
-                let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
-                executionResponseEventData.data.blockArray = blockArray
-                clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
+
+                blockQuery = blockArray
+                // let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
+                // executionResponseEventData.data.blockArray = blockArray
+                // clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
+                generatorArray[0].mainGenerator()
 
                 generatorArray[generatorIndex].parameter.blockTypeArray = []
                 generatorArray[generatorIndex].parameter.positionArray = []
@@ -299,7 +306,11 @@ clientSystem.initialize = function () {
 };
 
 clientSystem.update = function () {
-
+    if ((++tick) % 1 == 0 && blockQuery.length > 0) {
+        let setBlockEventData = clientSystem.createEventData("NormaConstructor:setBlock")
+        setBlockEventData.data.block = blockQuery.pop()
+        clientSystem.broadcastEvent("NormaConstructor:setBlock", setBlockEventData)
+    }
 };
 
 function displayObject(object) {

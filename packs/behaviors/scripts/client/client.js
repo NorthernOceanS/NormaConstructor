@@ -306,10 +306,14 @@ clientSystem.initialize = function () {
 };
 
 clientSystem.update = function () {
-    if ((++tick) % 1 == 0 && blockQuery.length > 0) {
-        let setBlockEventData = clientSystem.createEventData("NormaConstructor:setBlock")
-        setBlockEventData.data.block = blockQuery.pop()
-        clientSystem.broadcastEvent("NormaConstructor:setBlock", setBlockEventData)
+    if ((++tick) % 5 == 0 && blockQuery.length > 0) {
+        // let setBlockEventData = clientSystem.createEventData("NormaConstructor:setBlock")
+        // setBlockEventData.data.block = blockQuery.pop()
+        // clientSystem.broadcastEvent("NormaConstructor:setBlock", setBlockEventData)
+
+        let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
+        executionResponseEventData.data.blockArray = blockQuery.splice(0,100)
+        clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
     }
 };
 

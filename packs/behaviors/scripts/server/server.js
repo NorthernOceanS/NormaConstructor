@@ -1,25 +1,6 @@
 var serverSystem = server.registerSystem(0, 0);
 
-//TODO:Wrap up the constructor && find better solution.
-class Coordinate {
-    constructor(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-}
-class Position {
-    constructor(coordinate, tickingArea) {
-        this.coordinate = coordinate;
-        this.tickingArea = tickingArea;
-    }
-}
-class BlockType {
-    constructor(blockIdentifier, blockState) {
-        this.blockIdentifier = blockIdentifier;
-        this.blockState = blockState;
-    }
-}
+import { Coordinate, Position, BlockType } from '../utils';
 
 serverSystem.initialize = function () {
     
@@ -142,6 +123,9 @@ serverSystem.initialize = function () {
         //displayObject(eventData)
         for (let block of eventData.data.blockArray) setBlock(block)
     })
+    serverSystem.listenForEvent("NormaConstructor:setBlock",(eventData)=>{
+        setBlock(eventData.data.block)
+    })
 }
 
 serverSystem.update = function () {
@@ -161,20 +145,20 @@ function displayChat(message) {
 function setBlock(block) {
 
     displayChat("§b We all agree, NZ is JULAO!")
-    displayObject(block)
+    //displayObject(block)
     let blockType = block.blockType
     let position = block.position
     let coordinate = position.coordinate
 
     serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)}`, (commandResultData) => {
 
-        displayObject(commandResultData);
-        displayChat("Position now:")
-        displayObject(coordinate)
+        // displayObject(commandResultData);
+        // displayChat("Position now:")
+        // displayObject(coordinate)
 
         var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 
-        displayChat(JSON.stringify(targerBlock, null, '    '))
+        //displayChat(JSON.stringify(targerBlock, null, '    '))
 
         var targetBlockStateComponent = serverSystem.getComponent(targerBlock, "minecraft:blockstate")
         targetBlockStateComponent.data = blockType.blockState

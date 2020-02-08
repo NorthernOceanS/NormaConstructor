@@ -1,25 +1,6 @@
 var serverSystem = server.registerSystem(0, 0);
 
-//TODO:Wrap up the constructor && find better solution.
-class Coordinate {
-    constructor(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-}
-class Position {
-    constructor(coordinate, tickingArea) {
-        this.coordinate = coordinate;
-        this.tickingArea = tickingArea;
-    }
-}
-class BlockType {
-    constructor(blockIdentifier, blockState) {
-        this.blockIdentifier = blockIdentifier;
-        this.blockState = blockState;
-    }
-}
+import { Coordinate, Position, BlockType } from '../utils';
 
 serverSystem.initialize = function () {
     

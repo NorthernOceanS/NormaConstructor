@@ -2,87 +2,152 @@ var clientSystem = client.registerSystem(0, 0);
 
 var playerID = undefined
 var generatorIndex = 0
+var globalSettings = {
+    "generateByServer": false,
+}
 var tick = 0
 var blockQuery = []
 
-import { Coordinate, Position, BlockType, Block, Parameter, LengthRequired, Usage, Description, Generator } from '../utils'
+import { Coordinate, Position, BlockType, Block, Usage, Description, Generator } from '../utils'
+let generatorArray = [];
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Create a solid rectangle with two points.",
+                new Usage(
+                    ["First point", "Second point"],
+                    ["BlockType"],
+                    {})
+            ),
 
-let generatorArray = []
-generatorArray.push(
-    new Generator(
-        new Description("Create a solid rectangle with two points.", new Usage(["First point", "Second point"], ["BlockType"], [])),
-        new Parameter([], [], []),
-        new LengthRequired(2, 1, 0),
-        function () {
+            {
+                "positionArrayLengthRequired": 2,
+                "blockTypeArrayLengthRequired": 1
+            },
+            [undefined, undefined],
+            [undefined],
 
-            displayChat("§b NZ is JULAO!")
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
 
-            let positionArray = this.parameter.positionArray
-            let blockTypeArray = this.parameter.blockTypeArray
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (result == "") result = "success"
 
-            displayChat("§b Yes, NZ is JULAO!")
+                return result;
+            },
+            function () {
+                let blockArray = []
 
-            let blockArray = []
+                displayChat("§b NZ is JULAO!")
 
-            let minCoordinate = new Coordinate(
-                Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-                Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-                Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
-            )
-            let maxCoordinate = new Coordinate(
-                Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-                Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-                Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
-            )
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+                let minCoordinate = new Coordinate(
+                    Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+                    Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+                    Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
+                )
+                let maxCoordinate = new Coordinate(
+                    Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+                    Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+                    Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+                )
 
+                displayChat("§b Yes, NZ is JULAO!")
 
+                for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
+                    for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
+                        for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
 
-            for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
-                for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
-                    for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
-
-                        blockArray.push(new Block(
-                            new Position(
-                                new Coordinate(x, y, z),
-                                positionArray[0].tickingArea
-                            ),
-                            blockTypeArray[0])
-                        )
+                            blockArray.push(new Block(
+                                new Position(
+                                    new Coordinate(x, y, z),
+                                    positionArray[0].tickingArea
+                                ),
+                                blockTypeArray[0])
+                            )
+                        }
                     }
                 }
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined, undefined]
+                this.blockTypeArray = [undefined]
             }
-            return blockArray
-        },
-        function () {
-            let result = new String()
-            if (generatorArray[generatorIndex].lengthRequired.blockTypeArray > generatorArray[generatorIndex].parameter.blockTypeArray.length)
-                result += "Too few blockTypes!Refusing to execute.\n"
-            if (generatorArray[generatorIndex].lengthRequired.positionArray > generatorArray[generatorIndex].parameter.positionArray.length)
-                result += "Too few positions!Refusing to execute."
-            if (result == "") result = "success"
-
-            return result;
-        }
+        )
     )
-)
 
-generatorArray.push(
-    new Generator(
-        new Description("test", new Usage([], [], [])),
-        new Parameter([], [], []),
-        new LengthRequired(0, 0, 0),
-        function () { },
-        function () { }
+    generatorArray.push(
+        new Generator(
+            new Description("Test.",
+                new Usage(
+                    [],
+                    [],
+                    {})
+            ),
+
+            {},
+            new Array(0),
+            new Array(0),
+
+            function (position) {
+            },
+            function (blockType) {
+            },
+            function (index) {
+            },
+            function (index) {
+            },
+
+            function () {
+            },
+            function () {
+            },
+            function () {
+            }
+        )
     )
-)
+}())
+
 
 clientSystem.initialize = function () {
 
-    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { blockArray: undefined })
-    clientSystem.registerEventData("NormaConstructor:setBlock", { block: undefined })
+    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
+    clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
 
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
         playerID = eventData.data.player.id
+
+        displayObject(generatorArray)
 
         const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
         scriptLoggerConfig.data.log_errors = true;
@@ -124,25 +189,12 @@ clientSystem.initialize = function () {
     })
     clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
         if (playerID == eventData.data.playerID) {
-            displayObject(eventData.data.position)
-            if (generatorArray[generatorIndex].parameter.positionArray.length >= generatorArray[generatorIndex].lengthRequired.positionArray) {
-                displayChat("Too many positions!New one is ignored")
-            }
-            else {
-                generatorArray[generatorIndex].parameter.positionArray.push(eventData.data.position)
-            }
+            generatorArray[generatorIndex].addPosition(eventData.data.position)
         }
-
     })
     clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
         if (playerID == eventData.data.playerID) {
-            displayObject(eventData.data.blockType)
-            if (generatorArray[generatorIndex].parameter.blockTypeArray.length >= generatorArray[generatorIndex].lengthRequired.blockTypeArray) {
-                displayChat("Too many blockTypes!New one is ignored")
-            }
-            else {
-                generatorArray[generatorIndex].parameter.blockTypeArray.push(eventData.data.blockType)
-            }
+            generatorArray[generatorIndex].addBlockType(eventData.data.blockType)
         }
     })
     clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
@@ -150,16 +202,12 @@ clientSystem.initialize = function () {
             switch (eventData.data.command) {
                 case "removeLastPosition": {
                     displayChat("Removing the last position...")
-                    generatorArray[generatorIndex].parameter.positionArray.pop()
-                    displayChat("Current positionArray:")
-                    displayObject(generatorArray[generatorIndex].parameter.positionArray)
+                    generatorArray[generatorIndex].removePosition()
                     break;
                 }
                 case "removeLastblockType": {
                     displayChat("Removing the last blockType...")
-                    generatorArray[generatorIndex].parameter.blockTypeArray.pop()
-                    displayChat("Current blockTypeArray:")
-                    displayObject(generatorArray[generatorIndex].parameter.blockTypeArray)
+                    generatorArray[generatorIndex].removeBlockType()
                     break;
                 }
                 case "chooseNextGenerator": {
@@ -171,9 +219,9 @@ clientSystem.initialize = function () {
                 }
                 case "showSavedData": {
                     displayChat("Current positionArray:")
-                    displayObject(generatorArray[generatorIndex].parameter.positionArray)
+                    displayObject(generatorArray[generatorIndex].positionArray)
                     displayChat("Current blockTypeArray:")
-                    displayObject(generatorArray[generatorIndex].parameter.blockTypeArray)
+                    displayObject(generatorArray[generatorIndex].blockTypeArray)
                     break;
                 }
             }
@@ -181,20 +229,20 @@ clientSystem.initialize = function () {
     })
     clientSystem.listenForEvent("NormaConstructor:ExecutionRequest", (eventData) => {
         if (playerID == eventData.data.playerID) {
-            let validateResult = generatorArray[generatorIndex].parameterValidator();
+            let validateResult = generatorArray[generatorIndex].validateParameter();
             if (validateResult != "success") displayChat("§c " + validateResult)
             else {
                 displayChat("Execution started.")
-                let blockArray = generatorArray[0].mainGenerator()
 
-                blockQuery = blockArray
-                // let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
-                // executionResponseEventData.data.blockArray = blockArray
-                // clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
-                generatorArray[0].mainGenerator()
+                if (globalSettings["generateByServer"] == false) {
+                    let blockArray = generatorArray[0].generate()
+                    Array.prototype.push.apply(blockQuery, blockArray);
+                }
+                else {
 
-                generatorArray[generatorIndex].parameter.blockTypeArray = []
-                generatorArray[generatorIndex].parameter.positionArray = []
+                }
+
+                generatorArray[generatorIndex].postGenerate()
             }
         }
     })
@@ -245,12 +293,10 @@ clientSystem.initialize = function () {
 
 clientSystem.update = function () {
     if ((++tick) % 5 == 0 && blockQuery.length > 0) {
-        // let setBlockEventData = clientSystem.createEventData("NormaConstructor:setBlock")
-        // setBlockEventData.data.block = blockQuery.pop()
-        // clientSystem.broadcastEvent("NormaConstructor:setBlock", setBlockEventData)
 
         let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
-        executionResponseEventData.data.blockArray = blockQuery.splice(0,100)
+        executionResponseEventData.data.playerID = playerID
+        executionResponseEventData.data.blockArray = blockQuery.splice(0, 100)
         clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
     }
 };
@@ -265,3 +311,4 @@ function displayChat(message) {
         clientSystem.broadcastEvent("minecraft:display_chat_event", eventData);
     }
 }
+

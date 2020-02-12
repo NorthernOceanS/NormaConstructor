@@ -24,25 +24,12 @@ class Block {
         this.blockType = blockType;
     }
 }
-class Parameter {
-    constructor(positionArray, blockTypeArray, specialValueArray) {
-        this.positionArray = positionArray;
-        this.blockTypeArray = blockTypeArray;
-        this.specialValueArray = specialValueArray;
-    }
-}
-class LengthRequired {
-    constructor(positionArrayLengthRequired, blockTypeArrayLengthRequired, specialValueArrayLengthRequired) {
-        this.positionArray = positionArrayLengthRequired;
-        this.blockTypeArray = blockTypeArrayLengthRequired;
-        this.specialValueArrayLengthRequired = specialValueArrayLengthRequired
-    }
-}
+
 class Usage {
-    constructor(positionUsageArray, blockTypeUsageArray, specialValueUsageArray) {
+    constructor(positionUsageArray, blockTypeUsageArray, optionUsage) {
         this.positionUsageArray = positionUsageArray;
         this.blockTypeUsageArray = blockTypeUsageArray;
-        this.specialValueUsageArray = specialValueUsageArray;
+        this.optionUsage = optionUsage;
     }
 }
 class Description {
@@ -53,13 +40,24 @@ class Description {
 }
 //TODO:Refactor generator
 class Generator {
-    constructor(description, parameter, lengthRequired, mainGenerator, parameterValidator) {
+    constructor(description, option, positionArray, blockTypeArray,
+        addPosition, addBlockType, removePosition, removeBlockType,
+        validateParameter, generate, postGenerate) {
         this.description = description;
-        this.parameter = parameter
-        this.lengthRequired = lengthRequired;
-        this.mainGenerator = mainGenerator;
-        this.parameterValidator = parameterValidator
+
+        this.option = option;
+        this.positionArray = positionArray;
+        this.blockTypeArray = blockTypeArray;
+
+        this.addPosition = addPosition;
+        this.addBlockType = addBlockType;
+        this.removePosition = removePosition;
+        this.removeBlockType = removeBlockType;
+
+        this.validateParameter = validateParameter;
+        this.generate = generate;
+        this.postGenerate = postGenerate;
     }
 }
 
-export { Coordinate, Position, BlockType, Block, Parameter, LengthRequired, Usage, Description, Generator }
+export { Coordinate, Position, BlockType, Block, Usage, Description, Generator }

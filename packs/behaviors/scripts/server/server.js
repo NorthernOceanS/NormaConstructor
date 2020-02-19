@@ -1,6 +1,7 @@
 var serverSystem = server.registerSystem(0, 0);
 
 import { Coordinate, Position, BlockType } from '../utils';
+import { Block } from './block'
 
 serverSystem.initialize = function () {
 
@@ -22,7 +23,7 @@ serverSystem.initialize = function () {
         playerID: undefined
     })
     serverSystem.registerEventData("NormaConstructor:command", { command: undefined, playerID: undefined })
-    serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined})
+    serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => getBlockType(eventData))
     //TODO:Consider switching to "minecraft:entity_use_item"
@@ -64,8 +65,8 @@ serverSystem.initialize = function () {
                 serverSystem.broadcastEvent("NormaConstructor:ExecutionRequest", executeRequestEventData)
                 break;
             }
-            case "minecraft:": {
-
+            case "minecraft:wooden_sword": {
+                displayObject(serverSystem.getComponent(eventData.data.player, "minecraft:rotation"))
             }
         }
     })
@@ -73,7 +74,15 @@ serverSystem.initialize = function () {
         //TODO:Inspect why the log function here doesn't work...properly.(?)
         server.log("AAAAAAAAAAAAAAAA")
     })
-    serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => { for (let block of eventData.data.blockArray) setBlock(block) })
+    serverSystem.listenForEvent("NormaConstructor:generateWithBlockArray", (eventData) => { for (let block of eventData.data.blockArray) setBlock(block) })
+    serverSystem.listenForEvent("NormaConstructor:generateWithRawData", (eventData) => {
+        displayObject(eventData)
+        let generator = JSON.parse(eventData.data.generator)
+        displayObject(generator)
+        let blockArray = generator.generate()
+        
+        for (let block of blockArray) setBlock(block)
+    })
     serverSystem.listenForEvent("NormaConstructor:setBlock", (eventData) => setBlock(eventData.data.block))
 }
 
@@ -140,7 +149,10 @@ function setBlock(block) {
     let position = block.position
     let coordinate = position.coordinate
 
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)}`, (commandResultData) => {
+    let tileData = Block.getData(blockType.blockIdentifier, { data: blockType.blockState })
+    //Thank you, WavePlayz!
+
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData}`, (commandResultData) => {
 
         var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

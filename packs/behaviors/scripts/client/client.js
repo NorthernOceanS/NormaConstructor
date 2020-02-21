@@ -3,7 +3,7 @@ var clientSystem = client.registerSystem(0, 0);
 var playerID = undefined
 var generatorIndex = 0
 var globalSettings = {
-    "generateByServer": true,
+    "generateByServer": false,
 }
 var tick = 0
 var blockQuery = []
@@ -41,15 +41,13 @@ let generatorArray = [];
             },
             function (index) {
                 if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0; index--)
-                        if (this.positionArray[index] != undefined) break;
+                    for (index = this.positionArray.length - 1; this.positionArray[index] == undefined; index--);
                 if (index >= 0) this.positionArray[index] = undefined
                 displayObject(this.positionArray)
             },
             function (index) {
                 if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0; index--)
-                        if (this.blockTypeArray[index] != undefined) break;
+                    for (index = this.blockTypeArray.length - 1; this.blockTypeArray[index] == undefined; index--);
                 if (index >= 0) this.blockTypeArray[index] = undefined
                 displayObject(this.blockTypeArray)
             },
@@ -143,8 +141,7 @@ let generatorArray = [];
 
 clientSystem.initialize = function () {
 
-    clientSystem.registerEventData("NormaConstructor:generateWithBlockArray", { playerID: undefined, blockArray: undefined })
-    clientSystem.registerEventData("NormaConstructor:generateWithRawData", { playerID: undefined, generator: undefined })
+    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
     clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
 
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
@@ -198,7 +195,6 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
         if (playerID == eventData.data.playerID) {
             generatorArray[generatorIndex].addBlockType(eventData.data.blockType)
-            client.log(JSON.stringify(eventData.data.blockType,null,"    "))
         }
     })
     clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
@@ -243,12 +239,7 @@ clientSystem.initialize = function () {
                     Array.prototype.push.apply(blockQuery, blockArray);
                 }
                 else {
-                    let generateWithRawDataEventData = clientSystem.createEventData("NormaConstructor:generateWithRawData")
-                    generateWithRawDataEventData.data.playerID = playerID
-                    generateWithRawDataEventData.data.generator = JSON.stringify(generatorArray[generatorIndex],null,'')
-                    displayObject(generateWithRawDataEventData)
-                    clientSystem.broadcastEvent("NormaConstructor:generateWithRawData",generateWithRawDataEventData)
-                    
+
                 }
 
                 generatorArray[generatorIndex].postGenerate()
@@ -303,10 +294,10 @@ clientSystem.initialize = function () {
 clientSystem.update = function () {
     if ((++tick) % 5 == 0 && blockQuery.length > 0) {
 
-        let generateWithBlockArrayEventData = clientSystem.createEventData("NormaConstructor:generateWithBlockArray")
-        generateWithBlockArrayEventData.data.playerID = playerID
-        generateWithBlockArrayEventData.data.blockArray = blockQuery.splice(0, 100)
-        clientSystem.broadcastEvent("NormaConstructor:generateWithBlockArray", generateWithBlockArrayEventData)
+        let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
+        executionResponseEventData.data.playerID = playerID
+        executionResponseEventData.data.blockArray = blockQuery.splice(0, 100)
+        clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
     }
 };
 

@@ -24,11 +24,18 @@ class Block {
         this.blockType = blockType;
     }
 }
+class Direction {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
 
 class Usage {
-    constructor(positionUsageArray, blockTypeUsageArray, optionUsage) {
-        this.positionUsageArray = positionUsageArray;
-        this.blockTypeUsageArray = blockTypeUsageArray;
+    constructor(positionUsage, blockTypeUsage, directionUsage, optionUsage) {
+        this.positionUsage = positionUsage;
+        this.blockTypeUsage = blockTypeUsage;
+        this.directionUsage = directionUsage;
         this.optionUsage = optionUsage;
     }
 }
@@ -40,19 +47,24 @@ class Description {
 }
 //TODO:Refactor generator
 class Generator {
-    constructor(description, option, positionArray, blockTypeArray,
-        addPosition, addBlockType, removePosition, removeBlockType,
+    constructor(description,
+        positionArray, blockTypeArray, directionArray, option,
+        addPosition, addBlockType, addDirection,
+        removePosition, removeBlockType, removeDirection,
         validateParameter, generate, postGenerate) {
         this.description = description;
 
-        this.option = option;
         this.positionArray = positionArray;
         this.blockTypeArray = blockTypeArray;
+        this.directionArray = directionArray
+        this.option = option;
 
         this.addPosition = addPosition;
         this.addBlockType = addBlockType;
+        this.addDirection = addDirection;
         this.removePosition = removePosition;
         this.removeBlockType = removeBlockType;
+        this.removeDirection = removeDirection
 
         this.validateParameter = validateParameter;
         this.generate = generate;
@@ -60,4 +72,4 @@ class Generator {
     }
 }
 
-export { Coordinate, Position, BlockType, Block, Usage, Description, Generator }
+export { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator }

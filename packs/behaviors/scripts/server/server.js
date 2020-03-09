@@ -1,6 +1,54 @@
 var serverSystem = server.registerSystem(0, 0);
 
-import { Coordinate, Position, BlockType } from '../utils';
+import { Coordinate, Position, BlockType, Direction, Block } from '../utils';
+import { blockStateTranslator } from './translator'
+
+let generator = {
+    "19260817": function (positionArray, blockTypeArray, directionArray, option, playerID) {
+        let blockArray = []
+
+        displayChat("§b NZ is JULAO!", playerID)
+
+        let minCoordinate = new Coordinate(
+            Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+            Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+            Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
+        )
+        let maxCoordinate = new Coordinate(
+            Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+            Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+            Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+        )
+
+        displayChat("§b Yes, NZ is JULAO!", playerID)
+
+        for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
+            for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
+                for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
+
+                    let tickingArea = positionArray[0].tickingArea
+                    let block = serverSystem.getBlock(tickingArea, new Coordinate(x, y, z))
+                    let blockType = new BlockType(undefined, undefined)
+                    blockType.blockIdentifier = block.__identifier__
+                    blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
+
+                    blockArray.push(new Block(
+                        new Position(
+                            new Coordinate(
+                                x - positionArray[0].coordinate.x + positionArray[2].coordinate.x,
+                                y - positionArray[0].coordinate.y + positionArray[2].coordinate.y,
+                                z - positionArray[0].coordinate.z + positionArray[2].coordinate.z
+                            ),
+                            positionArray[2].tickingArea
+                        ),
+                        blockType)
+                    )
+                }
+            }
+        }
+        return blockArray
+    }
+}
 
 serverSystem.initialize = function () {
 
@@ -21,8 +69,17 @@ serverSystem.initialize = function () {
         blockType: new BlockType(undefined, undefined),
         playerID: undefined
     })
+    serverSystem.registerEventData("NormaConstructor:getDirection", {
+        direction: new Direction(undefined, undefined),
+        playerID: undefined
+    })
+    serverSystem.registerEventData("NormaConstructor:displayChatToClient", {
+        message: undefined,
+        playerID: undefined
+    })
+
     serverSystem.registerEventData("NormaConstructor:command", { command: undefined, playerID: undefined })
-    serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined})
+    serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => getBlockType(eventData))
     //TODO:Consider switching to "minecraft:entity_use_item"
@@ -35,6 +92,17 @@ serverSystem.initialize = function () {
             case "minecraft:wooden_axe": {
                 //Set position.
                 getPosition(eventData)
+                break;
+            }
+            case "minecraft:compass": {
+                //Set direction.
+                getDirection(eventData)
+                break;
+            }
+            case "minecraft:clock": {
+                //TODO:Change it in the future.
+                //Remove the last direction.
+                sendCommand("removeLastDirection", playerID)
                 break;
             }
             case "minecraft:stone_axe": {
@@ -65,7 +133,7 @@ serverSystem.initialize = function () {
                 break;
             }
             case "minecraft:": {
-
+                break;
             }
         }
     })
@@ -74,20 +142,37 @@ serverSystem.initialize = function () {
         server.log("AAAAAAAAAAAAAAAA")
     })
     serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => { for (let block of eventData.data.blockArray) setBlock(block) })
+    serverSystem.listenForEvent("NormaConstructor:generateByServer", (eventData) => {
+        let blockArray = generator[eventData.data.serverGeneratorIdentifier](
+            eventData.data.positionArray,
+            eventData.data.blockTypeArray,
+            eventData.data.directionArray,
+            eventData.data.option,
+            eventData.data.playerID
+        )
+        displayObject(blockArray, eventData.data.playerID)
+        for (let block of blockArray) setBlock(block)
+    })
     serverSystem.listenForEvent("NormaConstructor:setBlock", (eventData) => setBlock(eventData.data.block))
 }
 
 serverSystem.update = function () {
 };
 
-function displayObject(object) {
-    displayChat(JSON.stringify(object, null, '    '))
+function displayObject(object, playerID) {
+    displayChat(JSON.stringify(object, null, '    '), playerID)
 }
-function displayChat(message) {
-    let eventData = serverSystem.createEventData("minecraft:display_chat_event");
-    if (eventData) {
+function displayChat(message, playerID) {
+    if (playerID === undefined) {
+        let eventData = serverSystem.createEventData("minecraft:display_chat_event");
         eventData.data.message = message;
         serverSystem.broadcastEvent("minecraft:display_chat_event", eventData);
+    }
+    else {
+        let eventData = serverSystem.createEventData("NormaConstructor:displayChatToClient");
+        eventData.data.message = message;
+        eventData.data.playerID = playerID;
+        serverSystem.broadcastEvent("NormaConstructor:displayChatToClient", eventData);
     }
 }
 
@@ -127,6 +212,15 @@ function getPosition(eventData) {
     getPositionEventData.data.playerID = eventData.data.player.id
     serverSystem.broadcastEvent("NormaConstructor:getPosition", getPositionEventData)
 }
+function getDirection(eventData) {
+    let direction = new Direction(undefined, undefined)
+    direction = serverSystem.getComponent(eventData.data.player, "minecraft:rotation").data
+
+    let getDirectionEventData = serverSystem.createEventData("NormaConstructor:getDirection")
+    getDirectionEventData.data.direction = direction
+    getDirectionEventData.data.playerID = eventData.data.player.id
+    serverSystem.broadcastEvent("NormaConstructor:getDirection", getDirectionEventData)
+}
 function sendCommand(command, playerID) {
     let commandEventData = serverSystem.createEventData("NormaConstructor:command")
     commandEventData.data.command = command
@@ -139,13 +233,14 @@ function setBlock(block) {
     let blockType = block.blockType
     let position = block.position
     let coordinate = position.coordinate
+    //Thank you, WavePlayz!
 
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)}`, (commandResultData) => {
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getID(blockType.blockIdentifier,blockType.blockState)}`, (commandResultData) => {
 
-        var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
+        // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 
-        var targetBlockStateComponent = serverSystem.getComponent(targerBlock, "minecraft:blockstate")
-        targetBlockStateComponent.data = blockType.blockState
-        serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
+        // var targetBlockStateComponent = serverSystem.getComponent(targerBlock, "minecraft:blockstate")
+        // targetBlockStateComponent.data = blockType.blockState
+        // serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
     });
 }

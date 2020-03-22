@@ -169,6 +169,10 @@
         document.getElementById("NumPad").style.visibility = "hidden"
     }
     function alterChoice(id) {
+        //TODO:
+        //I suppose I should alter the value stored in this menu.
+        //Though it seems it doesn't matter.
+        
         currentChoices[id] = (currentChoices[id] + 1) % optionUsage[id].data.length
         let element = document.getElementById(id)
         element.textContent = optionUsage[id].data[currentChoices[id]].text
@@ -185,27 +189,15 @@
         inputDisplay.textContent = editTextInput
     }
     function setNumber() {
-        displayChat(idOfEditTextOnFocus)
-
         let number = Number.parseFloat(editTextInput)
-
-        displayChat(number)
-
         let element = document.getElementById(idOfEditTextOnFocus)
-
-        displayChat("AAAAAAAAA")
-
-        element.value = number
-
-        displayChat("BBBBBB")
-
+        // option[optionUsage[idOfEditTextOnFocus].key]=element.value = number
         setData({
             key: optionUsage[idOfEditTextOnFocus].key,
             value: number
         })
         editTextInput = ''
         inputDisplay.textContent = ''
-
     }
 
     sendCommand("reload")
@@ -236,11 +228,14 @@
                     break;
                 }
                 case "edittext": {
+                    let defaultNumber = option[optionUsage[i].key]
+                    if(defaultNumber == undefined) defaultNumber = optionUsage[i].default
+
                     mainMenu.insertAdjacentHTML('beforeend',
                         `<div style="display: flex;flex-direction: row;">
                             <div style="width: 90%;">${optionUsage[i].text}</div>
-                            <input id=${i} type="text" style="width: 10%;text-align: center;" value=${optionUsage[i].default}
-                                onclick="idOfEditTextOnFocus = ${i}">
+                            <input id=${i} type="text" style="width: 10%;text-align: center;" value=${defaultNumber}
+                                onclick="idOfEditTextOnFocus = ${i};inputDisplay.textContent = editTextInput = ${defaultNumber}">
                         </div>`)
                     break;
                 }

@@ -127,9 +127,12 @@ serverSystem.initialize = function () {
             }
             case "minecraft:stick": {
                 //Execute.
-                let executeRequestEventData = serverSystem.createEventData("NormaConstructor:ExecutionRequest")
-                executeRequestEventData.data.playerID = playerID
-                serverSystem.broadcastEvent("NormaConstructor:ExecutionRequest", executeRequestEventData)
+                sendCommand("execute",playerID)
+                break;
+            }
+            case "minecraft:iron_sword": {
+                displayChat("AAAAAAAAAAAAAAAAAA")
+                sendCommand("showMenu",playerID)
                 break;
             }
             case "minecraft:": {
@@ -150,7 +153,6 @@ serverSystem.initialize = function () {
             eventData.data.option,
             eventData.data.playerID
         )
-        displayObject(blockArray, eventData.data.playerID)
         for (let block of blockArray) setBlock(block)
     })
     serverSystem.listenForEvent("NormaConstructor:setBlock", (eventData) => setBlock(eventData.data.block))

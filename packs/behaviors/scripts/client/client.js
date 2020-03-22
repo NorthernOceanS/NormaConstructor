@@ -134,7 +134,7 @@ let generatorArray = [];
                 "positionArrayLengthRequired": 3,
                 "blockTypeArrayLengthRequired": 0,
                 "__serverGeneratorIdentifier": "19260817",
-                "__forceGenerateByServer": true
+                "__generateByServer": true
             },
 
             function (position) {
@@ -207,27 +207,27 @@ let generatorArray = [];
                         { viewtype: "text", text: "NZ IS JULAO." },
                         {
                             viewtype: "button",
-                            text:"Yes, NZ is JULAO.", 
+                            text: "Yes, NZ is JULAO.",
                             key: "CCC",
-                            data:[
-                                {value:"red",text:"Choosing red"},
-                                {value:"blue",text:"Choosing blue"},
-                                {value:"yellow",text:"Choosing yellow"}
+                            data: [
+                                { value: "red", text: "Choosing red" },
+                                { value: "blue", text: "Choosing blue" },
+                                { value: "yellow", text: "Choosing yellow" }
                             ]
                         },
                         {
                             viewtype: "edittext",
-                            text:"Of course, NZ is JULAO.", 
+                            text: "Of course, NZ is JULAO.",
                             key: "BBB",
-                            default:999
+                            default: 999
                         },
                         {
                             viewtype: "checkbox",
-                            text:"We all agree, NZ is JULAO.", 
+                            text: "We all agree, NZ is JULAO.",
                             key: "AAA",
-                            data:[
-                                {value:true,text:"Yes"},
-                                {value:false,text:"OK."},
+                            data: [
+                                { value: true, text: "Yes" },
+                                { value: false, text: "OK." },
                             ]
                         }
                     ]
@@ -303,9 +303,6 @@ clientSystem.initialize = function () {
         //     should_steal_mouse: true
         // }
         // clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
-        let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
-        loadUIEventData.data.path = "menu/menu.html"
-        clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
 
         //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
         client.log("Logging started")
@@ -367,15 +364,20 @@ clientSystem.initialize = function () {
                     displayObject(generatorArray[generatorIndex].option)
                     break;
                 }
+                case "execute": {
+                    execute();
+                    break;
+                }
+                case "showMenu": {
+                    let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
+                    loadUIEventData.data.path = "menu/menu.html"
+                    clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
+                    break;
+                }
             }
         }
     })
 
-    clientSystem.listenForEvent("NormaConstructor:ExecutionRequest", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            execute();
-        }
-    })
     clientSystem.listenForEvent("minecraft:ui_event", (eventData) => {
         if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
             let uiData = JSON.parse(eventData.data.slice(eventData.data.indexOf(":") + 1))
@@ -455,7 +457,7 @@ function execute() {
         displayChat("§c " + validateResult);
     else {
         displayChat("Execution started.");
-        if (generatorArray[generatorIndex].option["__forceGenerateByServer"] == true) {
+        if (generatorArray[generatorIndex].option["__generateByServer"] == true) {
             let generateByServerEventData = clientSystem.createEventData("NormaConstructor:generateByServer");
             generateByServerEventData.data.playerID = playerID;
             generateByServerEventData.data.serverGeneratorIdentifier =

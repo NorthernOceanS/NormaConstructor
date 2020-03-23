@@ -191,7 +191,8 @@
     function setNumber() {
         let number = Number.parseFloat(editTextInput)
         let element = document.getElementById(idOfEditTextOnFocus)
-        // option[optionUsage[idOfEditTextOnFocus].key]=element.value = number
+        // option[optionUsage[idOfEditTextOnFocus].key]=
+        element.value = number
         setData({
             key: optionUsage[idOfEditTextOnFocus].key,
             value: number

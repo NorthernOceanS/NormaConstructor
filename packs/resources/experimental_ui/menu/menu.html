@@ -183,7 +183,7 @@
     }
     function handleEditTextInput(character) {
         if (character == 'd')
-            if (editTextInput > 0) editTextInput = editTextInput.slice(0, editTextInput.length - 1)
+            if (editTextInput.length > 0) editTextInput = editTextInput.slice(0, editTextInput.length - 1)
             else;
         else editTextInput += character
         inputDisplay.textContent = editTextInput
@@ -235,7 +235,7 @@
                         `<div style="display: flex;flex-direction: row;">
                             <div style="width: 90%;">${optionUsage[i].text}</div>
                             <input id=${i} type="text" style="width: 10%;text-align: center;" value=${defaultNumber}
-                                onclick="idOfEditTextOnFocus = ${i};inputDisplay.textContent = editTextInput = ${defaultNumber}">
+                                onclick="idOfEditTextOnFocus = ${i};inputDisplay.textContent = editTextInput = '0';">
                         </div>`)
                     break;
                 }

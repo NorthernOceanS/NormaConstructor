@@ -131,7 +131,6 @@ serverSystem.initialize = function () {
                 break;
             }
             case "minecraft:iron_sword": {
-                displayChat("AAAAAAAAAAAAAAAAAA")
                 sendCommand("showMenu",playerID)
                 break;
             }
@@ -237,7 +236,7 @@ function setBlock(block) {
     let coordinate = position.coordinate
     //Thank you, WavePlayz!
 
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getID(blockType.blockIdentifier,blockType.blockState)}`, (commandResultData) => {
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getData(blockType.blockIdentifier,{"data":blockType.blockState})}`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

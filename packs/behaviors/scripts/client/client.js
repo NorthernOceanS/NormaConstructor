@@ -5,7 +5,7 @@ var generatorIndex = 0
 var tick = 0
 var blockQuery = []
 
-import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../utils'
+import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../constructor'
 let generatorArray = [];
 
 (function () {

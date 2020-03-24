@@ -1,6 +1,6 @@
 var serverSystem = server.registerSystem(0, 0);
 
-import { Coordinate, Position, BlockType, Direction, Block } from '../utils';
+import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
 import { blockStateTranslator } from './translator'
 
 let generator = {

@@ -49,7 +49,7 @@ let generator = {
         return blockArray
     }
 }
-
+let playerOption = {}
 serverSystem.initialize = function () {
 
     const scriptLoggerConfig = serverSystem.createEventData("minecraft:script_logger_config");
@@ -81,7 +81,18 @@ serverSystem.initialize = function () {
     serverSystem.registerEventData("NormaConstructor:command", { command: undefined, playerID: undefined })
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
-    serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => getBlockType(eventData))
+    serverSystem.listenForEvent("NormaConstructor:setServerSideOption", (eventData) => {
+        if(playerOption[eventData.data.playerID]==undefined) playerOption[eventData.data.playerID] = new Object()
+        playerOption[eventData.data.playerID][eventData.data.option.key]=eventData.data.option.value
+    })
+    serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
+        getBlockType(eventData)
+
+        //Ahh!!!!!!!!!!!!!!!!!!
+        //I actually illegally sent the eventData. Thank god they have the same "block_position".
+        if (playerOption[playerID]["__requestAdditionalPosition"]) getPosition(eventData)
+        if (playerOption[playerID]["__requestAdditionalDirection"]) getDirection(eventData)
+    })
     //TODO:Consider switching to "minecraft:entity_use_item"
     serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {
         let playerID = eventData.data.player.id
@@ -92,11 +103,21 @@ serverSystem.initialize = function () {
             case "minecraft:wooden_axe": {
                 //Set position.
                 getPosition(eventData)
+
+                //I HATE IT!I HATE IT!I HATE IT!!!
+                if (playerOption[playerID]["__requestAdditionalDirection"]) getDirection(eventData)
+                if (playerOption[playerID]["__requestAdditionalBlockType"]) getBlockType(eventData)
+
                 break;
             }
             case "minecraft:compass": {
                 //Set direction.
                 getDirection(eventData)
+
+                //AND MORE!AND MORE!AND MORE!!!
+                if (playerOption[playerID]["__requestAdditionalPosition"]) getPosition(eventData)
+                if (playerOption[playerID]["__requestAdditionalBlockType"]) getBlockType(eventData)
+
                 break;
             }
             case "minecraft:clock": {
@@ -127,11 +148,11 @@ serverSystem.initialize = function () {
             }
             case "minecraft:stick": {
                 //Execute.
-                sendCommand("execute",playerID)
+                sendCommand("execute", playerID)
                 break;
             }
             case "minecraft:iron_sword": {
-                sendCommand("showMenu",playerID)
+                sendCommand("showMenu", playerID)
                 break;
             }
             case "minecraft:": {
@@ -193,10 +214,10 @@ function getBlockType(eventData) {
         blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
     }
 
-    let getblockTypeEventData = serverSystem.createEventData("NormaConstructor:getBlockType")
-    getblockTypeEventData.data.blockType = blockType
-    getblockTypeEventData.data.playerID = eventData.data.player.id
-    serverSystem.broadcastEvent("NormaConstructor:getBlockType", getblockTypeEventData)
+    let blockTypeEventData = serverSystem.createEventData("NormaConstructor:getBlockType")
+    blockTypeEventData.data.blockType = blockType
+    blockTypeEventData.data.playerID = eventData.data.player.id
+    serverSystem.broadcastEvent("NormaConstructor:getBlockType", blockTypeEventData)
 
 }
 function getPosition(eventData) {
@@ -208,19 +229,19 @@ function getPosition(eventData) {
     position.coordinate = eventData.data.block_position
     position.tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
 
-    let getPositionEventData = serverSystem.createEventData("NormaConstructor:getPosition")
-    getPositionEventData.data.position = position
-    getPositionEventData.data.playerID = eventData.data.player.id
-    serverSystem.broadcastEvent("NormaConstructor:getPosition", getPositionEventData)
+    let positionEventData = serverSystem.createEventData("NormaConstructor:getPosition")
+    positionEventData.data.position = position
+    positionEventData.data.playerID = eventData.data.player.id
+    serverSystem.broadcastEvent("NormaConstructor:getPosition", positionEventData)
 }
 function getDirection(eventData) {
     let direction = new Direction(undefined, undefined)
     direction = serverSystem.getComponent(eventData.data.player, "minecraft:rotation").data
 
-    let getDirectionEventData = serverSystem.createEventData("NormaConstructor:getDirection")
-    getDirectionEventData.data.direction = direction
-    getDirectionEventData.data.playerID = eventData.data.player.id
-    serverSystem.broadcastEvent("NormaConstructor:getDirection", getDirectionEventData)
+    let directionEventData = serverSystem.createEventData("NormaConstructor:getDirection")
+    directionEventData.data.direction = direction
+    directionEventData.data.playerID = eventData.data.player.id
+    serverSystem.broadcastEvent("NormaConstructor:getDirection", directionEventData)
 }
 function sendCommand(command, playerID) {
     let commandEventData = serverSystem.createEventData("NormaConstructor:command")
@@ -236,7 +257,7 @@ function setBlock(block) {
     let coordinate = position.coordinate
     //Thank you, WavePlayz!
 
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getData(blockType.blockIdentifier,{"data":blockType.blockState})}`, (commandResultData) => {
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })}`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

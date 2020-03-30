@@ -10,20 +10,54 @@
 <body>
     <div class="body1">
         <div style='width: 90%;height:auto;display:flex;flex-direction: row;'>
-            <!-- <div class="minecraft-container" id="DirectionPad"
+            <div class="minecraft-container" id="ServerSideOptionPanel"
                 style='right:12px;width: 20%;display:flex;flex-direction: column;'>
                 <div class="minecraft-container-dark">
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
-                            <button class="button" style="width: 100%;">East</button>
-                            <button class="button" style="width: 100%;">South</button>
-                            <button class="button" style="width: 100%;">West</button>
-                            <button class="button" style="width: 100%;">North</button>
+                            <div>
+                                <div style="width: 100%;">Request Additional Position</div>
+                                <div style="display: flex;flex-direction: row;justify-content:center;">
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setServerSideOption('__requestAdditionalPosition',true)">On</button>
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setServerSideOption('__requestAdditionalPosition',false)">Off</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex;flex-direction: column;justify-content:center;">
+                            <div>
+                                <div style="width: 100%;">Request Additional BlockType</div>
+                                <div style="display: flex;flex-direction: row;justify-content:center;">
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setServerSideOption('__requestAdditionalBlockType',true)">On</button>
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setServerSideOption('__requestAdditionalBlockType',false)">Off</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex;flex-direction: column;justify-content:center;">
+                            <div>
+                                <div style="width: 100%;">Request Additional Direction</div>
+                                <div style="display: flex;flex-direction: row;justify-content:center;">
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setServerSideOption('__requestAdditionalDirection',true)">On</button>
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setServerSideOption('__requestAdditionalDirection',false)">Off</button>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div> -->
-            <div class="minecraft-container" style='width: 80%;display:flex;flex-direction: column;'>
+            </div>
+            <div class="minecraft-container" style='width: 60%;display:flex;flex-direction: column;'>
                 <div>
                     <div style="text-align:center;">Constructor panel</div>
                     <button id="close" onclick="closeUI()" class="close-button"
@@ -147,8 +181,11 @@
     function getData(request) {
         scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "get", data: request }))
     }
-    function setData(respond) {
-        scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "set", data: { key: respond.key, value: respond.value } }))
+    function setData(key,value) {
+        scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "set", data: { key: key, value: value } }))
+    }
+    function setServerSideOption(key,value){
+        scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "setServerSideOption", data: { key: key, value: value } }))
     }
 
     function chooseNextGenerator() {
@@ -172,14 +209,14 @@
         //TODO:
         //I suppose I should alter the value stored in this menu.
         //Though it seems it doesn't matter.
-        
+
         currentChoices[id] = (currentChoices[id] + 1) % optionUsage[id].data.length
         let element = document.getElementById(id)
         element.textContent = optionUsage[id].data[currentChoices[id]].text
-        setData({
-            key: optionUsage[id].key,
-            value: optionUsage[id].data[currentChoices[id]].value
-        })
+        setData(
+             optionUsage[id].key,
+             optionUsage[id].data[currentChoices[id]].value
+        )
     }
     function handleEditTextInput(character) {
         if (character == 'd')
@@ -193,10 +230,10 @@
         let element = document.getElementById(idOfEditTextOnFocus)
         // option[optionUsage[idOfEditTextOnFocus].key]=
         element.value = number
-        setData({
-            key: optionUsage[idOfEditTextOnFocus].key,
-            value: number
-        })
+        setData(
+             optionUsage[idOfEditTextOnFocus].key,
+             number
+        )
         editTextInput = ''
         inputDisplay.textContent = ''
     }
@@ -230,7 +267,7 @@
                 }
                 case "edittext": {
                     let defaultNumber = option[optionUsage[i].key]
-                    if(defaultNumber == undefined) defaultNumber = optionUsage[i].default
+                    if (defaultNumber == undefined) defaultNumber = optionUsage[i].default
 
                     mainMenu.insertAdjacentHTML('beforeend',
                         `<div style="display: flex;flex-direction: row;">
@@ -250,7 +287,8 @@
                     <div style="display: flex;flex-direction: row;">
                             <div style="width: 90%;">${optionUsage[i].text}</div>
                             <button id=${i} class="button" style="width: 10%;padding: 0%;"
-                                onclick="alterChoice(${i})">${defaultText}</button>`
+                                onclick="alterChoice(${i})">${defaultText}</button>
+                            </div>`
                     )
                     break;
                 }
@@ -264,7 +302,8 @@
                     <div style="display: flex;flex-direction: row;">
                             <div style="width: 90%;">${optionUsage[i].text}</div>
                             <button id=${i} class="button" style="width: 10%;padding: 0%;"
-                                onclick="alterChoice(${i})">${defaultText}</button>`
+                                onclick="alterChoice(${i})">${defaultText}</button>
+                            </div>`
                     )
                     break;
                 }

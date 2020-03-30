@@ -21,7 +21,7 @@ let generatorArray = [];
 
             [undefined, undefined],
             [undefined],
-            [undefined],
+            [],
             {
                 "positionArrayLengthRequired": 2,
                 "blockTypeArrayLengthRequired": 1
@@ -450,15 +450,22 @@ clientSystem.initialize = function () {
         directionArray: undefined,
         option: undefined
     })
+    clientSystem.registerEventData("NormaConstructor:setServerSideOption", { playerID: undefined, option: { key: undefined, value: undefined } })
 
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
         playerID = eventData.data.player.id
 
+        //Logging:
         const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
         scriptLoggerConfig.data.log_errors = true;
         scriptLoggerConfig.data.log_information = true;
         scriptLoggerConfig.data.log_warnings = true;
         clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
+
+        //Set default setServerSideOption:(Yes I hate it too)
+        setServerSideOption("__requestAdditionalPosition", false)
+        setServerSideOption("__requestAdditionalBlockType", false)
+        setServerSideOption("__requestAdditionalDirection", false)
 
         //Wait until the mobile version officially supports scripting API.
 
@@ -603,6 +610,10 @@ clientSystem.initialize = function () {
                     }
                     break;
                 }
+                case "setServerSideOption": {
+                    setServerSideOption(uiData.data.key,uiData.data.value)
+                    break;
+                }
                 case "displayChat": {
                     displayChat(uiData.data)
                     break;
@@ -645,6 +656,13 @@ function execute() {
         }
         generatorArray[generatorIndex].postGenerate();
     }
+}
+function setServerSideOption(key, value) {
+    let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
+    setServerSideOptionEventData.data.playerID = playerID
+    setServerSideOptionEventData.data.option.key = key
+    setServerSideOptionEventData.data.option.value = value
+    clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
 }
 
 function displayObject(object) {

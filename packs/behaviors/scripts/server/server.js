@@ -90,8 +90,8 @@ serverSystem.initialize = function () {
 
         //Ahh!!!!!!!!!!!!!!!!!!
         //I actually illegally sent the eventData. Thank god they have the same "block_position".
-        if (playerOption[playerID]["__requestAdditionalPosition"]) getPosition(eventData)
-        if (playerOption[playerID]["__requestAdditionalDirection"]) getDirection(eventData)
+        if (playerOption[eventData.data.player.id]["__requestAdditionalPosition"]) getPosition(eventData)
+        if (playerOption[eventData.data.player.id]["__requestAdditionalDirection"]) getDirection(eventData)
     })
     //TODO:Consider switching to "minecraft:entity_use_item"
     serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {

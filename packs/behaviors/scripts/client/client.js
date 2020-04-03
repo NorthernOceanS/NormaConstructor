@@ -6,7 +6,321 @@ var tick = 0
 var blockQuery = []
 
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../constructor'
+import { utils } from './utils'
 let generatorArray = [];
+
+
+
+clientSystem.initialize = function () {
+
+    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
+    clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
+    clientSystem.registerEventData("NormaConstructor:generateByServer", {
+        playerID: undefined,
+        serverGeneratorIdentifier: undefined,
+        positionArray: undefined,
+        blockTypeArray: undefined,
+        directionArray: undefined,
+        option: undefined
+    })
+    clientSystem.registerEventData("NormaConstructor:setServerSideOption", { playerID: undefined, option: { key: undefined, value: undefined } })
+
+    clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
+
+        playerID = eventData.data.player.id
+
+        //Logging:
+        const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
+        scriptLoggerConfig.data.log_errors = true;
+        scriptLoggerConfig.data.log_information = true;
+        scriptLoggerConfig.data.log_warnings = true;
+        clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
+
+        //Set default setServerSideOption:(Yes I hate it too)
+        setServerSideOption("__requestAdditionalPosition", false)
+        setServerSideOption("__requestAdditionalBlockType", false)
+        setServerSideOption("__requestAdditionalDirection", false)
+
+        //Wait until the mobile version officially supports scripting API.
+
+        // let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
+        // loadUIEventData.data.path = "HUD.html"
+        // loadUIEventData.data.options = {
+        //     absorbs_input: false,
+        //     always_accepts_input: false,
+        //     force_render_below: true,
+        //     is_showing_menu: false,
+        //     render_game_behind: true,
+        //     render_only_when_topmost: false,
+        //     should_steal_mouse: true
+        // }
+        // clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
+
+        //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
+        client.log("Logging started")
+
+
+    })
+
+    clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
+        if (playerID == eventData.data.playerID) {
+            generatorArray[generatorIndex].addPosition(eventData.data.position)
+        }
+    })
+    clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
+        if (playerID == eventData.data.playerID) {
+            generatorArray[generatorIndex].addBlockType(eventData.data.blockType)
+        }
+    })
+    clientSystem.listenForEvent("NormaConstructor:getDirection", (eventData) => {
+        if (playerID == eventData.data.playerID) {
+            generatorArray[generatorIndex].addDirection(eventData.data.direction)
+        }
+    })
+
+    clientSystem.listenForEvent("NormaConstructor:displayChatToClient", (eventData) => {
+        if (playerID == eventData.data.playerID)
+            displayChat(eventData.data.message)
+    })
+    clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
+        if (playerID == eventData.data.playerID) {
+            switch (eventData.data.command) {
+                case "removeLastPosition": {
+                    displayChat("Removing the last position...")
+                    generatorArray[generatorIndex].removePosition()
+                    break;
+                }
+                case "removeLastblockType": {
+                    displayChat("Removing the last blockType...")
+                    generatorArray[generatorIndex].removeBlockType()
+                    break;
+                }
+                case "removeLastDirection": {
+                    displayChat("Removing the last direction...")
+                    generatorArray[generatorIndex].removeDirection()
+                    break;
+                }
+                case "chooseNextGenerator": {
+                    displayChat("Choosing next generator...")
+                    generatorIndex = (generatorIndex + 1) % generatorArray.length
+                    displayChat("Current generator:")
+                    displayObject(generatorArray[generatorIndex])
+                    break;
+                }
+                case "showSavedData": {
+                    displayChat("Current positionArray:")
+                    displayObject(generatorArray[generatorIndex].positionArray)
+                    displayChat("Current blockTypeArray:")
+                    displayObject(generatorArray[generatorIndex].blockTypeArray)
+                    displayChat("Current directionArray:")
+                    displayObject(generatorArray[generatorIndex].directionArray)
+                    displayChat("Current option:")
+                    displayObject(generatorArray[generatorIndex].option)
+                    break;
+                }
+                case "execute": {
+                    execute();
+                    break;
+                }
+                case "showMenu": {
+                    let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
+                    loadUIEventData.data.path = "menu/menu.html"
+                    clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
+                    break;
+                }
+            }
+        }
+    })
+
+    clientSystem.listenForEvent("minecraft:ui_event", (eventData) => {
+        if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
+            let uiData = JSON.parse(eventData.data.slice(eventData.data.indexOf(":") + 1))
+
+            displayChat("From UI:")
+            displayObject(uiData)
+
+            switch (uiData.type) {
+                //Must wait until the UI is loaded
+
+                case "get": {
+                    let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
+                    sendUIEventData.data.eventIdentifier = "NormaConstructor:get"
+                    sendUIEventData.data.data = JSON.stringify(generatorArray[generatorIndex].option[uiData.data], null, '    ')
+                    clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
+                    break;
+                }
+                case "set": {
+                    generatorArray[generatorIndex].option[uiData.data.key] = uiData.data.value
+                    break;
+                }
+                case "command": {
+                    switch (uiData.data) {
+                        case "reload": {
+                            let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
+                            sendUIEventData.data.eventIdentifier = "NormaConstructor:reload"
+                            sendUIEventData.data.data = JSON.stringify({
+                                description: generatorArray[generatorIndex].description,
+                                option: generatorArray[generatorIndex].option
+                            }, null, '    ')
+                            clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
+                            break;
+                        }
+                        case "execute": {
+                            execute();
+                            break;
+                        }
+                        case "closeMenu": {
+                            let closeMenuEventData = clientSystem.createEventData("minecraft:unload_ui")
+                            closeMenuEventData.data.path = "menu/menu.html"
+                            displayObject(closeMenuEventData)
+                            clientSystem.broadcastEvent("minecraft:unload_ui", closeMenuEventData)
+                            break;
+                        }
+                        case "chooseNextGenerator": {
+                            generatorIndex = (generatorIndex + 1) % generatorArray.length
+                            break;
+                        }
+                        case "chooseLastGenerator": {
+                            generatorIndex = (generatorIndex - 1 + generatorArray.length) % generatorArray.length
+                        }
+                    }
+                    break;
+                }
+                case "setServerSideOption": {
+                    setServerSideOption(uiData.data.key, uiData.data.value)
+                    break;
+                }
+                case "displayChat": {
+                    displayChat(uiData.data)
+                    break;
+                }
+            }
+        }
+    })
+};
+
+clientSystem.update = function () {
+    if ((++tick) % 5 == 0 && blockQuery.length > 0) {
+
+        let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
+        executionResponseEventData.data.playerID = playerID
+        executionResponseEventData.data.blockArray = blockQuery.splice(0, 100)
+        clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
+    }
+};
+
+function execute() {
+    let validateResult = generatorArray[generatorIndex].validateParameter();
+    if (validateResult != "success")
+        displayChat("§c " + validateResult);
+    else {
+        displayChat("Execution started.");
+        if (generatorArray[generatorIndex].option["__generateByServer"] == true) {
+            let generateByServerEventData = clientSystem.createEventData("NormaConstructor:generateByServer");
+            generateByServerEventData.data.playerID = playerID;
+            generateByServerEventData.data.serverGeneratorIdentifier =
+                generatorArray[generatorIndex].option["__serverGeneratorIdentifier"];
+            generateByServerEventData.data.positionArray = generatorArray[generatorIndex].positionArray;
+            generateByServerEventData.data.blockTypeArray = generatorArray[generatorIndex].blockTypeArray;
+            generateByServerEventData.data.directionArray = generatorArray[generatorIndex].directionArray;
+            generateByServerEventData.data.option = generatorArray[generatorIndex].option;
+            clientSystem.broadcastEvent("NormaConstructor:generateByServer", generateByServerEventData);
+        }
+        else {
+            let blockArray = generatorArray[generatorIndex].generate();
+            Array.prototype.push.apply(blockQuery, blockArray);
+        }
+        generatorArray[generatorIndex].postGenerate();
+    }
+}
+function setServerSideOption(key, value) {
+    let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
+    setServerSideOptionEventData.data.playerID = playerID
+    setServerSideOptionEventData.data.option.key = key
+    setServerSideOptionEventData.data.option.value = value
+    clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
+}
+
+function displayObject(object) {
+    displayChat(JSON.stringify(object, null, '    '))
+}
+function displayChat(message) {
+    let eventData = clientSystem.createEventData("minecraft:display_chat_event");
+    eventData.data.message = message;
+    clientSystem.broadcastEvent("minecraft:display_chat_event", eventData);
+
+}
+
+/*(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Test.",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        { viewtype: "text", text: "NZ IS JULAO." },
+                        {
+                            viewtype: "button",
+                            text: "Yes, NZ is JULAO.",
+                            key: "CCC",
+                            data: [
+                                { value: "red", text: "Choosing red" },
+                                { value: "blue", text: "Choosing blue" },
+                                { value: "yellow", text: "Choosing yellow" }
+                            ]
+                        },
+                        {
+                            viewtype: "edittext",
+                            text: "Of course, NZ is JULAO.",
+                            key: "BBB",
+                            default: 999
+                        },
+                        {
+                            viewtype: "checkbox",
+                            text: "We all agree, NZ is JULAO.",
+                            key: "AAA",
+                            data: [
+                                { value: true, text: "Yes" },
+                                { value: false, text: "OK." },
+                            ]
+                        }
+                    ]
+                )
+            ),
+
+            [],
+            [],
+            [],
+            {
+                "AAA": true,
+                "BBB": 123,
+                "CCC": "red"
+            },
+
+            function (position) {
+            },
+            function (blockType) {
+            },
+            function (direction) { },
+            function (index) {
+            },
+            function (index) {
+            },
+            function (index) {
+
+            },
+
+            function () {
+            },
+            function () {
+            },
+            function () {
+            }
+        )
+    )
+}());*/
 
 (function () {
     generatorArray.push(
@@ -203,77 +517,6 @@ let generatorArray = [];
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Test.",
-                new Usage(
-                    [],
-                    [],
-                    [],
-                    [
-                        { viewtype: "text", text: "NZ IS JULAO." },
-                        {
-                            viewtype: "button",
-                            text: "Yes, NZ is JULAO.",
-                            key: "CCC",
-                            data: [
-                                { value: "red", text: "Choosing red" },
-                                { value: "blue", text: "Choosing blue" },
-                                { value: "yellow", text: "Choosing yellow" }
-                            ]
-                        },
-                        {
-                            viewtype: "edittext",
-                            text: "Of course, NZ is JULAO.",
-                            key: "BBB",
-                            default: 999
-                        },
-                        {
-                            viewtype: "checkbox",
-                            text: "We all agree, NZ is JULAO.",
-                            key: "AAA",
-                            data: [
-                                { value: true, text: "Yes" },
-                                { value: false, text: "OK." },
-                            ]
-                        }
-                    ]
-                )
-            ),
-
-            [],
-            [],
-            [],
-            {
-                "AAA": true,
-                "BBB": 123,
-                "CCC": "red"
-            },
-
-            function (position) {
-            },
-            function (blockType) {
-            },
-            function (direction) { },
-            function (index) {
-            },
-            function (index) {
-            },
-            function (index) {
-
-            },
-
-            function () {
-            },
-            function () {
-            },
-            function () {
-            }
-        )
-    )
-}());
-
-(function () {
-    generatorArray.push(
-        new Generator(
             new Description("Create a line with given interval.",
                 new Usage(
                     ["Start point"],
@@ -438,240 +681,280 @@ let generatorArray = [];
     )
 }());
 
-clientSystem.initialize = function () {
+//Generators:
 
-    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
-    clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
-    clientSystem.registerEventData("NormaConstructor:generateByServer", {
-        playerID: undefined,
-        serverGeneratorIdentifier: undefined,
-        positionArray: undefined,
-        blockTypeArray: undefined,
-        directionArray: undefined,
-        option: undefined
-    })
-    clientSystem.registerEventData("NormaConstructor:setServerSideOption", { playerID: undefined, option: { key: undefined, value: undefined } })
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("造马路",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "长度:",
+                            key: "length",
+                        },
+                        {
+                            viewtype: "button",
+                            text: "马路风格",
+                            key: "roadStyle",
+                            data: [
+                                { value: "NS", text: "北冥/南冥" },
+                                { value: "DB", text: "东沙/冰岛" }
+                            ]
+                        },
+                        {
+                            viewtype: "checkbox",
+                            text: "加护栏",
+                            key: "isBarred",
+                            data: [
+                                { value: true, text: "是" },
+                                { value: false, text: "否" },
+                            ]
+                        }
+                    ])
+            ),
 
-    clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
-        playerID = eventData.data.player.id
+            [undefined],
+            [],
+            [undefined],
+            {
+                "length": 10,
+                "roadStyle": "NS",
+                "isBarred": false
+            },
 
-        //Logging:
-        const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
-        scriptLoggerConfig.data.log_errors = true;
-        scriptLoggerConfig.data.log_information = true;
-        scriptLoggerConfig.data.log_warnings = true;
-        clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
 
-        //Set default setServerSideOption:(Yes I hate it too)
-        setServerSideOption("__requestAdditionalPosition", false)
-        setServerSideOption("__requestAdditionalBlockType", false)
-        setServerSideOption("__requestAdditionalDirection", false)
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (this.directionArray.indexOf(undefined) != -1)
+                    result += "Too few directions!Refusing to execute."
+                if (result == "") result = "success"
 
-        //Wait until the mobile version officially supports scripting API.
+                return result;
+            },
+            function () {
+                let blockArray = []
 
-        // let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
-        // loadUIEventData.data.path = "HUD.html"
-        // loadUIEventData.data.options = {
-        //     absorbs_input: false,
-        //     always_accepts_input: false,
-        //     force_render_below: true,
-        //     is_showing_menu: false,
-        //     render_game_behind: true,
-        //     render_only_when_topmost: false,
-        //     should_steal_mouse: true
-        // }
-        // clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
+                displayChat("§b NZ is JULAO!")
 
-        //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
-        client.log("Logging started")
-    })
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+                let directionArray = this.directionArray
+                let option = this.option
 
-    clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            generatorArray[generatorIndex].addPosition(eventData.data.position)
-        }
-    })
-    clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            generatorArray[generatorIndex].addBlockType(eventData.data.blockType)
-        }
-    })
-    clientSystem.listenForEvent("NormaConstructor:getDirection", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            generatorArray[generatorIndex].addDirection(eventData.data.direction)
-        }
-    })
+                displayChat("§b Yes, NZ is JULAO!")
 
-    clientSystem.listenForEvent("NormaConstructor:displayChatToClient", (eventData) => {
-        if (playerID == eventData.data.playerID)
-            displayChat(eventData.data.message)
-    })
-    clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            switch (eventData.data.command) {
-                case "removeLastPosition": {
-                    displayChat("Removing the last position...")
-                    generatorArray[generatorIndex].removePosition()
-                    break;
+                //{"blockIdentifier":"minecraft:stained_hardened_clay","blockState":{"color":"cyan"}}
+
+                let materials
+                if (option["roadStyle"] == "NS") materials = {
+                    "surface": new BlockType("minecraft:stained_hardened_clay", { "color": "cyan" }),
+                    "white_line": new BlockType("minecraft:concrete", { "color": "white" }),
+                    "yellow_line": new BlockType("minecraft:stained_hardened_clay", { "color": "yellow" }),
+                    "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
                 }
-                case "removeLastblockType": {
-                    displayChat("Removing the last blockType...")
-                    generatorArray[generatorIndex].removeBlockType()
-                    break;
+                else materials = {
+                    "surface": new BlockType("minecraft:wool", { "color": "black" }),
+                    "white_line": new BlockType("minecraft:wool", { "color": "white" }),
+                    "yellow_line": new BlockType("minecraft:wool", { "color": "yellow" }),
+                    "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
                 }
-                case "removeLastDirection": {
-                    displayChat("Removing the last direction...")
-                    generatorArray[generatorIndex].removeDirection()
-                    break;
-                }
-                case "chooseNextGenerator": {
-                    displayChat("Choosing next generator...")
-                    generatorIndex = (generatorIndex + 1) % generatorArray.length
-                    displayChat("Current generator:")
-                    displayObject(generatorArray[generatorIndex])
-                    break;
-                }
-                case "showSavedData": {
-                    displayChat("Current positionArray:")
-                    displayObject(generatorArray[generatorIndex].positionArray)
-                    displayChat("Current blockTypeArray:")
-                    displayObject(generatorArray[generatorIndex].blockTypeArray)
-                    displayChat("Current directionArray:")
-                    displayObject(generatorArray[generatorIndex].directionArray)
-                    displayChat("Current option:")
-                    displayObject(generatorArray[generatorIndex].option)
-                    break;
-                }
-                case "execute": {
-                    execute();
-                    break;
-                }
-                case "showMenu": {
-                    let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
-                    loadUIEventData.data.path = "menu/menu.html"
-                    clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
-                    break;
-                }
-            }
-        }
-    })
 
-    clientSystem.listenForEvent("minecraft:ui_event", (eventData) => {
-        if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
-            let uiData = JSON.parse(eventData.data.slice(eventData.data.indexOf(":") + 1))
+                let playerFacingAxis = (function () {
+                    if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                    else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                    else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                    else return "-z"
+                }());
 
-            displayChat("From UI:")
-            displayObject(uiData)
-
-            switch (uiData.type) {
-                //Must wait until the UI is loaded
-
-                case "get": {
-                    let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
-                    sendUIEventData.data.eventIdentifier = "NormaConstructor:get"
-                    sendUIEventData.data.data = JSON.stringify(generatorArray[generatorIndex].option[uiData.data], null, '    ')
-                    clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
-                    break;
-                }
-                case "set": {
-                    generatorArray[generatorIndex].option[uiData.data.key] = uiData.data.value
-                    break;
-                }
-                case "command": {
-                    switch (uiData.data) {
-                        case "reload": {
-                            let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
-                            sendUIEventData.data.eventIdentifier = "NormaConstructor:reload"
-                            sendUIEventData.data.data = JSON.stringify({
-                                description: generatorArray[generatorIndex].description,
-                                option: generatorArray[generatorIndex].option
-                            }, null, '    ')
-                            clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
+                //This assumes the original facing axis is +x.
+                let transform = (function (facingAxis) {
+                    switch (facingAxis) {
+                        case "+x": {
+                            return utils.geometry.transform(
+                                (x, y, z) => x,
+                                (x, y, z) => y,
+                                (x, y, z) => z
+                            )
                             break;
                         }
-                        case "execute": {
-                            execute();
+                        case "-x": {
+                            return utils.geometry.transform(
+                                (x, y, z) => 2 * positionArray[0].coordinate.x - x,
+                                (x, y, z) => y,
+                                (x, y, z) => 2 * positionArray[0].coordinate.z - z
+                            )
                             break;
                         }
-                        case "closeMenu": {
-                            let closeMenuEventData = clientSystem.createEventData("minecraft:unload_ui")
-                            closeMenuEventData.data.path = "menu/menu.html"
-                            displayObject(closeMenuEventData)
-                            clientSystem.broadcastEvent("minecraft:unload_ui", closeMenuEventData)
+                        case "+z": {
+                            return utils.geometry.transform(
+                                (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
+                                (x, y, z) => y,
+                                (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
+                            )
                             break;
                         }
-                        case "chooseNextGenerator": {
-                            generatorIndex = (generatorIndex + 1) % generatorArray.length
+                        case "-z": {
+                            return utils.geometry.transform(
+                                (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
+                                (x, y, z) => y,
+                                (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
+                            )
                             break;
-                        }
-                        case "chooseLastGenerator": {
-                            generatorIndex = (generatorIndex - 1 + generatorArray.length) % generatorArray.length
                         }
                     }
-                    break;
+                }(playerFacingAxis))
+
+                const numberOfLanesPerSide = 2
+                const widthOfLanes = 5
+                const dashLineInterval = 3
+                const dashLineLength = 4
+
+                let palette = [];
+
+                for (let i = 0; i < numberOfLanesPerSide; i++) {
+                    for (let j = 0; j < widthOfLanes; j++) palette.push("lane")
+                    if (i < numberOfLanesPerSide - 1) palette.push("dash_line")
                 }
-                case "setServerSideOption": {
-                    setServerSideOption(uiData.data.key,uiData.data.value)
-                    break;
+                palette.push("division_line")
+                for (let i = 0; i < numberOfLanesPerSide; i++) {
+                    for (let j = 0; j < widthOfLanes; j++) palette.push("lane")
+                    if (i < numberOfLanesPerSide - 1) palette.push("dash_line")
                 }
-                case "displayChat": {
-                    displayChat(uiData.data)
-                    break;
+                if (option["isBarred"]) palette[0] = palette[palette.length - 1] = "edge"
+
+                const offset = (palette.length - 1) / 2;
+                for (let i = 0; i < palette.length; i++) {
+                    switch (palette[i]) {
+                        case "edge": {
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["surface"]
+                                    )
+                                )
+                            }
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["bar"]
+                                    )
+                                )
+                            }
+                            break;
+                        }
+                        case "lane": {
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["surface"]
+                                    )
+                                )
+                            }
+                            break;
+                        }
+                        case "dash_line": {
+                            for (let j = 0; j < option["length"]; j++) {
+                                let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
+                                if ((j % (dashLineInterval + dashLineLength)) < dashLineInterval) //Black first.
+                                    blockArray.push(new Block(position, materials["surface"]))
+                                else
+                                    blockArray.push(new Block(position, materials["white_line"]))
+                            }
+                            break;
+                        }
+                        case "division_line": {
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["yellow_line"]
+                                    )
+                                )
+                            }
+                            break;
+                        }
+                    }
                 }
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = []
+                this.directionArray = [undefined]
             }
-        }
-    })
-};
-
-clientSystem.update = function () {
-    if ((++tick) % 5 == 0 && blockQuery.length > 0) {
-
-        let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
-        executionResponseEventData.data.playerID = playerID
-        executionResponseEventData.data.blockArray = blockQuery.splice(0, 100)
-        clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
-    }
-};
-
-function execute() {
-    let validateResult = generatorArray[generatorIndex].validateParameter();
-    if (validateResult != "success")
-        displayChat("§c " + validateResult);
-    else {
-        displayChat("Execution started.");
-        if (generatorArray[generatorIndex].option["__generateByServer"] == true) {
-            let generateByServerEventData = clientSystem.createEventData("NormaConstructor:generateByServer");
-            generateByServerEventData.data.playerID = playerID;
-            generateByServerEventData.data.serverGeneratorIdentifier =
-                generatorArray[generatorIndex].option["__serverGeneratorIdentifier"];
-            generateByServerEventData.data.positionArray = generatorArray[generatorIndex].positionArray;
-            generateByServerEventData.data.blockTypeArray = generatorArray[generatorIndex].blockTypeArray;
-            generateByServerEventData.data.directionArray = generatorArray[generatorIndex].directionArray;
-            generateByServerEventData.data.option = generatorArray[generatorIndex].option;
-            clientSystem.broadcastEvent("NormaConstructor:generateByServer", generateByServerEventData);
-        }
-        else {
-            let blockArray = generatorArray[generatorIndex].generate();
-            Array.prototype.push.apply(blockQuery, blockArray);
-        }
-        generatorArray[generatorIndex].postGenerate();
-    }
-}
-function setServerSideOption(key, value) {
-    let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
-    setServerSideOptionEventData.data.playerID = playerID
-    setServerSideOptionEventData.data.option.key = key
-    setServerSideOptionEventData.data.option.value = value
-    clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
-}
-
-function displayObject(object) {
-    displayChat(JSON.stringify(object, null, '    '))
-}
-function displayChat(message) {
-    let eventData = clientSystem.createEventData("minecraft:display_chat_event");
-    eventData.data.message = message;
-    clientSystem.broadcastEvent("minecraft:display_chat_event", eventData);
-
-}
-
+        )
+    )
+}());

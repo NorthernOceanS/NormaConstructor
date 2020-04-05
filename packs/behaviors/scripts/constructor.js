@@ -18,18 +18,19 @@ class BlockType {
         this.blockState = blockState;
     }
 }
-class Block {
-    constructor(position, blockType) {
-        this.position = position;
-        this.blockType = blockType;
-    }
-}
 class Direction {
     constructor(x, y) {
         this.x = x;
         this.y = y;
     }
 }
+class Block {
+    constructor(position, blockType) {
+        this.position = position;
+        this.blockType = blockType;
+    }
+}
+
 
 class Usage {
     constructor(positionUsage, blockTypeUsage, directionUsage, optionUsage) {

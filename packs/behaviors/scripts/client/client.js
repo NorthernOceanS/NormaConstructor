@@ -251,6 +251,8 @@ function displayChat(message) {
 
 }
 
+//Generators:
+
 /*(function () {
     generatorArray.push(
         new Generator(
@@ -680,8 +682,6 @@ function displayChat(message) {
         )
     )
 }());
-
-//Generators:
 
 (function () {
     generatorArray.push(

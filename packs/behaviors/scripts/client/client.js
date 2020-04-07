@@ -251,9 +251,11 @@ function displayChat(message) {
 
 }
 
-//Generators:
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//Generators://////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*(function () {
+(function () {
     generatorArray.push(
         new Generator(
             new Description("Test.",
@@ -302,10 +304,14 @@ function displayChat(message) {
             },
 
             function (position) {
+                client.log(JSON.stringify(position, null, '    '))
             },
             function (blockType) {
+                console.log(JSON.stringify(blockType, null, '    '))
             },
-            function (direction) { },
+            function (direction) {
+                console.log(JSON.stringify(direction, null, '    '))
+            },
             function (index) {
             },
             function (index) {
@@ -322,7 +328,7 @@ function displayChat(message) {
             }
         )
     )
-}());*/
+}());
 
 (function () {
     generatorArray.push(
@@ -942,6 +948,262 @@ function displayChat(message) {
                                         materials["yellow_line"]
                                     )
                                 )
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = []
+                this.directionArray = [undefined]
+            }
+        )
+    )
+}());
+
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Construct railway",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "Length:",
+                            key: "length",
+                        },
+                        {
+                            viewtype: "checkbox",
+                            text: "加护栏",
+                            key: "isBarred",
+                            data: [
+                                { value: true, text: "是" },
+                                { value: false, text: "否" },
+                            ]
+                        }
+                    ])
+            ),
+
+            [undefined],
+            [],
+            [undefined],
+            {
+                "length": 10,
+                "isBarred": false
+            },
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (this.directionArray.indexOf(undefined) != -1)
+                    result += "Too few directions!Refusing to execute."
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+
+                displayChat("§b NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+                let directionArray = this.directionArray
+                let option = this.option
+
+                displayChat("§b Yes, NZ is JULAO!")
+
+                let directionMark = (function () {
+                    if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                    else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                    else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                    else return "-z"
+                }());
+
+                let materials = {
+                    "glass_pane": new BlockType("minecraft:glass_pane", null),
+                    "iron_block": new BlockType("minecraft:iron_block", null),
+                    "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
+                    "rail": utils.geometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), directionMark)
+                }
+
+
+
+                //This assumes the original facing axis is +x.
+                let transform = (function (facingAxis) {
+                    switch (facingAxis) {
+                        case "+x": {
+                            return utils.geometry.transform(
+                                (x, y, z) => x,
+                                (x, y, z) => y,
+                                (x, y, z) => z
+                            )
+                            break;
+                        }
+                        case "-x": {
+                            return utils.geometry.transform(
+                                (x, y, z) => 2 * positionArray[0].coordinate.x - x,
+                                (x, y, z) => y,
+                                (x, y, z) => 2 * positionArray[0].coordinate.z - z
+                            )
+                            break;
+                        }
+                        case "+z": {
+                            return utils.geometry.transform(
+                                (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
+                                (x, y, z) => y,
+                                (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
+                            )
+                            break;
+                        }
+                        case "-z": {
+                            return utils.geometry.transform(
+                                (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
+                                (x, y, z) => y,
+                                (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
+                            )
+                            break;
+                        }
+                    }
+                }(directionMark))
+
+                let palette = ["rail", "redstone", "rail"];
+
+                if (option["isBarred"]) {
+                    palette.unshift("edge")
+                    palette.push("edge")
+                }
+
+                const offset = (palette.length - 1) / 2;
+                for (let i = 0; i < palette.length; i++) {
+                    switch (palette[i]) {
+                        case "edge": {
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["iron_block"]
+                                    )
+                                )
+                            }
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["glass_pane"]
+                                    )
+                                )
+                            }
+                            break;
+                        }
+                        case "rail": {
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["iron_block"]
+                                    )
+                                )
+                            }
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["rail"]
+                                    )
+                                )
+                            }
+                            break;
+                        }
+                        case "redstone": {
+                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                            ) {
+                                blockArray.push(
+                                    new Block(
+                                        new Position(
+                                            transform(coordinate),
+                                            positionArray[0].tickingArea
+                                        ),
+                                        materials["iron_block"]
+                                    )
+                                )
+                            }
+                            for (let j = 0; j < option["length"]; j++) {
+                                let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
+                                if (j % 15 == 0) blockArray.push(new Block(position, materials["red_stone_torch"]))
                             }
                             break;
                         }

@@ -407,7 +407,7 @@ let utils = {
 				return "";
 			}());
 			let directionMap = (function () {
-				if (blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier] != undefined)
+				if (blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier] == undefined)
 					return blockDirectionTable[directionRelatedBlockStateKey]["default"];
 				else
 					return blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier];
@@ -421,7 +421,7 @@ let utils = {
 		},
 		//The degree is absolute degree.
 		setBlockDirection: function (blockType, directionMark) {
-			//Ignoring special block that doesn't use "+x" for now.
+			//Ignoring special block that doesn't use "+x" etc for now.
 			let directionRelatedBlockStateKey = (function () {
 				//The following function decides which specific key controls how the block rotates, if it exists.
 				//It is based on the fact that, only one blockState will decide how.
@@ -431,7 +431,7 @@ let utils = {
 				return "";
 			}());
 			let directionMap = (function () {
-				if (blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier] != undefined)
+				if (blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier] == undefined)
 					return blockDirectionTable[directionRelatedBlockStateKey]["default"];
 				else
 					return blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier];

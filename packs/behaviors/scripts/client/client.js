@@ -1071,7 +1071,7 @@ function displayChat(message) {
                     "glass_pane": new BlockType("minecraft:glass_pane", null),
                     "iron_block": new BlockType("minecraft:iron_block", null),
                     "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
-                    "rail": utils.geometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), directionMark)
+                    "rail": utils.geometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark=="+x"||directionMark=="-x")?"x":"z")
                 }
 
 

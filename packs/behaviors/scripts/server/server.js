@@ -257,7 +257,11 @@ function setBlock(block) {
     let coordinate = position.coordinate
     //Thank you, WavePlayz!
 
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })}`, (commandResultData) => {
+
+    //TODO:
+    //It currently use destroy mode to force replace the old block, but will leave tons of items.
+    //Might change to set air block first.
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })} destroy`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

@@ -2,6 +2,7 @@ var serverSystem = server.registerSystem(0, 0);
 
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
 import { blockStateTranslator } from './translator'
+import { utils } from '../utils'
 
 let generator = {
     "19260817": function (positionArray, blockTypeArray, directionArray, option, playerID) {
@@ -82,20 +83,20 @@ serverSystem.initialize = function () {
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("NormaConstructor:setServerSideOption", (eventData) => {
-        if(playerOption[eventData.data.playerID]==undefined) playerOption[eventData.data.playerID] = new Object()
-        playerOption[eventData.data.playerID][eventData.data.option.key]=eventData.data.option.value
+        if (playerOption[eventData.data.playerID] == undefined) playerOption[eventData.data.playerID] = new Object()
+        playerOption[eventData.data.playerID][eventData.data.option.key] = eventData.data.option.value
     })
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
         getBlockType(eventData)
 
         //Ahh!!!!!!!!!!!!!!!!!!
         //I actually illegally sent the eventData. Thank god they have the same "block_position".
-        if (playerOption[eventData.data.player.id]["__requestAdditionalPosition"]) getPosition(eventData)
-        if (playerOption[eventData.data.player.id]["__requestAdditionalDirection"]) getDirection(eventData)
+        if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalPosition"]) getPosition(eventData)
+        if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalDirection"]) getDirection(eventData)
     })
     //TODO:Consider switching to "minecraft:entity_use_item"
     serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {
-        let playerID = eventData.data.player.id
+        let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
         //TODO:Verify whether the player is permitted to use this addon.
         let handContainer = serverSystem.getComponent(eventData.data.player, "minecraft:hand_container").data
         let mainHandItem = handContainer[0].__identifier__
@@ -216,7 +217,7 @@ function getBlockType(eventData) {
 
     let blockTypeEventData = serverSystem.createEventData("NormaConstructor:getBlockType")
     blockTypeEventData.data.blockType = blockType
-    blockTypeEventData.data.playerID = eventData.data.player.id
+    blockTypeEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
     serverSystem.broadcastEvent("NormaConstructor:getBlockType", blockTypeEventData)
 
 }
@@ -231,7 +232,7 @@ function getPosition(eventData) {
 
     let positionEventData = serverSystem.createEventData("NormaConstructor:getPosition")
     positionEventData.data.position = position
-    positionEventData.data.playerID = eventData.data.player.id
+    positionEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
     serverSystem.broadcastEvent("NormaConstructor:getPosition", positionEventData)
 }
 function getDirection(eventData) {
@@ -240,7 +241,7 @@ function getDirection(eventData) {
 
     let directionEventData = serverSystem.createEventData("NormaConstructor:getDirection")
     directionEventData.data.direction = direction
-    directionEventData.data.playerID = eventData.data.player.id
+    directionEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
     serverSystem.broadcastEvent("NormaConstructor:getDirection", directionEventData)
 }
 function sendCommand(command, playerID) {
@@ -251,7 +252,7 @@ function sendCommand(command, playerID) {
 }
 function setBlock(block) {
 
-    displayChat("§b We all agree, NZ is JULAO!")
+    //displayChat("§b We all agree, NZ is JULAO!")
     let blockType = block.blockType
     let position = block.position
     let coordinate = position.coordinate

@@ -6,7 +6,7 @@ var tick = 0
 var blockQuery = []
 
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../constructor'
-import { utils } from './utils'
+import { utils } from '../utils'
 let generatorArray = [];
 
 
@@ -27,7 +27,7 @@ clientSystem.initialize = function () {
 
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
 
-        playerID = eventData.data.player.id
+        playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 
         //Logging:
         const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
@@ -208,6 +208,10 @@ clientSystem.update = function () {
         clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
     }
 };
+
+clientSystem.shutdown = function() {
+    //TODO:Ask the server to delete the profile.(Maybe...not necessary.)
+  };
 
 function execute() {
     let validateResult = generatorArray[generatorIndex].validateParameter();

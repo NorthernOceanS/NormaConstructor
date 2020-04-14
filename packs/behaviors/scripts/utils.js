@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { Coordinate, BlockType, Direction } from "../constructor";
+import { Coordinate, BlockType, Direction } from "./constructor";
 const blockDirectionTable = {
 	"huge_mushroom_bits": {
 		"default": {
@@ -367,26 +367,35 @@ const blockDirectionTable = {
 		}
 	}
 };
-let translator={
-	directionMarkToDirection:function(directionMark){
+let translator = {
+	directionMarkToDirection: function (directionMark) {
 		switch (directionMark) {
-		case "+x": return new Direction(0, -90);
-		case "-x": return new Direction(0, 90);
-		case "+y": return new Direction(-90, 0);
-		case "-y": return new Direction(90, 0);
-		case "+z": return new Direction(0, 0);
-		case "-z": return new Direction(0, 180);
+			case "+x": return new Direction(0, -90);
+			case "-x": return new Direction(0, 90);
+			case "+y": return new Direction(-90, 0);
+			case "-y": return new Direction(90, 0);
+			case "+z": return new Direction(0, 0);
+			case "-z": return new Direction(0, 180);
 
-		case "x": return new Direction(0, -90);
-		case "y": return new Direction(90, 0);
-		case "z": return new Direction(0,0);
-		default:{
-			return "Ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh";
-		}
+			case "x": return new Direction(0, -90);
+			case "y": return new Direction(90, 0);
+			case "z": return new Direction(0, 0);
+			default: {
+				return "Ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh";
+			}
 		}
 	}
 };
 let utils = {
+	misc:{
+		generatePlayerIDFromUniqueID:function(uniqueID){
+			let low=uniqueID["64bit_low"]
+			let high=uniqueID["64bit_high"]
+			//hash function:
+
+			return (low+high)*(low+high+1)/2+high;
+		}
+	},
 	geometry: {
 		transform: function (f, g, h) {
 			return (coordinate) => {
@@ -445,9 +454,9 @@ let utils = {
 			for (let t = t_span[0]; t < t_span[1]; t += t_step) {
 				let coordinate_new = new Coordinate(Math.floor(x(t)), Math.floor(y(t)), Math.floor(z(t)));
 				if (coordinateArray.length == 0 ||
-                    (coordinateArray[coordinateArray.length - 1].x != coordinate_new.x ||
-                        coordinateArray[coordinateArray.length - 1].y != coordinate_new.y ||
-                        coordinateArray[coordinateArray.length - 1].z != coordinate_new.z)
+					(coordinateArray[coordinateArray.length - 1].x != coordinate_new.x ||
+						coordinateArray[coordinateArray.length - 1].y != coordinate_new.y ||
+						coordinateArray[coordinateArray.length - 1].z != coordinate_new.z)
 				) coordinateArray.push(coordinate_new);
 			}
 			return coordinateArray;

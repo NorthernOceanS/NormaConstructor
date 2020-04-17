@@ -209,9 +209,9 @@ clientSystem.update = function () {
     }
 };
 
-clientSystem.shutdown = function() {
+clientSystem.shutdown = function () {
     //TODO:Ask the server to delete the profile.(Maybe...not necessary.)
-  };
+};
 
 function execute() {
     let validateResult = generatorArray[generatorIndex].validateParameter();
@@ -232,7 +232,10 @@ function execute() {
         }
         else {
             let blockArray = generatorArray[generatorIndex].generate();
-            Array.prototype.push.apply(blockQuery, blockArray);
+            blockQuery=blockQuery.concat(blockArray)
+            //The following line is the original code which append the array to the query. Sadly, it will throw an error when there's too many blocks.
+            //I...am not even sure if it is fixed.
+            //Array.prototype.push.apply(blockQuery, blockArray);
         }
         generatorArray[generatorIndex].postGenerate();
     }
@@ -724,7 +727,27 @@ function displayChat(message) {
                                 { value: true, text: "是" },
                                 { value: false, text: "否" },
                             ]
-                        }
+                        },
+                        {
+                            viewtype: "edittext",
+                            text: "每一边车道数:",
+                            key: "numberOfLanesPerSide",
+                        },
+                        {
+                            viewtype: "edittext",
+                            text: "车道宽:",
+                            key: "widthOfLanes",
+                        },
+                        {
+                            viewtype: "edittext",
+                            text: "白线间隔:",
+                            key: "dashLineInterval",
+                        },
+                        {
+                            viewtype: "edittext",
+                            text: "白线长度:",
+                            key: "dashLineLength",
+                        },
                     ])
             ),
 
@@ -734,7 +757,11 @@ function displayChat(message) {
             {
                 "length": 10,
                 "roadStyle": "NS",
-                "isBarred": false
+                "isBarred": false,
+                "numberOfLanesPerSide": 2,
+                "widthOfLanes": 5,
+                "dashLineInterval": 3,
+                "dashLineLength": 4
             },
 
             function (position) {
@@ -859,21 +886,18 @@ function displayChat(message) {
                     }
                 }(playerFacingAxis))
 
-                const numberOfLanesPerSide = 2
-                const widthOfLanes = 5
-                const dashLineInterval = 3
-                const dashLineLength = 4
+
 
                 let palette = [];
 
-                for (let i = 0; i < numberOfLanesPerSide; i++) {
-                    for (let j = 0; j < widthOfLanes; j++) palette.push("lane")
-                    if (i < numberOfLanesPerSide - 1) palette.push("dash_line")
+                for (let i = 0; i < option["numberOfLanesPerSide"]; i++) {
+                    for (let j = 0; j < option["widthOfLanes"]; j++) palette.push("lane")
+                    if (i < option["numberOfLanesPerSide"] - 1) palette.push("dash_line")
                 }
                 palette.push("division_line")
-                for (let i = 0; i < numberOfLanesPerSide; i++) {
-                    for (let j = 0; j < widthOfLanes; j++) palette.push("lane")
-                    if (i < numberOfLanesPerSide - 1) palette.push("dash_line")
+                for (let i = 0; i < option["numberOfLanesPerSide"]; i++) {
+                    for (let j = 0; j < option["widthOfLanes"]; j++) palette.push("lane")
+                    if (i < option["numberOfLanesPerSide"] - 1) palette.push("dash_line")
                 }
                 if (option["isBarred"]) palette[0] = palette[palette.length - 1] = "edge"
 
@@ -931,7 +955,7 @@ function displayChat(message) {
                         case "dash_line": {
                             for (let j = 0; j < option["length"]; j++) {
                                 let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
-                                if ((j % (dashLineInterval + dashLineLength)) < dashLineInterval) //Black first.
+                                if ((j % (option["dashLineInterval"] + option["dashLineLength"])) < option["dashLineInterval"]) //Black first.
                                     blockArray.push(new Block(position, materials["surface"]))
                                 else
                                     blockArray.push(new Block(position, materials["white_line"]))
@@ -1075,7 +1099,7 @@ function displayChat(message) {
                     "glass_pane": new BlockType("minecraft:glass_pane", null),
                     "iron_block": new BlockType("minecraft:iron_block", null),
                     "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
-                    "rail": utils.geometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark=="+x"||directionMark=="-x")?"x":"z")
+                    "rail": utils.geometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z")
                 }
 
 

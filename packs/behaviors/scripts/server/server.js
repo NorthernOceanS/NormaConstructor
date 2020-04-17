@@ -4,6 +4,8 @@ import { Coordinate, Position, BlockType, Direction, Block } from '../constructo
 import { blockStateTranslator } from './translator'
 import { utils } from '../utils'
 
+let blockStateToTileDataTable = new Map()
+
 let generator = {
     "19260817": function (positionArray, blockTypeArray, directionArray, option, playerID) {
         let blockArray = []
@@ -258,11 +260,21 @@ function setBlock(block) {
     let coordinate = position.coordinate
     //Thank you, WavePlayz!
 
+    let tileData=undefined
+
+    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))){
+        tileData=blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
+        displayChat(tileData)
+    }
+    else{
+        tileData=blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
+        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState),tileData)
+    }
 
     //TODO:
     //It currently use destroy mode to force replace the old block, but will leave tons of items.
     //Might change to set air block first.
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })} destroy`, (commandResultData) => {
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} destroy`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

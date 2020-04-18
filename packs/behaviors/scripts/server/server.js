@@ -260,15 +260,14 @@ function setBlock(block) {
     let coordinate = position.coordinate
     //Thank you, WavePlayz!
 
-    let tileData=undefined
+    let tileData = undefined
 
-    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))){
-        tileData=blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-        displayChat(tileData)
+    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
+        tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
     }
-    else{
-        tileData=blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState),tileData)
+    else {
+        tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
+        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
     }
 
     //TODO:

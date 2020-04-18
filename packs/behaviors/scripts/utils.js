@@ -387,16 +387,16 @@ let translator = {
 	}
 };
 let utils = {
-	misc:{
-		generatePlayerIDFromUniqueID:function(uniqueID){
-			let low=uniqueID["64bit_low"]
-			let high=uniqueID["64bit_high"]
+	misc: {
+		generatePlayerIDFromUniqueID: function (uniqueID) {
+			let low = uniqueID["64bit_low"]
+			let high = uniqueID["64bit_high"]
 			//hash function:
 
-			return (low+high)*(low+high+1)/2+high;
+			return (low + high) * (low + high + 1) / 2 + high;
 		}
 	},
-	geometry: {
+	coordinateGeometry: {
 		transform: function (f, g, h) {
 			return (coordinate) => {
 				return new Coordinate(
@@ -406,6 +406,100 @@ let utils = {
 				);
 			};
 		},
+
+		generateLine: function (x, y, z, t_span, constraint) {
+			//TODO: t_step<0?t_span[0]>t_span[1]?
+			let coordinateArray = [];
+
+			function isRedundant(coordinateArray, newCoordinate) {
+				if (coordinateArray.length == 0) return false;
+				return (
+					coordinateArray[coordinateArray.length - 1].x == newCoordinate.x &&
+					coordinateArray[coordinateArray.length - 1].y == newCoordinate.y &&
+					coordinateArray[coordinateArray.length - 1].z == newCoordinate.z
+				)
+			}
+
+			let t_step = 0.0001
+			for (let t = t_span[0]; t < t_span[1]; t += t_step) {
+				let newCoordinate = new Coordinate(Math.floor(x(t)), Math.floor(y(t)), Math.floor(z(t)));
+				if (!isRedundant(coordinateArray, newCoordinate) && constraint(newCoordinate.x, newCoordinate.y, newCoordinate.z, t))
+					coordinateArray.push(newCoordinate);
+			}
+			return coordinateArray;
+		},
+		generateLineWithTwoPoints: function (x_start, y_start, z_start, x_end, y_end, z_end) {
+			let t_span = [0, 1];
+			let x_coefficient = (x_end - x_start) / (t_span[1] - t_span[0]);
+			let y_coefficient = (y_end - y_start) / (t_span[1] - t_span[0]);
+			let z_coefficient = (z_end - z_start) / (t_span[1] - t_span[0]);
+			return this.generateLine(
+				(t) => { return ((t - t_span[0]) * x_coefficient + x_start); },
+				(t) => { return ((t - t_span[0]) * y_coefficient + y_start); },
+				(t) => { return ((t - t_span[0]) * z_coefficient + z_start); },
+				t_span, (x, y, z, t) => { return true });
+		},
+		generateTriangle: function (x1, y1, z1, x2, y2, z2, x3, y3, z3) {
+			let coordinateArray = [];
+			coordinateArray = coordinateArray.concat(this.generateLineWithTwoPoints(x1, y1, z1, x2, y2, z2))
+			coordinateArray = coordinateArray.concat(this.generateLineWithTwoPoints(x2, y2, z2, x3, y3, z3))
+			coordinateArray = coordinateArray.concat(this.generateLineWithTwoPoints(x3, y3, z3, x1, y1, z1))
+
+			return coordinateArray
+		},
+		generateFilledPlanarTriangle: function (x1, y1, z1, x2, y2, z2, x3, y3, z3) {
+			const A = (y2 - y1) * (z3 - z1) - (y3 - y1) * (z2 - z1)
+			const B = -((x2 - x1) * (z3 - z1) - (x3 - x1) * (z2 - z1))
+			const C = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
+			let x_span=[Math.min(x1,x2,x3),Math.max(x1,x2,x3)]
+			let y_span=[Math.min(y1,y2,y3),Math.max(y1,y2,y3)]
+			let z_span=[Math.min(z1,z2,z3),Math.max(z1,z2,z3)]
+			return this.generateWithConstraint(x_span, y_span, z_span, (x, y, z) => {
+				return (A * (x - x1) + B * (y - y1) + C * (z - z1))
+			})
+		},
+		generateWithConstraint: function (x_span, y_span, z_span, constraint) {
+			let coordinateArray = [];
+			function isRedundant(coordinateArray, newCoordinate) {
+				if (coordinateArray.length == 0) return false;
+				return (
+					coordinateArray[coordinateArray.length - 1].x == newCoordinate.x &&
+					coordinateArray[coordinateArray.length - 1].y == newCoordinate.y &&
+					coordinateArray[coordinateArray.length - 1].z == newCoordinate.z
+				)
+			}
+			const x_step = 0.25;
+			const y_step = 0.25;
+			const z_step = 0.25;
+
+			if (x_span[0] >= x_span[1]) {
+				let temp = x_span[1]
+				x_span[1] = x_span[0]
+				x_span[0] = temp
+			}
+			if (y_span[0] >= y_span[1]) {
+				let temp = y_span[1]
+				y_span[1] = y_span[0]
+				y_span[0] = temp
+			}
+			if (z_span[0] >= z_span[1]) {
+				let temp = z_span[1]
+				z_span[1] = z_span[0]
+				z_span[0] = temp
+			}
+
+			for (let x = x_span[0]; x < x_span[1]; x += x_step)
+				for (let y = y_span[0]; y < y_span[1]; y += y_step)
+					for (let z = z_span[0]; z < z_span[1]; z += z_step) {
+						let newCoordinate = new Coordinate(Math.round(x), Math.round(y), Math.round(z))
+						if (!isRedundant(coordinateArray, newCoordinate) && constraint(x, y, z-z_step/2) * constraint(x , y , z + z_step/2) <= 0)
+							coordinateArray.push(newCoordinate)
+					}
+			return coordinateArray
+
+		}
+	},
+	blockGeometry: {
 		getBlockDirection: function (blockType) {
 			let directionRelatedBlockStateKey = (function () {
 				//The following function decides which specific key controls how the block rotates, if it exists.
@@ -448,30 +542,6 @@ let utils = {
 			blockType.blockState.directionRelatedBlockStateKey = directionMap[directionMark];
 			return blockType;
 		},
-		generateLine: function (x, y, z, t_span, t_step) {
-			//TODO: t_step<0?t_span[0]>t_span[1]?
-			let coordinateArray = [];
-			for (let t = t_span[0]; t < t_span[1]; t += t_step) {
-				let coordinate_new = new Coordinate(Math.floor(x(t)), Math.floor(y(t)), Math.floor(z(t)));
-				if (coordinateArray.length == 0 ||
-					(coordinateArray[coordinateArray.length - 1].x != coordinate_new.x ||
-						coordinateArray[coordinateArray.length - 1].y != coordinate_new.y ||
-						coordinateArray[coordinateArray.length - 1].z != coordinate_new.z)
-				) coordinateArray.push(coordinate_new);
-			}
-			return coordinateArray;
-		},
-		generateLineWithTwoPoints: function (x_start, y_start, z_start, x_end, y_end, z_end) {
-			let t_span = [0, 1];
-			let x_coefficient = (x_end - x_start) / (t_span[1] - t_span[0]);
-			let y_coefficient = (y_end - y_start) / (t_span[1] - t_span[0]);
-			let z_coefficient = (z_end - z_start) / (t_span[1] - t_span[0]);
-			return this.generateLine(
-				(t) => { return ((t - t_span[0]) * x_coefficient + x_start); },
-				(t) => { return ((t - t_span[0]) * y_coefficient + y_start); },
-				(t) => { return ((t - t_span[0]) * z_coefficient + z_start); },
-				t_span, 0.0001);
-		}
 	}
 };
 

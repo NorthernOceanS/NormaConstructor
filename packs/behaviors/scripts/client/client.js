@@ -232,7 +232,7 @@ function execute() {
         }
         else {
             let blockArray = generatorArray[generatorIndex].generate();
-            blockQuery=blockQuery.concat(blockArray)
+            blockQuery = blockQuery.concat(blockArray)
             //The following line is the original code which append the array to the query. Sadly, it will throw an error when there's too many blocks.
             //I...am not even sure if it is fixed.
             //Array.prototype.push.apply(blockQuery, blockArray);
@@ -852,7 +852,7 @@ function displayChat(message) {
                 let transform = (function (facingAxis) {
                     switch (facingAxis) {
                         case "+x": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => x,
                                 (x, y, z) => y,
                                 (x, y, z) => z
@@ -860,7 +860,7 @@ function displayChat(message) {
                             break;
                         }
                         case "-x": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => 2 * positionArray[0].coordinate.x - x,
                                 (x, y, z) => y,
                                 (x, y, z) => 2 * positionArray[0].coordinate.z - z
@@ -868,7 +868,7 @@ function displayChat(message) {
                             break;
                         }
                         case "+z": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
@@ -876,7 +876,7 @@ function displayChat(message) {
                             break;
                         }
                         case "-z": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
@@ -905,7 +905,7 @@ function displayChat(message) {
                 for (let i = 0; i < palette.length; i++) {
                     switch (palette[i]) {
                         case "edge": {
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -919,7 +919,7 @@ function displayChat(message) {
                                     )
                                 )
                             }
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -936,7 +936,7 @@ function displayChat(message) {
                             break;
                         }
                         case "lane": {
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -963,7 +963,7 @@ function displayChat(message) {
                             break;
                         }
                         case "division_line": {
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -1099,7 +1099,7 @@ function displayChat(message) {
                     "glass_pane": new BlockType("minecraft:glass_pane", null),
                     "iron_block": new BlockType("minecraft:iron_block", null),
                     "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
-                    "rail": utils.geometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z")
+                    "rail": utils.blockGeometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z")
                 }
 
 
@@ -1108,7 +1108,7 @@ function displayChat(message) {
                 let transform = (function (facingAxis) {
                     switch (facingAxis) {
                         case "+x": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => x,
                                 (x, y, z) => y,
                                 (x, y, z) => z
@@ -1116,7 +1116,7 @@ function displayChat(message) {
                             break;
                         }
                         case "-x": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => 2 * positionArray[0].coordinate.x - x,
                                 (x, y, z) => y,
                                 (x, y, z) => 2 * positionArray[0].coordinate.z - z
@@ -1124,7 +1124,7 @@ function displayChat(message) {
                             break;
                         }
                         case "+z": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
@@ -1132,7 +1132,7 @@ function displayChat(message) {
                             break;
                         }
                         case "-z": {
-                            return utils.geometry.transform(
+                            return utils.coordinateGeometry.transform(
                                 (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
@@ -1153,7 +1153,7 @@ function displayChat(message) {
                 for (let i = 0; i < palette.length; i++) {
                     switch (palette[i]) {
                         case "edge": {
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -1167,7 +1167,7 @@ function displayChat(message) {
                                     )
                                 )
                             }
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -1184,7 +1184,7 @@ function displayChat(message) {
                             break;
                         }
                         case "rail": {
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -1198,7 +1198,7 @@ function displayChat(message) {
                                     )
                                 )
                             }
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -1215,7 +1215,7 @@ function displayChat(message) {
                             break;
                         }
                         case "redstone": {
-                            for (let coordinate of utils.geometry.generateLineWithTwoPoints(
+                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
                                 positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
@@ -1244,6 +1244,106 @@ function displayChat(message) {
                 this.positionArray = [undefined]
                 this.blockTypeArray = []
                 this.directionArray = [undefined]
+            }
+        )
+    )
+}());
+
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Create a triangle.",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [])
+            ),
+
+            [undefined, undefined, undefined],
+            [undefined],
+            [],
+            {},
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+
+                displayChat("§b NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+
+                displayChat("§b Yes, NZ is JULAO!")
+
+                let coordinateArray = utils.coordinateGeometry.generateFilledPlanarTriangle(
+                    positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z,
+                    positionArray[1].coordinate.x, positionArray[1].coordinate.y, positionArray[1].coordinate.z,
+                    positionArray[2].coordinate.x, positionArray[2].coordinate.y, positionArray[2].coordinate.z)
+
+                displayObject(coordinateArray)
+
+                for (const coordinate of coordinateArray) {
+                    blockArray.push(new Block(
+                        new Position(
+                            coordinate,
+                            positionArray[0].tickingArea
+                        ),
+                        blockTypeArray[0])
+                    )
+                }
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined, undefined, undefined]
+                this.blockTypeArray = [undefined]
             }
         )
     )

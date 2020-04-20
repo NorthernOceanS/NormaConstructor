@@ -422,7 +422,7 @@ let utils = {
 
 			let t_step = 0.0001
 			for (let t = t_span[0]; t < t_span[1]; t += t_step) {
-				let newCoordinate = new Coordinate(Math.floor(x(t)), Math.floor(y(t)), Math.floor(z(t)));
+				let newCoordinate = new Coordinate(Math.round(x(t)), Math.round(y(t)), Math.round(z(t)));
 				if (!isRedundant(coordinateArray, newCoordinate) && constraint(newCoordinate.x, newCoordinate.y, newCoordinate.z, t))
 					coordinateArray.push(newCoordinate);
 			}
@@ -451,15 +451,36 @@ let utils = {
 			const A = (y2 - y1) * (z3 - z1) - (y3 - y1) * (z2 - z1)
 			const B = -((x2 - x1) * (z3 - z1) - (x3 - x1) * (z2 - z1))
 			const C = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
-			let x_span=[Math.min(x1,x2,x3),Math.max(x1,x2,x3)]
-			let y_span=[Math.min(y1,y2,y3),Math.max(y1,y2,y3)]
-			let z_span=[Math.min(z1,z2,z3),Math.max(z1,z2,z3)]
+			const G = new Coordinate((x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3, (z1 + z2 + z3) / 3)
+			let x_span = [Math.min(x1, x2, x3), Math.max(x1, x2, x3)]
+			let y_span = [Math.min(y1, y2, y3), Math.max(y1, y2, y3)]
+			let z_span = [Math.min(z1, z2, z3), Math.max(z1, z2, z3)]
+
+			function signedDistance(x_start,y_start,x_end,y_end){
+				return (x,y)=>{return (y_end-y_start)*x-(x_end-x_start)*y+x_end*y_start-x_start*y_end}
+			}
+
 			return this.generateWithConstraint(x_span, y_span, z_span, (x, y, z) => {
-				return (A * (x - x1) + B * (y - y1) + C * (z - z1))
+				return (Math.abs(A * (x - x1) + B * (y - y1) + C * (z - z1)) < Math.sqrt(A * A + B * B + C * C)/2)
+					&&
+					(
+						signedDistance(x1,y1,x2,y2)(x,y)*signedDistance(x1,y1,x2,y2)(G.x,G.y)>=0&&
+						signedDistance(x1,y1,x3,y3)(x,y)*signedDistance(x1,y1,x3,y3)(G.x,G.y)>=0&&
+						signedDistance(x2,y2,x3,y3)(x,y)*signedDistance(x2,y2,x3,y3)(G.x,G.y)>=0&&
+
+						signedDistance(x1,z1,x2,z2)(x,z)*signedDistance(x1,z1,x2,z2)(G.x,G.z)>=0&&
+						signedDistance(x1,z1,x3,z3)(x,z)*signedDistance(x1,z1,x3,z3)(G.x,G.z)>=0&&
+						signedDistance(x2,z2,x3,z3)(x,z)*signedDistance(x2,z2,x3,z3)(G.x,G.z)>=0&&
+
+						signedDistance(y1,z1,y2,z2)(y,z)*signedDistance(y1,z1,y2,z2)(G.y,G.z)>=0&&
+						signedDistance(y1,z1,y3,z3)(y,z)*signedDistance(y1,z1,y3,z3)(G.y,G.z)>=0&&
+						signedDistance(y2,z2,y3,z3)(y,z)*signedDistance(y2,z2,y3,z3)(G.y,G.z)>=0
+					)
 			})
 		},
 		generateWithConstraint: function (x_span, y_span, z_span, constraint) {
 			let coordinateArray = [];
+
 			function isRedundant(coordinateArray, newCoordinate) {
 				if (coordinateArray.length == 0) return false;
 				return (
@@ -468,9 +489,10 @@ let utils = {
 					coordinateArray[coordinateArray.length - 1].z == newCoordinate.z
 				)
 			}
-			const x_step = 0.25;
-			const y_step = 0.25;
-			const z_step = 0.25;
+
+			const x_step = 1/3;
+			const y_step = 1/3;
+			const z_step = 1/3;
 
 			if (x_span[0] >= x_span[1]) {
 				let temp = x_span[1]
@@ -488,12 +510,13 @@ let utils = {
 				z_span[0] = temp
 			}
 
-			for (let x = x_span[0]; x < x_span[1]; x += x_step)
-				for (let y = y_span[0]; y < y_span[1]; y += y_step)
-					for (let z = z_span[0]; z < z_span[1]; z += z_step) {
-						let newCoordinate = new Coordinate(Math.round(x), Math.round(y), Math.round(z))
-						if (!isRedundant(coordinateArray, newCoordinate) && constraint(x, y, z-z_step/2) * constraint(x , y , z + z_step/2) <= 0)
+			for (let x = x_span[0]; x <= x_span[1]; x += x_step)
+				for (let z = z_span[0]; z <= z_span[1]; z += z_step)
+					for (let y = y_span[0]; y <= y_span[1]; y += y_step) {
+						if (constraint(x, y, z)){
+							let newCoordinate = new Coordinate(x,y,z)
 							coordinateArray.push(newCoordinate)
+						} 
 					}
 			return coordinateArray
 

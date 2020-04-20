@@ -50,6 +50,32 @@ let generator = {
             }
         }
         return blockArray
+    },
+    "20010705": function (positionArray, blockTypeArray, directionArray, option, playerID) {
+        let blockArray = []
+
+        displayChat("§b NZ is JULAO!")
+
+        let x_min = Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+        let z_min = Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+        let x_max = Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+        let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+        let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
+
+        displayChat("§b Yes, NZ is JULAO!")
+
+        fill({
+            data: {
+                "coordinate_start": new Coordinate(x_min, y_start, z_min), "coordinate_end": new Coordinate(x_max, 255, z_max), "blockType": {
+                    "blockIdentifier": "minecraft:air",
+                    "blockState": null
+                }
+            }
+        })
+
+        return []
     }
 }
 let playerOption = {}
@@ -179,6 +205,7 @@ serverSystem.initialize = function () {
         for (let block of blockArray) setBlock(block)
     })
     serverSystem.listenForEvent("NormaConstructor:setBlock", (eventData) => setBlock(eventData.data.block))
+    serverSystem.listenForEvent("NormaConstructor:fill", (eventData) => fill(eventData))
 }
 
 serverSystem.update = function () {
@@ -281,4 +308,48 @@ function setBlock(block) {
         // targetBlockStateComponent.data = blockType.blockState
         // serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
     });
+}
+
+function fill(eventData) {
+    let blockType = eventData.data.blockType
+    let coordinate_start = eventData.data.coordinate_start
+    let coordinate_end = eventData.data.coordinate_end
+
+    if (coordinate_start.x >= coordinate_end.x) {
+        let temp = coordinate_start.x
+        coordinate_start.x = coordinate_end.x
+        coordinate_end.x = temp
+    }
+    if (coordinate_start.y >= coordinate_end.y) {
+        let temp = coordinate_start.y
+        coordinate_start.y = coordinate_end.y
+        coordinate_end.y = temp
+    }
+    if (coordinate_start.z >= coordinate_end.z) {
+        let temp = coordinate_start.z
+        coordinate_start.z = coordinate_end.z
+        coordinate_end.z = temp
+    }
+
+    let tileData = undefined
+
+    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
+        tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
+    }
+    else {
+        tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
+        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
+    }
+
+    displayObject(coordinate_start)
+    displayObject(coordinate_end)
+
+    //Bypass the restriction of 32767 blocks
+    for (let x = coordinate_start.x; x <= coordinate_end.x; x += 32)
+        for (let y = coordinate_start.y; y <= coordinate_end.y; y += 32)
+            for (let z = coordinate_start.z; z <= coordinate_end.z; z += 32) {
+                serverSystem.executeCommand(`/fill ${x} ${y} ${z} ${Math.min(x + 31, coordinate_end.x)} ${Math.min(y + 31, coordinate_end.y)} ${Math.min(z + 31, coordinate_end.z)} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} destroy`, (commandResultData) => {
+                    //displayObject(commandResultData)
+                });
+            }
 }

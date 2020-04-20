@@ -15,6 +15,7 @@ clientSystem.initialize = function () {
 
     clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
     clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
+    clientSystem.registerEventData("NormaConstructor:fill", { playerID: undefined, coordinate_start: undefined, coordinate_end: undefined, blockType: undefined })
     clientSystem.registerEventData("NormaConstructor:generateByServer", {
         playerID: undefined,
         serverGeneratorIdentifier: undefined,
@@ -136,9 +137,6 @@ clientSystem.initialize = function () {
         if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
             let uiData = JSON.parse(eventData.data.slice(eventData.data.indexOf(":") + 1))
 
-            displayChat("From UI:")
-            displayObject(uiData)
-
             switch (uiData.type) {
                 //Must wait until the UI is loaded
 
@@ -172,7 +170,6 @@ clientSystem.initialize = function () {
                         case "closeMenu": {
                             let closeMenuEventData = clientSystem.createEventData("minecraft:unload_ui")
                             closeMenuEventData.data.path = "menu/menu.html"
-                            displayObject(closeMenuEventData)
                             clientSystem.broadcastEvent("minecraft:unload_ui", closeMenuEventData)
                             break;
                         }
@@ -240,6 +237,14 @@ function execute() {
         generatorArray[generatorIndex].postGenerate();
     }
 }
+function fill(coordinate_start, coordinate_end, blockType) {
+    let fillEventData = clientSystem.createEventData("NormaConstructor:fill")
+    fillEventData.data.playerID = playerID
+    fillEventData.data.coordinate_start = coordinate_start
+    fillEventData.data.coordinate_end = coordinate_end
+    fillEventData.data.blockType = blockType
+    clientSystem.broadcastEvent("NormaConstructor:fill", fillEventData)
+}
 function setServerSideOption(key, value) {
     let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
     setServerSideOptionEventData.data.playerID = playerID
@@ -262,7 +267,7 @@ function displayChat(message) {
 //Generators://////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-(function () {
+/*(function () {
     generatorArray.push(
         new Generator(
             new Description("Test.",
@@ -335,7 +340,7 @@ function displayChat(message) {
             }
         )
     )
-}());
+}());*/
 
 (function () {
     generatorArray.push(
@@ -1252,7 +1257,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Create a triangle.",
+            new Description("Create a triangle.(Broken)",
                 new Usage(
                     [],
                     [],
@@ -1327,8 +1332,6 @@ function displayChat(message) {
                     positionArray[1].coordinate.x, positionArray[1].coordinate.y, positionArray[1].coordinate.z,
                     positionArray[2].coordinate.x, positionArray[2].coordinate.y, positionArray[2].coordinate.z)
 
-                displayObject(coordinateArray)
-
                 for (const coordinate of coordinateArray) {
                     blockArray.push(new Block(
                         new Position(
@@ -1344,6 +1347,231 @@ function displayChat(message) {
             function () {
                 this.positionArray = [undefined, undefined, undefined]
                 this.blockTypeArray = [undefined]
+            }
+        )
+    )
+}());
+
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Clear terrain",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [])
+            ),
+
+            [undefined, undefined],
+            [],
+            [],
+            {
+                "__serverGeneratorIdentifier": "20010705",
+                "__generateByServer": true
+            },
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+
+                displayChat("§b NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+
+                let x_min = Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+                let z_min = Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+                let x_max = Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+                let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+                let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
+
+                displayChat("§b Yes, NZ is JULAO!")
+
+                for (let x = x_min; x <= x_max; x++) {
+                    for (let y = y_start; y <= 256; y++) {
+                        for (let z = z_min; z <= z_max; z++) {
+
+                            blockArray.push(new Block(
+                                new Position(
+                                    new Coordinate(x, y, z),
+                                    positionArray[0].tickingArea
+                                ),
+                                {
+                                    "blockIdentifier": "minecraft:air",
+                                    "blockState": null
+                                })
+                            )
+                        }
+                    }
+                }
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined, undefined]
+                this.blockTypeArray = []
+            }
+        )
+    )
+}());
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Create polygon.",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "Number of sides:",
+                            key: "numberOfSides",
+                        },
+                        {
+                            viewtype: "edittext",
+                            text: "Radius:",
+                            key: "r",
+                        }
+                    ])
+            ),
+
+            [undefined],
+            [],
+            [],
+            {
+                "numberOfSides": 6,
+                "r": 10
+            },
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+
+                displayChat("§b NZ is JULAO!")
+
+                let positionArray = this.positionArray
+
+                let coordinateArray = []
+
+                for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / this.option.numberOfSides) {
+                    coordinateArray=coordinateArray.concat(utils.coordinateGeometry.generateLineWithTwoPoints(
+                        positionArray[0].coordinate.x + this.option.r * Math.cos(theta), positionArray[0].coordinate.y, positionArray[0].coordinate.z + this.option.r * Math.sin(theta),
+                        positionArray[0].coordinate.x + this.option.r * Math.cos(theta + 2 * Math.PI / this.option.numberOfSides), positionArray[0].coordinate.y, positionArray[0].coordinate.z + this.option.r * Math.sin(theta + 2 * Math.PI / this.option.numberOfSides)
+                    ))
+                }
+
+                displayObject(coordinateArray)
+
+                for (let coordinate of coordinateArray)
+                    blockArray.push(new Block(
+                        new Position(
+                            coordinate,
+                            positionArray[0].tickingArea
+                        ),
+                        new BlockType("minecraft:stained_hardened_clay", { "color": "cyan" })
+                    ))
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = []
             }
         )
     )

@@ -912,7 +912,7 @@ function displayChat(message) {
                         case "edge": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -926,7 +926,7 @@ function displayChat(message) {
                             }
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -943,7 +943,7 @@ function displayChat(message) {
                         case "lane": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -958,7 +958,7 @@ function displayChat(message) {
                             break;
                         }
                         case "dash_line": {
-                            for (let j = 0; j < option["length"]; j++) {
+                            for (let j = 0; j < option["length"] -1; j++) {
                                 let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
                                 if ((j % (option["dashLineInterval"] + option["dashLineLength"])) < option["dashLineInterval"]) //Black first.
                                     blockArray.push(new Block(position, materials["surface"]))
@@ -970,7 +970,7 @@ function displayChat(message) {
                         case "division_line": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1160,7 +1160,7 @@ function displayChat(message) {
                         case "edge": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1174,7 +1174,7 @@ function displayChat(message) {
                             }
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1191,7 +1191,7 @@ function displayChat(message) {
                         case "rail": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1205,7 +1205,7 @@ function displayChat(message) {
                             }
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1222,7 +1222,7 @@ function displayChat(message) {
                         case "redstone": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"], positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1234,7 +1234,7 @@ function displayChat(message) {
                                     )
                                 )
                             }
-                            for (let j = 0; j < option["length"]; j++) {
+                            for (let j = 0; j < option["length"] -1; j++) {
                                 let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
                                 if (j % 15 == 0) blockArray.push(new Block(position, materials["red_stone_torch"]))
                             }

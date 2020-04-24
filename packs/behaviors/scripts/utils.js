@@ -421,10 +421,12 @@ let utils = {
 			}
 
 			let t_step = 0.0001
-			for (let t = t_span[0]; t < t_span[1]; t += t_step) {
+			for (let t = t_span[0]; t <= t_span[1]; t += t_step) {
 				let newCoordinate = new Coordinate(Math.round(x(t)), Math.round(y(t)), Math.round(z(t)));
-				if (!isRedundant(coordinateArray, newCoordinate) && constraint(newCoordinate.x, newCoordinate.y, newCoordinate.z, t))
+				if (!isRedundant(coordinateArray, newCoordinate) && constraint(newCoordinate.x, newCoordinate.y, newCoordinate.z, t)) {
+
 					coordinateArray.push(newCoordinate);
+				}
 			}
 			return coordinateArray;
 		},
@@ -456,25 +458,25 @@ let utils = {
 			let y_span = [Math.min(y1, y2, y3), Math.max(y1, y2, y3)]
 			let z_span = [Math.min(z1, z2, z3), Math.max(z1, z2, z3)]
 
-			function signedDistance(x_start,y_start,x_end,y_end){
-				return (x,y)=>{return (y_end-y_start)*x-(x_end-x_start)*y+x_end*y_start-x_start*y_end}
+			function signedDistance(x_start, y_start, x_end, y_end) {
+				return (x, y) => { return (y_end - y_start) * x - (x_end - x_start) * y + x_end * y_start - x_start * y_end }
 			}
 
 			return this.generateWithConstraint(x_span, y_span, z_span, (x, y, z) => {
-				return (Math.abs(A * (x - x1) + B * (y - y1) + C * (z - z1)) < Math.sqrt(A * A + B * B + C * C)/2)
+				return (Math.abs(A * (x - x1) + B * (y - y1) + C * (z - z1)) < Math.sqrt(A * A + B * B + C * C) / 2)
 					&&
 					(
-						signedDistance(x1,y1,x2,y2)(x,y)*signedDistance(x1,y1,x2,y2)(G.x,G.y)>=0&&
-						signedDistance(x1,y1,x3,y3)(x,y)*signedDistance(x1,y1,x3,y3)(G.x,G.y)>=0&&
-						signedDistance(x2,y2,x3,y3)(x,y)*signedDistance(x2,y2,x3,y3)(G.x,G.y)>=0&&
+						signedDistance(x1, y1, x2, y2)(x, y) * signedDistance(x1, y1, x2, y2)(G.x, G.y) >= 0 &&
+						signedDistance(x1, y1, x3, y3)(x, y) * signedDistance(x1, y1, x3, y3)(G.x, G.y) >= 0 &&
+						signedDistance(x2, y2, x3, y3)(x, y) * signedDistance(x2, y2, x3, y3)(G.x, G.y) >= 0 &&
 
-						signedDistance(x1,z1,x2,z2)(x,z)*signedDistance(x1,z1,x2,z2)(G.x,G.z)>=0&&
-						signedDistance(x1,z1,x3,z3)(x,z)*signedDistance(x1,z1,x3,z3)(G.x,G.z)>=0&&
-						signedDistance(x2,z2,x3,z3)(x,z)*signedDistance(x2,z2,x3,z3)(G.x,G.z)>=0&&
+						signedDistance(x1, z1, x2, z2)(x, z) * signedDistance(x1, z1, x2, z2)(G.x, G.z) >= 0 &&
+						signedDistance(x1, z1, x3, z3)(x, z) * signedDistance(x1, z1, x3, z3)(G.x, G.z) >= 0 &&
+						signedDistance(x2, z2, x3, z3)(x, z) * signedDistance(x2, z2, x3, z3)(G.x, G.z) >= 0 &&
 
-						signedDistance(y1,z1,y2,z2)(y,z)*signedDistance(y1,z1,y2,z2)(G.y,G.z)>=0&&
-						signedDistance(y1,z1,y3,z3)(y,z)*signedDistance(y1,z1,y3,z3)(G.y,G.z)>=0&&
-						signedDistance(y2,z2,y3,z3)(y,z)*signedDistance(y2,z2,y3,z3)(G.y,G.z)>=0
+						signedDistance(y1, z1, y2, z2)(y, z) * signedDistance(y1, z1, y2, z2)(G.y, G.z) >= 0 &&
+						signedDistance(y1, z1, y3, z3)(y, z) * signedDistance(y1, z1, y3, z3)(G.y, G.z) >= 0 &&
+						signedDistance(y2, z2, y3, z3)(y, z) * signedDistance(y2, z2, y3, z3)(G.y, G.z) >= 0
 					)
 			})
 		},
@@ -490,9 +492,9 @@ let utils = {
 				)
 			}
 
-			const x_step = 1/3;
-			const y_step = 1/3;
-			const z_step = 1/3;
+			const x_step = 1 / 3;
+			const y_step = 1 / 3;
+			const z_step = 1 / 3;
 
 			if (x_span[0] >= x_span[1]) {
 				let temp = x_span[1]
@@ -513,10 +515,11 @@ let utils = {
 			for (let x = x_span[0]; x <= x_span[1]; x += x_step)
 				for (let z = z_span[0]; z <= z_span[1]; z += z_step)
 					for (let y = y_span[0]; y <= y_span[1]; y += y_step) {
-						if (constraint(x, y, z)){
-							let newCoordinate = new Coordinate(x,y,z)
-							coordinateArray.push(newCoordinate)
-						} 
+						if (constraint(x, y, z)) {
+							let newCoordinate = new Coordinate(Math.round(x), Math.round(y), Math.round(z))
+							if (!isRedundant(coordinateArray, newCoordinate))
+								coordinateArray.push(newCoordinate)
+						}
 					}
 			return coordinateArray
 

@@ -8,11 +8,11 @@ on:
   push:
     branches: [ master ]
     tags:
-      - 'v*'
+      - '\d+(\.\d+){2,2}'
   pull_request:
     branches: [ master ]
     tags:
-      - 'v*'
+      - '\d+(\.\d+){2,2}'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a single command using the runners shell
-    - name: A
+    - name: Package the addon
       run: |
         npm install 
         npm run packageaddon
@@ -42,3 +42,13 @@ jobs:
           body: test
           draft: false
           prerelease: true
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./out/packs/*
+        asset_name: aaa
+        asset_content_type: application/zip

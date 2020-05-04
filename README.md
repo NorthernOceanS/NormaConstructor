@@ -1,4 +1,7 @@
 # NormaConstructor
+
+![CI](https://github.com/NorthernOceanS/NormaConstructor/workflows/CI/badge.svg)
+
 Speed up your construction.Created by NorthernOceanS.
 
 ## Credit

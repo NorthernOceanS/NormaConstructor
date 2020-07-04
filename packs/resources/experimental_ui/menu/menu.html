@@ -54,7 +54,7 @@
 
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
             </div>
             <div class="minecraft-container" style='width: 60%;display:flex;flex-direction: column;'>
@@ -181,10 +181,10 @@
     function getData(request) {
         scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "get", data: request }))
     }
-    function setData(key,value) {
+    function setData(key, value) {
         scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "set", data: { key: key, value: value } }))
     }
-    function setServerSideOption(key,value){
+    function setServerSideOption(key, value) {
         scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "setServerSideOption", data: { key: key, value: value } }))
     }
 
@@ -214,8 +214,8 @@
         let element = document.getElementById(id)
         element.textContent = optionUsage[id].data[currentChoices[id]].text
         setData(
-             optionUsage[id].key,
-             optionUsage[id].data[currentChoices[id]].value
+            optionUsage[id].key,
+            optionUsage[id].data[currentChoices[id]].value
         )
     }
     function handleEditTextInput(character) {
@@ -231,8 +231,8 @@
         // option[optionUsage[idOfEditTextOnFocus].key]=
         element.value = number
         setData(
-             optionUsage[idOfEditTextOnFocus].key,
-             number
+            optionUsage[idOfEditTextOnFocus].key,
+            number
         )
         editTextInput = ''
         inputDisplay.textContent = ''

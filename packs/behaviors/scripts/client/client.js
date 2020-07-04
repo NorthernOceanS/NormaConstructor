@@ -8,10 +8,12 @@ var blockQuery = []
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../constructor'
 import { utils } from '../utils'
 let generatorArray = [];
+let coordinatePlayerLookingAt = undefined
 
 
 
 clientSystem.initialize = function () {
+
 
     clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
     clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
@@ -25,7 +27,12 @@ clientSystem.initialize = function () {
         option: undefined
     })
     clientSystem.registerEventData("NormaConstructor:setServerSideOption", { playerID: undefined, option: { key: undefined, value: undefined } })
+    clientSystem.registerEventData("NormaConstructor:queryBlockType", {
+        playerID: undefined,
+        position: undefined
+    })
 
+    clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
 
         playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
@@ -63,21 +70,7 @@ clientSystem.initialize = function () {
 
     })
 
-    clientSystem.listenForEvent("NormaConstructor:getPosition", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            generatorArray[generatorIndex].addPosition(eventData.data.position)
-        }
-    })
-    clientSystem.listenForEvent("NormaConstructor:getBlockType", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            generatorArray[generatorIndex].addBlockType(eventData.data.blockType)
-        }
-    })
-    clientSystem.listenForEvent("NormaConstructor:getDirection", (eventData) => {
-        if (playerID == eventData.data.playerID) {
-            generatorArray[generatorIndex].addDirection(eventData.data.direction)
-        }
-    })
+
 
     clientSystem.listenForEvent("NormaConstructor:displayChatToClient", (eventData) => {
         if (playerID == eventData.data.playerID)
@@ -86,29 +79,66 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
         if (playerID == eventData.data.playerID) {
             switch (eventData.data.command) {
-                case "removeLastPosition": {
+                case "get_data": {
+                    displayObject(eventData.data.additionalData)
+
+                    let serveData = {blockType:undefined,position:undefined,direction:undefined}
+
+                    let direction = eventData.data.additionalData.direction
+                    if (eventData.data.additionalData.playerRequest["direction"]) serveData.direction=direction
+
+                    if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
+                        let rawCoordinate = coordinatePlayerLookingAt
+                        if (rawCoordinate == null) {
+                            displayChat("§c Unable to get the block position. Please retry.")
+                        }
+                        else {
+                            let coordinate = rawCoordinate
+                            function isCoordinatePlaneFacing(num) {
+                                return Math.floor(num) == num
+                            }
+                            if (isCoordinatePlaneFacing(rawCoordinate.x)) coordinate.x -= ((-180 <= direction.y && direction.y < 0) ? 0 : 1)
+                            if (isCoordinatePlaneFacing(rawCoordinate.y)) coordinate.y -= ((-90 <= direction.x && direction.x < 0) ? 0 : 1)
+                            if (isCoordinatePlaneFacing(rawCoordinate.z)) coordinate.z -= ((-90 <= direction.y && direction.y < 90) ? 0 : 1)
+                            coordinate.x = Math.floor(coordinate.x)
+                            coordinate.y = Math.floor(coordinate.y)
+                            coordinate.z = Math.floor(coordinate.z)
+                            let position = new Position(coordinate, eventData.data.additionalData.tickingArea)
+                            if (eventData.data.additionalData.playerRequest["position"]) serveData.position=position
+                            if (eventData.data.additionalData.playerRequest["blockType"]) {
+                                let queryBlockTypeEventData = clientSystem.createEventData("NormaConstructor:queryBlockType")
+                                queryBlockTypeEventData.position = position
+                                queryBlockTypeEventData.playerID = playerID
+                                clientSystem.broadcastEvent("NormaConstructor:queryBlockType", queryBlockTypeEventData)
+                            }
+                        }
+                    }
+                    storeData(serveData.blockType,serveData.position,serveData.direction)
+                    break;
+                }
+                case "remove_last_position": {
                     displayChat("Removing the last position...")
                     generatorArray[generatorIndex].removePosition()
                     break;
                 }
-                case "removeLastblockType": {
+                case "remove_last_blocktype": {
                     displayChat("Removing the last blockType...")
                     generatorArray[generatorIndex].removeBlockType()
                     break;
                 }
-                case "removeLastDirection": {
+                case "remove_last_direction": {
                     displayChat("Removing the last direction...")
                     generatorArray[generatorIndex].removeDirection()
                     break;
                 }
-                case "chooseNextGenerator": {
+                case "choose_next_generator": {
                     displayChat("Choosing next generator...")
                     generatorIndex = (generatorIndex + 1) % generatorArray.length
                     displayChat("Current generator:")
                     displayObject(generatorArray[generatorIndex])
                     break;
                 }
-                case "showSavedData": {
+                case "show_saved_data": {
                     displayChat("Current positionArray:")
                     displayObject(generatorArray[generatorIndex].positionArray)
                     displayChat("Current blockTypeArray:")
@@ -123,13 +153,21 @@ clientSystem.initialize = function () {
                     execute();
                     break;
                 }
-                case "showMenu": {
+                case "show_menu": {
                     let loadUIEventData = clientSystem.createEventData("minecraft:load_ui")
                     loadUIEventData.data.path = "menu/menu.html"
                     clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
                     break;
                 }
             }
+        }
+    })
+    clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
+        displayChat("RECEIVE:")
+        displayObject(eventData)
+        if (playerID == eventData.data.playerID) {
+            storeData(eventData.data.blockType,eventData.data.position,eventData.data.direction)
+
         }
     })
 
@@ -197,6 +235,9 @@ clientSystem.initialize = function () {
 };
 
 clientSystem.update = function () {
+
+
+
     if ((++tick) % 5 == 0 && blockQuery.length > 0) {
 
         let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
@@ -210,6 +251,11 @@ clientSystem.shutdown = function () {
     //TODO:Ask the server to delete the profile.(Maybe...not necessary.)
 };
 
+function storeData(blockType, position, direction) {
+    if (blockType != undefined) generatorArray[generatorIndex].addBlockType(blockType)
+    if (position != undefined) generatorArray[generatorIndex].addPosition(position)
+    if (direction != undefined) generatorArray[generatorIndex].addDirection(direction)
+}
 function execute() {
     let validateResult = generatorArray[generatorIndex].validateParameter();
     if (validateResult != "success")
@@ -912,7 +958,7 @@ function displayChat(message) {
                         case "edge": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -926,7 +972,7 @@ function displayChat(message) {
                             }
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -943,7 +989,7 @@ function displayChat(message) {
                         case "lane": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -958,7 +1004,7 @@ function displayChat(message) {
                             break;
                         }
                         case "dash_line": {
-                            for (let j = 0; j < option["length"] -1; j++) {
+                            for (let j = 0; j < option["length"] - 1; j++) {
                                 let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
                                 if ((j % (option["dashLineInterval"] + option["dashLineLength"])) < option["dashLineInterval"]) //Black first.
                                     blockArray.push(new Block(position, materials["surface"]))
@@ -970,7 +1016,7 @@ function displayChat(message) {
                         case "division_line": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1160,7 +1206,7 @@ function displayChat(message) {
                         case "edge": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1174,7 +1220,7 @@ function displayChat(message) {
                             }
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1191,7 +1237,7 @@ function displayChat(message) {
                         case "rail": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1205,7 +1251,7 @@ function displayChat(message) {
                             }
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1222,7 +1268,7 @@ function displayChat(message) {
                         case "redstone": {
                             for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
                                 positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + option["length"] -1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                                positionArray[0].coordinate.x + option["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
                             ) {
                                 blockArray.push(
                                     new Block(
@@ -1234,7 +1280,7 @@ function displayChat(message) {
                                     )
                                 )
                             }
-                            for (let j = 0; j < option["length"] -1; j++) {
+                            for (let j = 0; j < option["length"] - 1; j++) {
                                 let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
                                 if (j % 15 == 0) blockArray.push(new Block(position, materials["red_stone_torch"]))
                             }
@@ -1550,7 +1596,7 @@ function displayChat(message) {
                 let coordinateArray = []
 
                 for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / this.option.numberOfSides) {
-                    coordinateArray=coordinateArray.concat(utils.coordinateGeometry.generateLineWithTwoPoints(
+                    coordinateArray = coordinateArray.concat(utils.coordinateGeometry.generateLineWithTwoPoints(
                         positionArray[0].coordinate.x + this.option.r * Math.cos(theta), positionArray[0].coordinate.y, positionArray[0].coordinate.z + this.option.r * Math.sin(theta),
                         positionArray[0].coordinate.x + this.option.r * Math.cos(theta + 2 * Math.PI / this.option.numberOfSides), positionArray[0].coordinate.y, positionArray[0].coordinate.z + this.option.r * Math.sin(theta + 2 * Math.PI / this.option.numberOfSides)
                     ))

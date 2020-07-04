@@ -1,0 +1,13 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "normaconstructor:remove_last_direction",
+      "catagory":"Nature"
+    },
+    "components": {
+      "minecraft:icon": "slime",
+      "minecraft:render_offsets": "apple"
+    }
+  }
+}

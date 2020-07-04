@@ -87,27 +87,30 @@ serverSystem.initialize = function () {
     scriptLoggerConfig.data.log_warnings = true;
     serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
-    serverSystem.registerEventData("NormaConstructor:getPosition", {
-        position: new Position(
-            new Coordinate(undefined, undefined, undefined),
-            undefined
-        ),
-        playerID: undefined
-    })
-    serverSystem.registerEventData("NormaConstructor:getBlockType", {
-        blockType: new BlockType(undefined, undefined),
-        playerID: undefined
-    })
-    serverSystem.registerEventData("NormaConstructor:getDirection", {
-        direction: new Direction(undefined, undefined),
-        playerID: undefined
-    })
     serverSystem.registerEventData("NormaConstructor:displayChatToClient", {
         message: undefined,
         playerID: undefined
     })
 
-    serverSystem.registerEventData("NormaConstructor:command", { command: undefined, playerID: undefined })
+    serverSystem.registerEventData("NormaConstructor:command", {
+        command: undefined,
+        additionalData: {
+            direction: new Direction(undefined, undefined),
+            tickingArea: undefined,
+            playerRequest: {
+                "position": false,
+                "direction": false,
+                "blockType": false
+            }
+        },
+        playerID: undefined
+    })
+    serverSystem.registerEventData("NormaConstructor:serveData", {
+        blockType: undefined,
+        position: undefined,
+        direction: undefined,
+        playerID: undefined
+    })
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("NormaConstructor:setServerSideOption", (eventData) => {
@@ -115,15 +118,62 @@ serverSystem.initialize = function () {
         playerOption[eventData.data.playerID][eventData.data.option.key] = eventData.data.option.value
     })
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
-        getBlockType(eventData)
+        //TODO: Break down the parameter.
+        function getBlockType(eventData) {
+            let blockType = new BlockType(undefined, undefined)
 
-        //Ahh!!!!!!!!!!!!!!!!!!
-        //I actually illegally sent the eventData. Thank god they have the same "block_position".
-        if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalPosition"]) getPosition(eventData)
-        if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalDirection"]) getDirection(eventData)
+            let handContainer = serverSystem.getComponent(eventData.data.player, "minecraft:hand_container").data
+            let offHandItem = handContainer[1]
+            if (offHandItem.__identifier__ == "minecraft:shield") {//Since the player can't place air, holding a shield will represent so. 
+                blockType.blockIdentifier = "minecraft:air"
+                blockType.blockState = null
+            }
+            else {
+                let tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
+                let block = serverSystem.getBlock(tickingArea, eventData.data.block_position)
+                blockType.blockIdentifier = block.__identifier__
+                blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
+            }
+
+            return blockType
+
+        }
+        function getPosition(eventData) {
+            let position = new Position(
+                new Coordinate(undefined, undefined, undefined),
+                undefined
+            )
+
+            position.coordinate = eventData.data.block_position
+            position.tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
+
+            return position
+        }
+        function getDirection(eventData) {
+            let direction = new Direction(undefined, undefined)
+            direction = serverSystem.getComponent(eventData.data.player, "minecraft:rotation").data
+            return direction
+        }
+        let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
+        serveDataEventData.data.blockType = getBlockType(eventData)
+        if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalPosition"]) serveDataEventData.data.position = getPosition(eventData)
+        if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalDirection"]) serveDataEventData.data.direction = getDirection(eventData)
+        serveDataEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
+        serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
     })
-    //TODO:Consider switching to "minecraft:entity_use_item"
-    serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {
+    serverSystem.listenForEvent("NormaConstructor:queryBlockType", (eventData) => {
+        let blockType=new BlockType(undefined,undefined)
+        let block = serverSystem.getBlock(eventData.data.position.tickingArea, eventData.data.position.coordinate)
+        blockType.blockIdentifier = block.__identifier__
+        blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
+
+        let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
+        serveDataEventData.data.blockType = blockType
+        serveDataEventData.data.playerID = eventData.data.playerID
+        serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
+    })
+    /*serverSystem.listenForEvent("minecraft:block_interacted_with", (eventData) => {
+        displayObject(eventData)
         let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
         //TODO:Verify whether the player is permitted to use this addon.
         let handContainer = serverSystem.getComponent(eventData.data.player, "minecraft:hand_container").data
@@ -188,10 +238,35 @@ serverSystem.initialize = function () {
                 break;
             }
         }
-    })
+    })*/
+
+    //I suppose I have to make an explanation.
+    //The input ("get data") mechanism is drasticly changed due to the 1.16 update as "block_interacted_with" is no longer useful.
+    //Now the server serves the data through one event:"serveData".
+    //When a block is placed, except that all three types of data will be sent in one event, things remain largely the same.
+    //For position and direction, it is now initiated through fake food. Then the following code will obtain player's direction, and list what types of data the player request. 
+    //Then the client will process the data. For position, the client will track the position the player is looking at in advance, and with direction it can calculate the block position.
+    //Finally...it won't obtain blocktype as additional data ever since...?
     serverSystem.listenForEvent("minecraft:entity_use_item", (eventData) => {
-        //TODO:Inspect why the log function here doesn't work...properly.(?)
-        server.log("AAAAAAAAAAAAAAAA")
+        displayObject(eventData)
+        if (eventData.data.item_stack.__identifier__.startsWith("normaconstructor:")) {
+            let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
+            let command = eventData.data.item_stack.__identifier__.slice(eventData.data.item_stack.__identifier__.indexOf(":") + 1)
+
+            if (command == "get_position" || command == "get_direction") {
+                let additionalData = {
+                    direction: serverSystem.getComponent(eventData.data.entity, "minecraft:rotation").data,
+                    tickingArea: serverSystem.getComponent(eventData.data.entity, "minecraft:tick_world").data.ticking_area,
+                    playerRequest: {
+                        "position": ((command == "get_position") || playerOption[playerID]["__requestAdditionalPosition"]),
+                        "direction": ((command == "get_direction") || playerOption[playerID]["__requestAdditionalDirection"]),
+                        "blockType": playerOption[playerID]["__requestAdditionalBlockType"]
+                    }
+                }
+                sendCommand("get_data", playerID, additionalData)
+            }
+            else sendCommand(command, playerID)
+        }
     })
     serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => { for (let block of eventData.data.blockArray) setBlock(block) })
     serverSystem.listenForEvent("NormaConstructor:generateByServer", (eventData) => {
@@ -228,55 +303,12 @@ function displayChat(message, playerID) {
     }
 }
 
-function getBlockType(eventData) {
-    let blockType = new BlockType(undefined, undefined)
 
-    let handContainer = serverSystem.getComponent(eventData.data.player, "minecraft:hand_container").data
-    let offHandItem = handContainer[1]
-    if (offHandItem.__identifier__ == "minecraft:shield") {//Since the player can't place air, holding a shield will represent so. 
-        blockType.blockIdentifier = "minecraft:air"
-        blockType.blockState = null
-    }
-    else {
-        let tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
-        let block = serverSystem.getBlock(tickingArea, eventData.data.block_position)
-        blockType.blockIdentifier = block.__identifier__
-        blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
-    }
-
-    let blockTypeEventData = serverSystem.createEventData("NormaConstructor:getBlockType")
-    blockTypeEventData.data.blockType = blockType
-    blockTypeEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-    serverSystem.broadcastEvent("NormaConstructor:getBlockType", blockTypeEventData)
-
-}
-function getPosition(eventData) {
-    let position = new Position(
-        new Coordinate(undefined, undefined, undefined),
-        undefined
-    )
-
-    position.coordinate = eventData.data.block_position
-    position.tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
-
-    let positionEventData = serverSystem.createEventData("NormaConstructor:getPosition")
-    positionEventData.data.position = position
-    positionEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-    serverSystem.broadcastEvent("NormaConstructor:getPosition", positionEventData)
-}
-function getDirection(eventData) {
-    let direction = new Direction(undefined, undefined)
-    direction = serverSystem.getComponent(eventData.data.player, "minecraft:rotation").data
-
-    let directionEventData = serverSystem.createEventData("NormaConstructor:getDirection")
-    directionEventData.data.direction = direction
-    directionEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-    serverSystem.broadcastEvent("NormaConstructor:getDirection", directionEventData)
-}
-function sendCommand(command, playerID) {
+function sendCommand(command, playerID, additionalData) {
     let commandEventData = serverSystem.createEventData("NormaConstructor:command")
     commandEventData.data.command = command
     commandEventData.data.playerID = playerID
+    commandEventData.data.additionalData = additionalData
     serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
 }
 function setBlock(block) {

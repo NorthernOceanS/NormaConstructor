@@ -1,12 +1,9 @@
-﻿## Comments can be added anywhere on a valid line by starting with '##'
-##
-## Note, trailing spaces will NOT be trimmed. If you want room between the end of the string and the start of a
-## comment on the same line, use TABs.
-accessibility.disableTTS=Text To Speech disabled
-accessibility.enableTTS=Text To Speech enabled
-
-entity.worldedit:select.name=select
-item.spawn_egg.entity.worldedit:select.name=select
-
-entity.worldedit:execute.name=execute
-item.spawn_egg.entity.worldedit:execute.name=execute
+﻿item.normaconstructor:execute.name=Execute
+item.normaconstructor:get_position.name=Get Position
+item.normaconstructor:get_direction.name=Get Direction
+item.normaconstructor:remove_last_position.name=Remove Last Position
+item.normaconstructor:remove_last_direction.name=Remove Last Direction
+item.normaconstructor:remove_last_blocktype.name=Remove Last BlockType
+item.normaconstructor:choose_next_generator.name=Choose Next Generator
+item.normaconstructor:show_menu.name=Show Menu
+item.normaconstructor:show_saved_data.name=Show Saved Data

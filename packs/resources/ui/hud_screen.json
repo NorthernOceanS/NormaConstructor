@@ -1,6 +1,0 @@
-﻿{
-  "namespace": "hud",
-  "hud_screen": {
-    "always_accepts_input": true
-  }
-}

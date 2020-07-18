@@ -52,7 +52,7 @@ class Generator {
         positionArray, blockTypeArray, directionArray, option,
         addPosition, addBlockType, addDirection,
         removePosition, removeBlockType, removeDirection,
-        validateParameter, generate, postGenerate) {
+        validateParameter, generate, postGenerate, UIHandler) {
         this.description = description;
 
         this.positionArray = positionArray;
@@ -70,6 +70,7 @@ class Generator {
         this.validateParameter = validateParameter;
         this.generate = generate;
         this.postGenerate = postGenerate;
+        this.UIHandler = UIHandler
     }
 }
 

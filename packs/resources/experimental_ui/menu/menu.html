@@ -54,7 +54,7 @@
 
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
             <div class="minecraft-container" style='width: 60%;display:flex;flex-direction: column;'>
@@ -217,6 +217,7 @@
             optionUsage[id].key,
             optionUsage[id].data[currentChoices[id]].value
         )
+        callUIHandler(optionUsage[id].data[currentChoices[id]].dataForUIHandler)
     }
     function handleEditTextInput(character) {
         if (character == 'd')
@@ -237,11 +238,14 @@
         editTextInput = ''
         inputDisplay.textContent = ''
     }
+    function callUIHandler(dataForUIHandler) {
+        if (dataForUIHandler != null)
+            scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "callUIHandler", data: dataForUIHandler }))
+    }
 
     sendCommand("reload")
 
     engine.on("NormaConstructor:reload", (eventData) => {
-        displayChat(eventData)
 
         let data = JSON.parse(eventData)
 

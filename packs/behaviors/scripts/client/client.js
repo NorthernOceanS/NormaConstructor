@@ -82,10 +82,10 @@ clientSystem.initialize = function () {
                 case "get_data": {
                     displayObject(eventData.data.additionalData)
 
-                    let serveData = {blockType:undefined,position:undefined,direction:undefined}
+                    let serveData = { blockType: undefined, position: undefined, direction: undefined }
 
                     let direction = eventData.data.additionalData.direction
-                    if (eventData.data.additionalData.playerRequest["direction"]) serveData.direction=direction
+                    if (eventData.data.additionalData.playerRequest["direction"]) serveData.direction = direction
 
                     if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
                         let rawCoordinate = coordinatePlayerLookingAt
@@ -104,7 +104,7 @@ clientSystem.initialize = function () {
                             coordinate.y = Math.floor(coordinate.y)
                             coordinate.z = Math.floor(coordinate.z)
                             let position = new Position(coordinate, eventData.data.additionalData.tickingArea)
-                            if (eventData.data.additionalData.playerRequest["position"]) serveData.position=position
+                            if (eventData.data.additionalData.playerRequest["position"]) serveData.position = position
                             if (eventData.data.additionalData.playerRequest["blockType"]) {
                                 let queryBlockTypeEventData = clientSystem.createEventData("NormaConstructor:queryBlockType")
                                 queryBlockTypeEventData.position = position
@@ -113,7 +113,7 @@ clientSystem.initialize = function () {
                             }
                         }
                     }
-                    storeData(serveData.blockType,serveData.position,serveData.direction)
+                    storeData(serveData.blockType, serveData.position, serveData.direction)
                     break;
                 }
                 case "remove_last_position": {
@@ -166,7 +166,7 @@ clientSystem.initialize = function () {
         displayChat("RECEIVE:")
         displayObject(eventData)
         if (playerID == eventData.data.playerID) {
-            storeData(eventData.data.blockType,eventData.data.position,eventData.data.direction)
+            storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
         }
     })
@@ -187,6 +187,10 @@ clientSystem.initialize = function () {
                 }
                 case "set": {
                     generatorArray[generatorIndex].option[uiData.data.key] = uiData.data.value
+                    break;
+                }
+                case "callUIHandler": {
+                    generatorArray[generatorIndex].UIHandler(uiData.data)
                     break;
                 }
                 case "command": {
@@ -766,8 +770,9 @@ function displayChat(message) {
                             text: "马路风格",
                             key: "roadStyle",
                             data: [
-                                { value: "NS", text: "北冥/南冥" },
-                                { value: "DB", text: "东沙/冰岛" }
+                                { value: "NS", text: "北冥/南冥", dataForUIHandler: "preset" },
+                                { value: "DB", text: "东沙/冰岛", dataForUIHandler: "preset" },
+                                { value: "custom", text: "自定", dataForUIHandler: "custom" }
                             ]
                         },
                         {
@@ -885,11 +890,21 @@ function displayChat(message) {
                     "yellow_line": new BlockType("minecraft:stained_hardened_clay", { "color": "yellow" }),
                     "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
                 }
-                else materials = {
-                    "surface": new BlockType("minecraft:wool", { "color": "black" }),
-                    "white_line": new BlockType("minecraft:wool", { "color": "white" }),
-                    "yellow_line": new BlockType("minecraft:wool", { "color": "yellow" }),
-                    "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
+                else if (option["roadStyle"] == "DB") {
+                    materials = {
+                        "surface": new BlockType("minecraft:wool", { "color": "black" }),
+                        "white_line": new BlockType("minecraft:wool", { "color": "white" }),
+                        "yellow_line": new BlockType("minecraft:wool", { "color": "yellow" }),
+                        "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
+                    }
+                }
+                else if (option["roadStyle"] == "custom") {
+                    materials = {
+                        "surface": blockTypeArray[0],
+                        "white_line": blockTypeArray[1],
+                        "yellow_line": blockTypeArray[2],
+                        "bar": blockTypeArray[3]
+                    }
                 }
 
                 let playerFacingAxis = (function () {
@@ -1004,7 +1019,7 @@ function displayChat(message) {
                             break;
                         }
                         case "dash_line": {
-                            for (let j = 0; j < option["length"] - 1; j++) {
+                            for (let j = 0; j <= option["length"] - 1; j++) {
                                 let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
                                 if ((j % (option["dashLineInterval"] + option["dashLineLength"])) < option["dashLineInterval"]) //Black first.
                                     blockArray.push(new Block(position, materials["surface"]))
@@ -1037,8 +1052,24 @@ function displayChat(message) {
             },
             function () {
                 this.positionArray = [undefined]
+                if(option["roadStyle"]=="custom") this.blockTypeArray=[undefined, undefined, undefined, undefined]
+                else this.blockTypeArray=[]
                 this.blockTypeArray = []
                 this.directionArray = [undefined]
+            },
+            function (data) {
+                if (data == "custom") {
+                    displayChat("Using custom materials.")
+                    displayChat("First block type for surface.")
+                    displayChat("Second for white line.")
+                    displayChat("Third for yellow line.")
+                    displayChat("Fourth for bar.")
+                    this.blockTypeArray = [undefined, undefined, undefined, undefined]
+                }
+                else {
+                    displayChat("Using preset materials. Custom materials are erased!")
+                    this.blockTypeArray = []
+                }
             }
         )
     )

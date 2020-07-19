@@ -78,6 +78,8 @@ let generator = {
         return []
     }
 }
+let compiler={}
+
 let playerOption = {}
 serverSystem.initialize = function () {
 
@@ -162,7 +164,7 @@ serverSystem.initialize = function () {
         serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
     })
     serverSystem.listenForEvent("NormaConstructor:queryBlockType", (eventData) => {
-        let blockType=new BlockType(undefined,undefined)
+        let blockType = new BlockType(undefined, undefined)
         let block = serverSystem.getBlock(eventData.data.position.tickingArea, eventData.data.position.coordinate)
         blockType.blockIdentifier = block.__identifier__
         blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
@@ -201,7 +203,18 @@ serverSystem.initialize = function () {
             else sendCommand(command, playerID)
         }
     })
-    serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => { for (let block of eventData.data.blockArray) setBlock(block) })
+    serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => {
+        for (let buildInstruction of eventData.data.buildInstructions) {
+            //I know it looks silly... "Compatible reason".
+            if (!buildInstruction.hasOwnProperty("type")) setBlock(buildInstruction)
+            else {
+                let blocks=compiler[buildInstruction.type](buildInstruction.data)
+                for(let block of blocks) setBlock(block)
+            }
+        }
+    })
+    //TODO:
+    //Deprecated. Shall be removed.
     serverSystem.listenForEvent("NormaConstructor:generateByServer", (eventData) => {
         let blockArray = generator[eventData.data.serverGeneratorIdentifier](
             eventData.data.positionArray,

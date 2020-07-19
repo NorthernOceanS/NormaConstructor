@@ -74,4 +74,10 @@ class Generator {
     }
 }
 
+class BuildInstruction{
+    constructor(type,data){
+        this.type=type
+        this.data=data
+    }
+}
 export { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator }

@@ -3,7 +3,7 @@ var clientSystem = client.registerSystem(0, 0);
 var playerID = undefined
 var generatorIndex = 0
 var tick = 0
-var blockQuery = []
+var buildInstructionsQuery = []
 
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../constructor'
 import { utils } from '../utils'
@@ -15,7 +15,7 @@ let coordinatePlayerLookingAt = undefined
 clientSystem.initialize = function () {
 
 
-    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, blockArray: undefined })
+    clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, buildInstructions: undefined })
     clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
     clientSystem.registerEventData("NormaConstructor:fill", { playerID: undefined, coordinate_start: undefined, coordinate_end: undefined, blockType: undefined })
     clientSystem.registerEventData("NormaConstructor:generateByServer", {
@@ -240,13 +240,11 @@ clientSystem.initialize = function () {
 
 clientSystem.update = function () {
 
-
-
-    if ((++tick) % 5 == 0 && blockQuery.length > 0) {
+    if ((++tick) % 5 == 0 && buildInstructionsQuery.length > 0) {
 
         let executionResponseEventData = clientSystem.createEventData("NormaConstructor:ExecutionResponse")
         executionResponseEventData.data.playerID = playerID
-        executionResponseEventData.data.blockArray = blockQuery.splice(0, 100)
+        executionResponseEventData.data.buildInstructions = buildInstructionsQuery.splice(0, 100)
         clientSystem.broadcastEvent("NormaConstructor:ExecutionResponse", executionResponseEventData)
     }
 };
@@ -259,6 +257,7 @@ function storeData(blockType, position, direction) {
     if (blockType != undefined) generatorArray[generatorIndex].addBlockType(blockType)
     if (position != undefined) generatorArray[generatorIndex].addPosition(position)
     if (direction != undefined) generatorArray[generatorIndex].addDirection(direction)
+    if (generatorArray[generatorIndex].option.hasOwnProperty("__executeOnAllSatisfied")&&generatorArray[generatorIndex].option["__executeOnAllSatisfied"] == true && generatorArray[generatorIndex].validateParameter() == "success") execute()
 }
 function execute() {
     let validateResult = generatorArray[generatorIndex].validateParameter();
@@ -266,6 +265,8 @@ function execute() {
         displayChat("§c " + validateResult);
     else {
         displayChat("Execution started.");
+        //TODO:
+        //Deprecated. Shall be removed.
         if (generatorArray[generatorIndex].option["__generateByServer"] == true) {
             let generateByServerEventData = clientSystem.createEventData("NormaConstructor:generateByServer");
             generateByServerEventData.data.playerID = playerID;
@@ -278,11 +279,12 @@ function execute() {
             clientSystem.broadcastEvent("NormaConstructor:generateByServer", generateByServerEventData);
         }
         else {
-            let blockArray = generatorArray[generatorIndex].generate();
-            blockQuery = blockQuery.concat(blockArray)
+            //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
+            let buildInstructions = generatorArray[generatorIndex].generate();
+            buildInstructionsQuery = buildInstructionsQuery.concat(buildInstructions)
             //The following line is the original code which append the array to the query. Sadly, it will throw an error when there's too many blocks.
             //I...am not even sure if it is fixed.
-            //Array.prototype.push.apply(blockQuery, blockArray);
+            //Array.prototype.push.apply(buildInstructionsQuery, buildInstructions);
         }
         generatorArray[generatorIndex].postGenerate();
     }
@@ -1052,8 +1054,8 @@ function displayChat(message) {
             },
             function () {
                 this.positionArray = [undefined]
-                if(option["roadStyle"]=="custom") this.blockTypeArray=[undefined, undefined, undefined, undefined]
-                else this.blockTypeArray=[]
+                if (this.option["roadStyle"] == "custom") this.blockTypeArray = [undefined, undefined, undefined, undefined]
+                else this.blockTypeArray = []
                 this.blockTypeArray = []
                 this.directionArray = [undefined]
             },

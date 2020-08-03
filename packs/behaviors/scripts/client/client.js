@@ -16,16 +16,6 @@ clientSystem.initialize = function () {
 
 
     clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, buildInstructions: undefined })
-    clientSystem.registerEventData("NormaConstructor:setBlock", { playerID: undefined, block: undefined })
-    clientSystem.registerEventData("NormaConstructor:fill", { playerID: undefined, coordinate_start: undefined, coordinate_end: undefined, blockType: undefined })
-    clientSystem.registerEventData("NormaConstructor:generateByServer", {
-        playerID: undefined,
-        serverGeneratorIdentifier: undefined,
-        positionArray: undefined,
-        blockTypeArray: undefined,
-        directionArray: undefined,
-        option: undefined
-    })
     clientSystem.registerEventData("NormaConstructor:setServerSideOption", { playerID: undefined, option: { key: undefined, value: undefined } })
     clientSystem.registerEventData("NormaConstructor:queryBlockType", {
         playerID: undefined,
@@ -103,7 +93,9 @@ clientSystem.initialize = function () {
                             coordinate.x = Math.floor(coordinate.x)
                             coordinate.y = Math.floor(coordinate.y)
                             coordinate.z = Math.floor(coordinate.z)
+
                             let position = new Position(coordinate, eventData.data.additionalData.tickingArea)
+
                             if (eventData.data.additionalData.playerRequest["position"]) serveData.position = position
                             if (eventData.data.additionalData.playerRequest["blockType"]) {
                                 let queryBlockTypeEventData = clientSystem.createEventData("NormaConstructor:queryBlockType")
@@ -257,7 +249,7 @@ function storeData(blockType, position, direction) {
     if (blockType != undefined) generatorArray[generatorIndex].addBlockType(blockType)
     if (position != undefined) generatorArray[generatorIndex].addPosition(position)
     if (direction != undefined) generatorArray[generatorIndex].addDirection(direction)
-    if (generatorArray[generatorIndex].option.hasOwnProperty("__executeOnAllSatisfied")&&generatorArray[generatorIndex].option["__executeOnAllSatisfied"] == true && generatorArray[generatorIndex].validateParameter() == "success") execute()
+    if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
 }
 function execute() {
     let validateResult = generatorArray[generatorIndex].validateParameter();
@@ -265,37 +257,16 @@ function execute() {
         displayChat("§c " + validateResult);
     else {
         displayChat("Execution started.");
-        //TODO:
-        //Deprecated. Shall be removed.
-        if (generatorArray[generatorIndex].option["__generateByServer"] == true) {
-            let generateByServerEventData = clientSystem.createEventData("NormaConstructor:generateByServer");
-            generateByServerEventData.data.playerID = playerID;
-            generateByServerEventData.data.serverGeneratorIdentifier =
-                generatorArray[generatorIndex].option["__serverGeneratorIdentifier"];
-            generateByServerEventData.data.positionArray = generatorArray[generatorIndex].positionArray;
-            generateByServerEventData.data.blockTypeArray = generatorArray[generatorIndex].blockTypeArray;
-            generateByServerEventData.data.directionArray = generatorArray[generatorIndex].directionArray;
-            generateByServerEventData.data.option = generatorArray[generatorIndex].option;
-            clientSystem.broadcastEvent("NormaConstructor:generateByServer", generateByServerEventData);
-        }
-        else {
-            //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
-            let buildInstructions = generatorArray[generatorIndex].generate();
-            buildInstructionsQuery = buildInstructionsQuery.concat(buildInstructions)
-            //The following line is the original code which append the array to the query. Sadly, it will throw an error when there's too many blocks.
-            //I...am not even sure if it is fixed.
-            //Array.prototype.push.apply(buildInstructionsQuery, buildInstructions);
-        }
+
+        //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
+        let buildInstructions = generatorArray[generatorIndex].generate();
+        buildInstructionsQuery = buildInstructionsQuery.concat(buildInstructions)
+        //The following line is the original code which append the array to the query. Sadly, it will throw an error when there's too many blocks.
+        //I...am not even sure if it is fixed.
+        //Array.prototype.push.apply(buildInstructionsQuery, buildInstructions);
+
         generatorArray[generatorIndex].postGenerate();
     }
-}
-function fill(coordinate_start, coordinate_end, blockType) {
-    let fillEventData = clientSystem.createEventData("NormaConstructor:fill")
-    fillEventData.data.playerID = playerID
-    fillEventData.data.coordinate_start = coordinate_start
-    fillEventData.data.coordinate_end = coordinate_end
-    fillEventData.data.blockType = blockType
-    clientSystem.broadcastEvent("NormaConstructor:fill", fillEventData)
 }
 function setServerSideOption(key, value) {
     let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
@@ -402,7 +373,17 @@ function displayChat(message) {
                     ["First point", "Second point"],
                     ["BlockType"],
                     [],
-                    [])
+                    [
+                        {
+                            viewtype:"button",
+                            text:"Toggle quick execution.(Execute on all parameters satisfied)",
+                            key:"__executeOnAllSatisfied",
+                            data:[
+                                {value:true,text:"On"},
+                                {value:false,text:"Off"}
+                            ]
+                        }
+                    ])
             ),
 
             [undefined, undefined],
@@ -410,7 +391,9 @@ function displayChat(message) {
             [],
             {
                 "positionArrayLengthRequired": 2,
-                "blockTypeArrayLengthRequired": 1
+                "blockTypeArrayLengthRequired": 1,
+                "__executeOnAllSatisfied": false,
+                "generateByServer": true
             },
 
             function (position) {
@@ -461,41 +444,53 @@ function displayChat(message) {
                 return result;
             },
             function () {
-                let blockArray = []
+                if (this.option.generateByServer) {
+                    return [{
+                        "type": "fill", "data": {
+                            blockType: this.blockTypeArray[0],
+                            startCoordinate: this.positionArray[0].coordinate,
+                            endCoordinate: this.positionArray[1].coordinate
+                        }
+                    }]
+                }
+                else {
+                    let blockArray = []
 
-                displayChat("§b NZ is JULAO!")
+                    displayChat("§b NZ is JULAO!")
 
-                let positionArray = this.positionArray
-                let blockTypeArray = this.blockTypeArray
-                let minCoordinate = new Coordinate(
-                    Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-                    Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-                    Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
-                )
-                let maxCoordinate = new Coordinate(
-                    Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-                    Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-                    Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
-                )
+                    let positionArray = this.positionArray
+                    let blockTypeArray = this.blockTypeArray
+                    let minCoordinate = new Coordinate(
+                        Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+                        Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+                        Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
+                    )
+                    let maxCoordinate = new Coordinate(
+                        Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
+                        Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
+                        Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+                    )
 
-                displayChat("§b Yes, NZ is JULAO!")
+                    displayChat("§b Yes, NZ is JULAO!")
 
-                for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
-                    for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
-                        for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
+                    for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
+                        for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
+                            for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
 
-                            blockArray.push(new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                blockTypeArray[0])
-                            )
+                                blockArray.push(new Block(
+                                    new Position(
+                                        new Coordinate(x, y, z),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    blockTypeArray[0])
+                                )
+                            }
                         }
                     }
+
+                    return blockArray
                 }
 
-                return blockArray
             },
             function () {
                 this.positionArray = [undefined, undefined]
@@ -522,8 +517,7 @@ function displayChat(message) {
             {
                 "positionArrayLengthRequired": 3,
                 "blockTypeArrayLengthRequired": 0,
-                "__serverGeneratorIdentifier": "19260817",
-                "__generateByServer": true
+                "generateByServer": true
             },
 
             function (position) {
@@ -574,9 +568,16 @@ function displayChat(message) {
                 return result;
             },
             function () {
-                let blockArray = []
-
-                return blockArray
+                if (this.option.generateByServer)
+                    return [{
+                        "type": "clone",
+                        "data": {
+                            startPosition: this.positionArray[0],
+                            endPosition: this.positionArray[1],
+                            targetStartPosition: this.positionArray[2]
+                        }
+                    }]
+                else return []
             },
             function () {
                 this.positionArray = [undefined, undefined, undefined]
@@ -1446,8 +1447,7 @@ function displayChat(message) {
             [],
             [],
             {
-                "__serverGeneratorIdentifier": "20010705",
-                "__generateByServer": true
+                "generateByServer": true
             },
 
             function (position) {
@@ -1498,42 +1498,69 @@ function displayChat(message) {
                 return result;
             },
             function () {
-                let blockArray = []
+                if (this.option.generateByServer) {
+                    displayChat("§b NZ is JULAO!")
 
-                displayChat("§b NZ is JULAO!")
+                    let x_min = Math.min(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x)
+                    let z_min = Math.min(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z)
 
-                let positionArray = this.positionArray
-                let blockTypeArray = this.blockTypeArray
+                    let x_max = Math.max(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x)
+                    let z_max = Math.max(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z)
 
-                let x_min = Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
-                let z_min = Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+                    let y_start = (Math.abs(this.positionArray[0].coordinate.y - 69) < Math.abs(this.positionArray[1].coordinate.y - 69)) ? this.positionArray[0].coordinate.y : this.positionArray[1].coordinate.y
 
-                let x_max = Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
-                let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+                    displayChat("§b Yes, NZ is JULAO!")
 
-                let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
+                    return [{
+                        "type": "fill",
+                        "data": {
+                            "startCoordinate": new Coordinate(x_min, y_start, z_min),
+                            "endCoordinate": new Coordinate(x_max, 255, z_max),
+                            "blockType": {
+                                "blockIdentifier": "minecraft:air",
+                                "blockState": null
+                            }
+                        }
+                    }]
+                }
+                else {
+                    let blockArray = []
 
-                displayChat("§b Yes, NZ is JULAO!")
+                    displayChat("§b NZ is JULAO!")
 
-                for (let x = x_min; x <= x_max; x++) {
-                    for (let y = y_start; y <= 256; y++) {
-                        for (let z = z_min; z <= z_max; z++) {
+                    let positionArray = this.positionArray
+                    let blockTypeArray = this.blockTypeArray
 
-                            blockArray.push(new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                {
-                                    "blockIdentifier": "minecraft:air",
-                                    "blockState": null
-                                })
-                            )
+                    let x_min = Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+                    let z_min = Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+                    let x_max = Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+                    let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+                    let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
+
+                    displayChat("§b Yes, NZ is JULAO!")
+
+                    for (let x = x_min; x <= x_max; x++) {
+                        for (let y = y_start; y <= 256; y++) {
+                            for (let z = z_min; z <= z_max; z++) {
+
+                                blockArray.push(new Block(
+                                    new Position(
+                                        new Coordinate(x, y, z),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    {
+                                        "blockIdentifier": "minecraft:air",
+                                        "blockState": null
+                                    })
+                                )
+                            }
                         }
                     }
-                }
 
-                return blockArray
+                    return blockArray
+                }
             },
             function () {
                 this.positionArray = [undefined, undefined]

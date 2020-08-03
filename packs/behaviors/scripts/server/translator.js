@@ -926,7 +926,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -4476,7 +4476,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -4529,7 +4529,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -4890,7 +4890,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -6420,7 +6420,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -6841,7 +6841,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -6894,7 +6894,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"
@@ -6959,7 +6959,7 @@ let blockStateTranslator = {
                     "color": "gray"
                 },
                 "8": {
-                    "color": "light_gray"
+                    "color": "silver"
                 },
                 "9": {
                     "color": "cyan"

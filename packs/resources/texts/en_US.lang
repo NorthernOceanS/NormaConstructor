@@ -1,4 +1,5 @@
 ﻿item.normaconstructor:execute.name=Execute
+item.normaconstructor:get_air.name=Get Air
 item.normaconstructor:get_position.name=Get Position
 item.normaconstructor:get_direction.name=Get Direction
 item.normaconstructor:remove_last_position.name=Remove Last Position

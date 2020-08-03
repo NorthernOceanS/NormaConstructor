@@ -6,30 +6,30 @@ import { utils } from '../utils'
 
 let blockStateToTileDataTable = new Map()
 
-let generator = {
-    "19260817": function (positionArray, blockTypeArray, directionArray, option, playerID) {
+let compiler = {
+    clone: function ({ startPosition, endPosition, targetStartPosition }) {
         let blockArray = []
 
-        displayChat("§b NZ is JULAO!", playerID)
+        displayChat("§b NZ is JULAO!")
 
         let minCoordinate = new Coordinate(
-            Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-            Math.min(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-            Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z),
+            Math.min(startPosition.coordinate.x, endPosition.coordinate.x),
+            Math.min(startPosition.coordinate.y, endPosition.coordinate.y),
+            Math.min(startPosition.coordinate.z, endPosition.coordinate.z),
         )
         let maxCoordinate = new Coordinate(
-            Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x),
-            Math.max(positionArray[0].coordinate.y, positionArray[1].coordinate.y),
-            Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+            Math.max(startPosition.coordinate.x, endPosition.coordinate.x),
+            Math.max(startPosition.coordinate.y, endPosition.coordinate.y),
+            Math.max(startPosition.coordinate.z, endPosition.coordinate.z)
         )
 
-        displayChat("§b Yes, NZ is JULAO!", playerID)
+        displayChat("§b Yes, NZ is JULAO!")
 
         for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
             for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
                 for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
 
-                    let tickingArea = positionArray[0].tickingArea
+                    let tickingArea = startPosition.tickingArea
                     let block = serverSystem.getBlock(tickingArea, new Coordinate(x, y, z))
                     let blockType = new BlockType(undefined, undefined)
                     blockType.blockIdentifier = block.__identifier__
@@ -38,11 +38,11 @@ let generator = {
                     blockArray.push(new Block(
                         new Position(
                             new Coordinate(
-                                x - positionArray[0].coordinate.x + positionArray[2].coordinate.x,
-                                y - positionArray[0].coordinate.y + positionArray[2].coordinate.y,
-                                z - positionArray[0].coordinate.z + positionArray[2].coordinate.z
+                                x - startPosition.coordinate.x + targetStartPosition.coordinate.x,
+                                y - startPosition.coordinate.y + targetStartPosition.coordinate.y,
+                                z - startPosition.coordinate.z + targetStartPosition.coordinate.z
                             ),
-                            positionArray[2].tickingArea
+                            targetStartPosition.tickingArea
                         ),
                         blockType)
                     )
@@ -51,34 +51,47 @@ let generator = {
         }
         return blockArray
     },
-    "20010705": function (positionArray, blockTypeArray, directionArray, option, playerID) {
-        let blockArray = []
+    fill: function ({ blockType, startCoordinate, endCoordinate }) {
 
-        displayChat("§b NZ is JULAO!")
+        if (startCoordinate.x >= endCoordinate.x) {
+            let temp = startCoordinate.x
+            startCoordinate.x = endCoordinate.x
+            endCoordinate.x = temp
+        }
+        if (startCoordinate.y >= endCoordinate.y) {
+            let temp = startCoordinate.y
+            startCoordinate.y = endCoordinate.y
+            endCoordinate.y = temp
+        }
+        if (startCoordinate.z >= endCoordinate.z) {
+            let temp = startCoordinate.z
+            startCoordinate.z = endCoordinate.z
+            endCoordinate.z = temp
+        }
 
-        let x_min = Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
-        let z_min = Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+        let tileData = undefined
 
-        let x_max = Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
-        let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+        if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
+            tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
+        }
+        else {
+            tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
+            blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
+        }
 
-        let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
+        displayObject(startCoordinate)
+        displayObject(endCoordinate)
 
-        displayChat("§b Yes, NZ is JULAO!")
-
-        fill({
-            data: {
-                "coordinate_start": new Coordinate(x_min, y_start, z_min), "coordinate_end": new Coordinate(x_max, 255, z_max), "blockType": {
-                    "blockIdentifier": "minecraft:air",
-                    "blockState": null
+        //Bypass the restriction of 32767 blocks
+        for (let x = startCoordinate.x; x <= endCoordinate.x; x += 32)
+            for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
+                for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32) {
+                    serverSystem.executeCommand(`/fill ${x} ${y} ${z} ${Math.min(x + 31, endCoordinate.x)} ${Math.min(y + 31, endCoordinate.y)} ${Math.min(z + 31, endCoordinate.z)} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} destroy`, (commandResultData) => {
+                        //displayObject(commandResultData)
+                    });
                 }
-            }
-        })
-
-        return []
     }
 }
-let compiler={}
 
 let playerOption = {}
 serverSystem.initialize = function () {
@@ -124,18 +137,10 @@ serverSystem.initialize = function () {
         function getBlockType(eventData) {
             let blockType = new BlockType(undefined, undefined)
 
-            let handContainer = serverSystem.getComponent(eventData.data.player, "minecraft:hand_container").data
-            let offHandItem = handContainer[1]
-            if (offHandItem.__identifier__ == "minecraft:shield") {//Since the player can't place air, holding a shield will represent so. 
-                blockType.blockIdentifier = "minecraft:air"
-                blockType.blockState = null
-            }
-            else {
-                let tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
-                let block = serverSystem.getBlock(tickingArea, eventData.data.block_position)
-                blockType.blockIdentifier = block.__identifier__
-                blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
-            }
+            let tickingArea = serverSystem.getComponent(eventData.data.player, "minecraft:tick_world").data.ticking_area
+            let block = serverSystem.getBlock(tickingArea, eventData.data.block_position)
+            blockType.blockIdentifier = block.__identifier__
+            blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
 
             return blockType
 
@@ -200,33 +205,27 @@ serverSystem.initialize = function () {
                 }
                 sendCommand("get_data", playerID, additionalData)
             }
+            else if (command == "get_air") {
+                let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
+                serveDataEventData.data.blockType = new BlockType("minecraft:air", null)
+                serveDataEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
+                serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
+            }
             else sendCommand(command, playerID)
         }
     })
     serverSystem.listenForEvent("NormaConstructor:ExecutionResponse", (eventData) => {
         for (let buildInstruction of eventData.data.buildInstructions) {
-            //I know it looks silly... "Compatible reason".
+            //I know it looks silly... "Compatibility reason".
             if (!buildInstruction.hasOwnProperty("type")) setBlock(buildInstruction)
             else {
-                let blocks=compiler[buildInstruction.type](buildInstruction.data)
-                for(let block of blocks) setBlock(block)
+                //Another compromise...
+                //'Compliers' don't just complie: the fill() method can be invoked in which block will be placed directly.
+                let blocks = compiler[buildInstruction.type](buildInstruction.data)
+                for (let block of blocks) setBlock(block)
             }
         }
     })
-    //TODO:
-    //Deprecated. Shall be removed.
-    serverSystem.listenForEvent("NormaConstructor:generateByServer", (eventData) => {
-        let blockArray = generator[eventData.data.serverGeneratorIdentifier](
-            eventData.data.positionArray,
-            eventData.data.blockTypeArray,
-            eventData.data.directionArray,
-            eventData.data.option,
-            eventData.data.playerID
-        )
-        for (let block of blockArray) setBlock(block)
-    })
-    serverSystem.listenForEvent("NormaConstructor:setBlock", (eventData) => setBlock(eventData.data.block))
-    serverSystem.listenForEvent("NormaConstructor:fill", (eventData) => fill(eventData))
 }
 
 serverSystem.update = function () {
@@ -286,48 +285,4 @@ function setBlock(block) {
         // targetBlockStateComponent.data = blockType.blockState
         // serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
     });
-}
-
-function fill(eventData) {
-    let blockType = eventData.data.blockType
-    let coordinate_start = eventData.data.coordinate_start
-    let coordinate_end = eventData.data.coordinate_end
-
-    if (coordinate_start.x >= coordinate_end.x) {
-        let temp = coordinate_start.x
-        coordinate_start.x = coordinate_end.x
-        coordinate_end.x = temp
-    }
-    if (coordinate_start.y >= coordinate_end.y) {
-        let temp = coordinate_start.y
-        coordinate_start.y = coordinate_end.y
-        coordinate_end.y = temp
-    }
-    if (coordinate_start.z >= coordinate_end.z) {
-        let temp = coordinate_start.z
-        coordinate_start.z = coordinate_end.z
-        coordinate_end.z = temp
-    }
-
-    let tileData = undefined
-
-    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-        tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-    }
-    else {
-        tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
-    }
-
-    displayObject(coordinate_start)
-    displayObject(coordinate_end)
-
-    //Bypass the restriction of 32767 blocks
-    for (let x = coordinate_start.x; x <= coordinate_end.x; x += 32)
-        for (let y = coordinate_start.y; y <= coordinate_end.y; y += 32)
-            for (let z = coordinate_start.z; z <= coordinate_end.z; z += 32) {
-                serverSystem.executeCommand(`/fill ${x} ${y} ${z} ${Math.min(x + 31, coordinate_end.x)} ${Math.min(y + 31, coordinate_end.y)} ${Math.min(z + 31, coordinate_end.z)} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} destroy`, (commandResultData) => {
-                    //displayObject(commandResultData)
-                });
-            }
 }

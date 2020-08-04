@@ -208,7 +208,7 @@ serverSystem.initialize = function () {
             else if (command == "get_air") {
                 let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
                 serveDataEventData.data.blockType = new BlockType("minecraft:air", null)
-                serveDataEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
+                serveDataEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
                 serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
             }
             else sendCommand(command, playerID)

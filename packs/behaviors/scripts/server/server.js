@@ -90,6 +90,7 @@ let compiler = {
                         //displayObject(commandResultData)
                     });
                 }
+        return []
     }
 }
 

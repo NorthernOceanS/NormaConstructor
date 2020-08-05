@@ -7,49 +7,28 @@ import { utils } from '../utils'
 let blockStateToTileDataTable = new Map()
 
 let compiler = {
-    clone: function ({ startPosition, endPosition, targetStartPosition }) {
-        let blockArray = []
+    clone: function ({ startCoordinate, endCoordinate, targetCoordinate }) {
+        displayObject(startCoordinate)
+        displayObject(endCoordinate)
+        displayObject(targetCoordinate)
 
-        displayChat("§b NZ is JULAO!")
-
-        let minCoordinate = new Coordinate(
-            Math.min(startPosition.coordinate.x, endPosition.coordinate.x),
-            Math.min(startPosition.coordinate.y, endPosition.coordinate.y),
-            Math.min(startPosition.coordinate.z, endPosition.coordinate.z),
-        )
-        let maxCoordinate = new Coordinate(
-            Math.max(startPosition.coordinate.x, endPosition.coordinate.x),
-            Math.max(startPosition.coordinate.y, endPosition.coordinate.y),
-            Math.max(startPosition.coordinate.z, endPosition.coordinate.z)
-        )
-
-        displayChat("§b Yes, NZ is JULAO!")
-
-        for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
-            for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
-                for (let z = minCoordinate.z; z <= maxCoordinate.z; z++) {
-
-                    let tickingArea = startPosition.tickingArea
-                    let block = serverSystem.getBlock(tickingArea, new Coordinate(x, y, z))
-                    let blockType = new BlockType(undefined, undefined)
-                    blockType.blockIdentifier = block.__identifier__
-                    blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
-
-                    blockArray.push(new Block(
-                        new Position(
-                            new Coordinate(
-                                x - startPosition.coordinate.x + targetStartPosition.coordinate.x,
-                                y - startPosition.coordinate.y + targetStartPosition.coordinate.y,
-                                z - startPosition.coordinate.z + targetStartPosition.coordinate.z
-                            ),
-                            targetStartPosition.tickingArea
-                        ),
-                        blockType)
-                    )
+        for (let x = startCoordinate.x; (startCoordinate.x < endCoordinate.x) ? (x <= endCoordinate.x) : (x >= endCoordinate.x); x = x + ((startCoordinate.x < endCoordinate.x) ? 32 : -32))
+            for (let y = startCoordinate.y; (startCoordinate.y < endCoordinate.y) ? (y <= endCoordinate.y) : (y >= endCoordinate.y); y = y + ((startCoordinate.y < endCoordinate.y) ? 32 : -32))
+                for (let z = startCoordinate.z; (startCoordinate.z < endCoordinate.z) ? (z <= endCoordinate.z) : (z >= endCoordinate.z); z = z + ((startCoordinate.z < endCoordinate.z) ? 32 : -32)) {
+                    displayObject({ x, y, z })
+                    serverSystem.executeCommand(`/clone ${x} ${y} ${z} 
+                    ${(startCoordinate.x < endCoordinate.x) ? Math.min(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x) : Math.max(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x)} 
+                    ${(startCoordinate.y < endCoordinate.y) ? Math.min(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y) : Math.max(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y)} 
+                    ${(startCoordinate.z < endCoordinate.z) ? Math.min(z + 31 * ((startCoordinate.z < endCoordinate.z) ? 1 : -1), endCoordinate.z) : Math.max(z + 31 * ((startCoordinate.z < endCoordinate.z) ? 1 : -1), endCoordinate.z)} 
+                    ${targetCoordinate.x + x - startCoordinate.x} 
+                    ${targetCoordinate.y + y - startCoordinate.y} 
+                    ${targetCoordinate.z + z - startCoordinate.z} 
+                    masked force`,
+                        (commandResultData) => {
+                            displayObject(commandResultData)
+                        })
                 }
-            }
-        }
-        return blockArray
+        return []
     },
     fill: function ({ blockType, startCoordinate, endCoordinate }) {
 

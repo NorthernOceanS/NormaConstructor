@@ -572,9 +572,9 @@ function displayChat(message) {
                     return [{
                         "type": "clone",
                         "data": {
-                            startPosition: this.positionArray[0],
-                            endPosition: this.positionArray[1],
-                            targetStartPosition: this.positionArray[2]
+                            startCoordinate: this.positionArray[0].coordinate,
+                            endCoordinate: this.positionArray[1].coordinate,
+                            targetCoordinate: this.positionArray[2].coordinate
                         }
                     }]
                 else return []

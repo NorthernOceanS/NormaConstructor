@@ -6,7 +6,7 @@
       "catagory":"Nature"
     },
     "components": {
-      "minecraft:icon": "slime",
+      "minecraft:icon": "removeLastBlockType",
       "minecraft:render_offsets": "apple"
     }
   }

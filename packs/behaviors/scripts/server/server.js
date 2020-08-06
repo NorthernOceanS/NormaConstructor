@@ -65,7 +65,7 @@ let compiler = {
         for (let x = startCoordinate.x; x <= endCoordinate.x; x += 32)
             for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
                 for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32) {
-                    serverSystem.executeCommand(`/fill ${x} ${y} ${z} ${Math.min(x + 31, endCoordinate.x)} ${Math.min(y + 31, endCoordinate.y)} ${Math.min(z + 31, endCoordinate.z)} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} destroy`, (commandResultData) => {
+                    serverSystem.executeCommand(`/fill ${x} ${y} ${z} ${Math.min(x + 31, endCoordinate.x)} ${Math.min(y + 31, endCoordinate.y)} ${Math.min(z + 31, endCoordinate.z)} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
                         //displayObject(commandResultData)
                     });
                 }
@@ -172,24 +172,19 @@ serverSystem.initialize = function () {
         if (eventData.data.item_stack.__identifier__.startsWith("normaconstructor:")) {
             let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
             let command = eventData.data.item_stack.__identifier__.slice(eventData.data.item_stack.__identifier__.indexOf(":") + 1)
-
-            if (command == "get_position" || command == "get_direction") {
+            //TODO: Explain how 'get_air' works.
+            if (command == "get_position" || command == "get_direction" || command == "get_air") {
                 let additionalData = {
                     direction: serverSystem.getComponent(eventData.data.entity, "minecraft:rotation").data,
                     tickingArea: serverSystem.getComponent(eventData.data.entity, "minecraft:tick_world").data.ticking_area,
                     playerRequest: {
                         "position": ((command == "get_position") || playerOption[playerID]["__requestAdditionalPosition"]),
                         "direction": ((command == "get_direction") || playerOption[playerID]["__requestAdditionalDirection"]),
-                        "blockType": playerOption[playerID]["__requestAdditionalBlockType"]
-                    }
+                        "blockType": ((command == "get_air") ? false : playerOption[playerID]["__requestAdditionalBlockType"])
+                    },
+                    isGetAir:(command == "get_air")
                 }
                 sendCommand("get_data", playerID, additionalData)
-            }
-            else if (command == "get_air") {
-                let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
-                serveDataEventData.data.blockType = new BlockType("minecraft:air", null)
-                serveDataEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
-                serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
             }
             else sendCommand(command, playerID)
         }
@@ -257,7 +252,7 @@ function setBlock(block) {
     //TODO:
     //It currently use destroy mode to force replace the old block, but will leave tons of items.
     //Might change to set air block first.
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} destroy`, (commandResultData) => {
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

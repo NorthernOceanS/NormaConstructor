@@ -77,6 +77,8 @@ clientSystem.initialize = function () {
                     let direction = eventData.data.additionalData.direction
                     if (eventData.data.additionalData.playerRequest["direction"]) serveData.direction = direction
 
+                    if (eventData.data.additionalData.isGetAir) serveData.blockType = new BlockType("minecraft:air", null)
+
                     if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
                         let rawCoordinate = coordinatePlayerLookingAt
                         if (rawCoordinate == null) {
@@ -375,12 +377,12 @@ function displayChat(message) {
                     [],
                     [
                         {
-                            viewtype:"button",
-                            text:"Toggle quick execution.(Execute on all parameters satisfied)",
-                            key:"__executeOnAllSatisfied",
-                            data:[
-                                {value:true,text:"On"},
-                                {value:false,text:"Off"}
+                            viewtype: "button",
+                            text: "Toggle quick execution.(Execute on all parameters satisfied)",
+                            key: "__executeOnAllSatisfied",
+                            data: [
+                                { value: true, text: "On" },
+                                { value: false, text: "Off" }
                             ]
                         }
                     ])

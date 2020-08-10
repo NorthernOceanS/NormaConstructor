@@ -1658,7 +1658,7 @@ function displayChat(message) {
                 let coordinateArray = []
 
                 for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / this.option.numberOfSides) {
-                    coordinateArray = coordinateArray.concat(utils.coordinateGeometry.generateLineWithTwoPoints(
+                    coordinateArray = coordinateArray.concat(utils.coordinateGeometry.withBresenhamAlgorithm.generateLineWithTwoPoints(
                         positionArray[0].coordinate.x + this.option.r * Math.cos(theta), positionArray[0].coordinate.y, positionArray[0].coordinate.z + this.option.r * Math.sin(theta),
                         positionArray[0].coordinate.x + this.option.r * Math.cos(theta + 2 * Math.PI / this.option.numberOfSides), positionArray[0].coordinate.y, positionArray[0].coordinate.z + this.option.r * Math.sin(theta + 2 * Math.PI / this.option.numberOfSides)
                     ))
@@ -1680,6 +1680,233 @@ function displayChat(message) {
             function () {
                 this.positionArray = [undefined]
                 this.blockTypeArray = []
+            }
+        )
+    )
+}());
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Create circle.(on xz plane)",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "Radius:(Must be integer?)",
+                            key: "r",
+                        }
+                    ])
+            ),
+
+            [undefined],
+            [undefined],
+            [],
+            {
+                "r": 10
+            },
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+
+
+
+                displayChat("§b NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+
+                let coordinateArray = []
+
+                utils.coordinateGeometry.withBresenhamAlgorithm.generate2DCircle(positionArray[0].coordinate.x, positionArray[0].coordinate.z, this.option.r
+                ).forEach((coordinate) => {
+                    coordinateArray.push(new Coordinate(coordinate.x, positionArray[0].coordinate.y, coordinate.y))
+                })
+
+
+                displayObject(coordinateArray)
+
+                for (let coordinate of coordinateArray)
+                    blockArray.push(new Block(
+                        new Position(
+                            coordinate,
+                            positionArray[0].tickingArea
+                        ),
+                        blockTypeArray[0]
+                    ))
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = [undefined]
+            }
+        )
+    )
+}());
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Create sphere.",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "Radius:",
+                            key: "r",
+                        },
+                        {
+                            viewtype: "button",
+                            text: "Hollow",
+                            key: "isHollow",
+                            data: [
+                                { value: true, text: "Yes" },
+                                { value: false, text: "No" }
+                            ]
+                        }
+                    ])
+            ),
+
+            [undefined],
+            [undefined],
+            [],
+            {
+                "r": 10,
+                "isHollow":false
+            },
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+
+
+
+                displayChat("§b NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+
+                let coordinateArray = this.option.isHollow?
+                utils.coordinateGeometry.generateHollowSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r):
+                utils.coordinateGeometry.generateSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r)
+
+
+
+
+                displayObject(coordinateArray)
+
+                for (let coordinate of coordinateArray)
+                    blockArray.push(new Block(
+                        new Position(
+                            coordinate,
+                            positionArray[0].tickingArea
+                        ),
+                        blockTypeArray[0]
+                    ))
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = [undefined]
             }
         )
     )

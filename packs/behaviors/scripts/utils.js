@@ -407,7 +407,7 @@ let utils = {
 			};
 		},
 
-		generateLine: function (x, y, z, t_span, constraint) {
+		generateLine: function (x, y, z, t_span, constraint, t_step) {
 			//TODO: t_step<0?t_span[0]>t_span[1]?
 			let coordinateArray = [];
 
@@ -420,7 +420,7 @@ let utils = {
 				)
 			}
 
-			let t_step = 0.0001
+			if (t_step == undefined) t_step = 0.0001
 			for (let t = t_span[0]; t <= t_span[1]; t += t_step) {
 				let newCoordinate = new Coordinate(Math.round(x(t)), Math.round(y(t)), Math.round(z(t)));
 				if (!isRedundant(coordinateArray, newCoordinate) && constraint(newCoordinate.x, newCoordinate.y, newCoordinate.z, t)) {
@@ -439,7 +439,7 @@ let utils = {
 				(t) => { return ((t - t_span[0]) * x_coefficient + x_start); },
 				(t) => { return ((t - t_span[0]) * y_coefficient + y_start); },
 				(t) => { return ((t - t_span[0]) * z_coefficient + z_start); },
-				t_span, (x, y, z, t) => { return true });
+				t_span, (x, y, z, t) => { return true }, Math.min(1 / x_coefficient, 1 / y_coefficient, 1 / z_coefficient));
 		},
 		generateTriangle: function (x1, y1, z1, x2, y2, z2, x3, y3, z3) {
 			let coordinateArray = [];
@@ -479,6 +479,12 @@ let utils = {
 						signedDistance(y2, z2, y3, z3)(y, z) * signedDistance(y2, z2, y3, z3)(G.y, G.z) >= 0
 					)
 			})
+		},
+		generateSphere:function(x,y,z,r){
+			return this.generateWithConstraint([x-r,x+r],[y-r,y+r],[z-r,z+r],(_x,_y,_z)=>{return (_x-x)*(_x-x)+(_y-y)*(_y-y)+(_z-z)*(_z-z)<=r*r})
+		},
+		generateHollowSphere:function(x,y,z,r){
+			return this.generateWithConstraint([x-r,x+r],[y-r,y+r],[z-r,z+r],(_x,_y,_z)=>{return (_x-x)*(_x-x)+(_y-y)*(_y-y)+(_z-z)*(_z-z)>(r-1)*(r-1)&&(_x-x)*(_x-x)+(_y-y)*(_y-y)+(_z-z)*(_z-z)<=r*r})
 		},
 		generateWithConstraint: function (x_span, y_span, z_span, constraint) {
 			let coordinateArray = [];
@@ -523,7 +529,113 @@ let utils = {
 					}
 			return coordinateArray
 
+		},
+		withBresenhamAlgorithm: {
+			//Shamelessly adopted from http://members.chello.at/~easyfilter/bresenham.html (
+			generateLineWithTwoPoints: function (x0, y0, z0, x1, y1, z1) {
+				x0 = Math.round(x0)
+				y0 = Math.round(y0)
+				z0 = Math.round(z0)
+				x1 = Math.round(x1)
+				y1 = Math.round(y1)
+				z1 = Math.round(z1)
+				let coordinateArray = []
+				let dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+				let dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+				let dz = Math.abs(z1 - z0), sz = z0 < z1 ? 1 : -1;
+				let dm = Math.max(dx, dy, dz), i = dm;
+				x1 = y1 = z1 = Math.floor(dm / 2);
+
+				for (; ;) {
+					coordinateArray.push(new Coordinate(x0, y0, z0));
+					if (i-- == 0) break;
+					x1 -= dx; if (x1 < 0) { x1 += dm; x0 += sx; }
+					y1 -= dy; if (y1 < 0) { y1 += dm; y0 += sy; }
+					z1 -= dz; if (z1 < 0) { z1 += dm; z0 += sz; }
+				}
+				return coordinateArray
+			},
+			generate2DEllipse: function (xm, ym, a, b) {
+				let coordinateArray = []
+				function setPixel(x, y) {
+					coordinateArray.push(new Coordinate(x, y, 0))
+				}
+				var x = -a, y = 0;           /* II. quadrant from bottom left to top right */
+				var e2, dx = (1 + 2 * x) * b * b;                              /* error increment  */
+				var dy = x * x, err = dx + dy;                              /* error of 1.step */
+
+				do {
+					setPixel(xm - x, ym + y);                                 /*   I. Quadrant */
+					setPixel(xm + x, ym + y);                                 /*  II. Quadrant */
+					setPixel(xm + x, ym - y);                                 /* III. Quadrant */
+					setPixel(xm - x, ym - y);                                 /*  IV. Quadrant */
+					e2 = 2 * err;
+					if (e2 >= dx) { x++; err += dx += 2 * b * b; }                   /* x step */
+					if (e2 <= dy) { y++; err += dy += 2 * a * a; }                   /* y step */
+				} while (x <= 0);
+
+				while (y++ < b) {            /* too early stop for flat ellipses with a=1, */
+					setPixel(xm, ym + y);                        /* -> finish tip of ellipse */
+					setPixel(xm, ym - y);
+				}
+				return coordinateArray
+			},
+
+			generate2DCircle: function (xm, ym, r) {
+				let coordinateArray = []
+				function setPixel(x, y) {
+					coordinateArray.push(new Coordinate(x, y, 0))
+				}
+				var x = -r, y = 0, err = 2 - 2 * r;                /* bottom left to top right */
+				do {
+					setPixel(xm - x, ym + y);                            /*   I. Quadrant +x +y */
+					setPixel(xm - y, ym - x);                            /*  II. Quadrant -x +y */
+					setPixel(xm + x, ym - y);                            /* III. Quadrant -x -y */
+					setPixel(xm + y, ym + x);                            /*  IV. Quadrant +x -y */
+					r = err;
+					if (r <= y) err += ++y * 2 + 1;                                   /* y step */
+					if (r > x || err > y) err += ++x * 2 + 1;                         /* x step */
+				} while (x < 0);
+				return coordinateArray
+			},
+
+			//Unsatisfactory. Will cause holes.
+			generateFilledPlanarTriangle: function (x1, y1, z1, x2, y2, z2, x3, y3, z3) {
+				let coordinateSet = new Set()
+				let generateLine = this.generateLine
+				generateLine(x2, y2, z2, x3, y3, z3).forEach(({ x, y, z }) => { generateLine(x1, y1, z1, x, y, z).forEach((coordinate) => { coordinateSet.add(coordinate) }) })
+				return coordinateSet.values()
+			},
+			generateEllipseRect: function (x0, y0, x1, y1) {                              /* rectangular parameter enclosing the ellipse */
+				var a = Math.abs(x1 - x0), b = Math.abs(y1 - y0), b1 = b & 1;        /* diameter */
+				var dx = 4 * (1.0 - a) * b * b, dy = 4 * (b1 + 1) * a * a;              /* error increment */
+				var err = dx + dy + b1 * a * a, e2;                             /* error of 1.step */
+
+				if (x0 > x1) { x0 = x1; x1 += a; }        /* if called with swapped points */
+				if (y0 > y1) y0 = y1;                                  /* .. exchange them */
+				y0 += (b + 1) >> 1; y1 = y0 - b1;                              /* starting pixel */
+				a = 8 * a * a; b1 = 8 * b * b;
+
+				do {
+					setPixel(x1, y0);                                      /*   I. Quadrant */
+					setPixel(x0, y0);                                      /*  II. Quadrant */
+					setPixel(x0, y1);                                      /* III. Quadrant */
+					setPixel(x1, y1);                                      /*  IV. Quadrant */
+					e2 = 2 * err;
+					if (e2 <= dy) { y0++; y1--; err += dy += a; }                 /* y step */
+					if (e2 >= dx || 2 * err > dy) { x0++; x1--; err += dx += b1; }       /* x */
+				} while (x0 <= x1);
+
+				while (y0 - y1 <= b) {                /* too early stop of flat ellipses a=1 */
+					setPixel(x0 - 1, y0);                         /* -> finish tip of ellipse */
+					setPixel(x1 + 1, y0++);
+					setPixel(x0 - 1, y1);
+					setPixel(x1 + 1, y1--);
+				}
+			}
+
 		}
+
 	},
 	blockGeometry: {
 		getBlockDirection: function (blockType) {
@@ -568,7 +680,8 @@ let utils = {
 			blockType.blockState.directionRelatedBlockStateKey = directionMap[directionMark];
 			return blockType;
 		},
-	}
+
+	},
 };
 
 export { utils };

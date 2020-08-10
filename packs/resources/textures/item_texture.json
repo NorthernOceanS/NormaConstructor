@@ -31,6 +31,9 @@
       },
       "chooseNextGenerator": {
         "textures": "textures/items/chooseNextGenerator"
+      },
+      "getAir": {
+        "textures": "textures/items/getAir"
       }
     }
   }

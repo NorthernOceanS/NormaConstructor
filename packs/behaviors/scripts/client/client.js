@@ -1824,7 +1824,7 @@ function displayChat(message) {
             [],
             {
                 "r": 10,
-                "isHollow":false
+                "isHollow": false
             },
 
             function (position) {
@@ -1884,9 +1884,9 @@ function displayChat(message) {
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
 
-                let coordinateArray = this.option.isHollow?
-                utils.coordinateGeometry.generateHollowSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r):
-                utils.coordinateGeometry.generateSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r)
+                let coordinateArray = this.option.isHollow ?
+                    utils.coordinateGeometry.generateHollowSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r) :
+                    utils.coordinateGeometry.generateSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r)
 
 
 
@@ -1907,6 +1907,104 @@ function displayChat(message) {
             function () {
                 this.positionArray = [undefined]
                 this.blockTypeArray = [undefined]
+            }
+        )
+    )
+}());
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Generate The Flag of Norma Federal Republic",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "Height:(Must be even)",
+                            key: "height",
+                        }
+                    ])
+            ),
+
+            [undefined],
+            [],
+            [],
+            {
+                "height": 10,
+            },
+
+            function (position) {
+                displayObject(position)
+                let indexOfVacancy = this.positionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
+                else this.positionArray[indexOfVacancy] = position
+            },
+            function (blockType) {
+                displayObject(blockType)
+                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
+                else this.blockTypeArray[indexOfVacancy] = blockType
+            },
+            function (direction) {
+                displayObject(direction)
+                let indexOfVacancy = this.directionArray.indexOf(undefined)
+                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
+                else this.directionArray[indexOfVacancy] = direction
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                displayObject(this.positionArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                if (index >= 0) this.blockTypeArray[index] = undefined
+                displayObject(this.blockTypeArray)
+            },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                if (index >= 0) this.directionArray[index] = undefined
+                displayObject(this.directionArray)
+            },
+
+            function () {
+                let result = new String()
+                if (this.blockTypeArray.indexOf(undefined) != -1)
+                    result += "Too few blockTypes!Refusing to execute.\n"
+                if (this.positionArray.indexOf(undefined) != -1)
+                    result += "Too few positions!Refusing to execute."
+                if (this.option.height % 2 != 0) result += "The height is odd!"
+                if (result == "") result = "success"
+
+                return result;
+            },
+            function () {
+                let blockArray = []
+                let positionArray=this.positionArray
+                let option=this.option
+
+                for (let x = positionArray[0].coordinate.x; x < positionArray[0].coordinate.x + option.height; x++)
+                    for (let y = positionArray[0].coordinate.y; y > positionArray[0].coordinate.y - option.height; y--) {
+                        let z = x - positionArray[0].coordinate.x + positionArray[0].coordinate.z;
+                        let blockType = (function () {
+                            if ((x-positionArray[0].coordinate.x  <= positionArray[0].coordinate.y - y) && (positionArray[0].coordinate.y - y < option.height-(x-positionArray[0].coordinate.x ))) return new BlockType("minecraft:wool", { "color": "blue" })
+                            else if (positionArray[0].coordinate.y - y < option.height/2) return new BlockType("minecraft:wool", { "color": "yellow" })
+                            else return new BlockType("minecraft:wool", { "color": "red" })
+                        })()
+                        blockArray.push(new Block(new Position(new Coordinate(x, y, z), positionArray[0].tickingArea), blockType))
+                    }
+
+
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = []
             }
         )
     )

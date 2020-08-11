@@ -480,23 +480,16 @@ let utils = {
 					)
 			})
 		},
-		generateSphere:function(x,y,z,r){
-			return this.generateWithConstraint([x-r,x+r],[y-r,y+r],[z-r,z+r],(_x,_y,_z)=>{return (_x-x)*(_x-x)+(_y-y)*(_y-y)+(_z-z)*(_z-z)<r*r})
+		generateSphere: function (x, y, z, r) {
+			return this.generateWithConstraint([x - r, x + r], [y - r, y + r], [z - r, z + r], (_x, _y, _z) => { return (_x - x) * (_x - x) + (_y - y) * (_y - y) + (_z - z) * (_z - z) < r * r })
 		},
-		generateHollowSphere:function(x,y,z,r){
-			return this.generateWithConstraint([x-r,x+r],[y-r,y+r],[z-r,z+r],(_x,_y,_z)=>{return (_x-x)*(_x-x)+(_y-y)*(_y-y)+(_z-z)*(_z-z)>=(r-1)*(r-1)&&(_x-x)*(_x-x)+(_y-y)*(_y-y)+(_z-z)*(_z-z)<r*r})
+		generateHollowSphere: function (x, y, z, r) {
+			return this.generateWithConstraint([x - r, x + r], [y - r, y + r], [z - r, z + r], (_x, _y, _z) => { return (_x - x) * (_x - x) + (_y - y) * (_y - y) + (_z - z) * (_z - z) >= (r - 1) * (r - 1) && (_x - x) * (_x - x) + (_y - y) * (_y - y) + (_z - z) * (_z - z) < r * r })
 		},
 		generateWithConstraint: function (x_span, y_span, z_span, constraint) {
 			let coordinateArray = [];
 
-			function isRedundant(coordinateArray, newCoordinate) {
-				if (coordinateArray.length == 0) return false;
-				return (
-					coordinateArray[coordinateArray.length - 1].x == newCoordinate.x &&
-					coordinateArray[coordinateArray.length - 1].y == newCoordinate.y &&
-					coordinateArray[coordinateArray.length - 1].z == newCoordinate.z
-				)
-			}
+
 
 			const x_step = 1 / 3;
 			const y_step = 1 / 3;
@@ -518,15 +511,38 @@ let utils = {
 				z_span[0] = temp
 			}
 
-			for (let x = x_span[0]; x <= x_span[1]; x += x_step)
-				for (let z = z_span[0]; z <= z_span[1]; z += z_step)
-					for (let y = y_span[0]; y <= y_span[1]; y += y_step) {
-						if (constraint(x, y, z)) {
-							let newCoordinate = new Coordinate(Math.round(x), Math.round(y), Math.round(z))
-							if (!isRedundant(coordinateArray, newCoordinate))
-								coordinateArray.push(newCoordinate)
-						}
-					}
+			function verifier(x, y, z) {
+				for (let _x = Math.max(x - x_step, x_span[0]); _x <= Math.min(x + x_step, x_span[1]); _x += x_step)
+					for (let _z = Math.max(z - z_step, z_span[0]); _z <= Math.min(z + z_step, z_span[1]); _z += z_step)
+						for (let _y = Math.max(y - y_step, y_span[0]); _y <= Math.min(y + y_step, y_span[1]); _y += y_step)
+							if (constraint(_x, _y, _z)) return true
+				return false
+			}
+
+			for (let x = x_span[0]; x <= x_span[1]; x += 1)
+				for (let z = z_span[0]; z <= z_span[1]; z += 1)
+					for (let y = y_span[0]; y <= y_span[1]; y += 1)
+						if (verifier(x, y, z))
+							coordinateArray.push(new Coordinate(x, y, z))
+			// function isRedundant(coordinateArray, newCoordinate) {
+			// 	if (coordinateArray.length == 0) return false;
+			// 	return (
+			// 		coordinateArray[coordinateArray.length - 1].x == newCoordinate.x &&
+			// 		coordinateArray[coordinateArray.length - 1].y == newCoordinate.y &&
+			// 		coordinateArray[coordinateArray.length - 1].z == newCoordinate.z
+			// 	)
+			// }
+			// for (let x = x_span[0]; x <= x_span[1]; x += x_step)
+			// 	for (let z = z_span[0]; z <= z_span[1]; z += z_step)
+			// 		for (let y = y_span[0]; y <= y_span[1]; y += y_step) 
+			// 			if (constraint(x, y, z)) {
+			// 				let newCoordinate = new Coordinate(Math.round(x), Math.round(y), Math.round(z))
+			// 				if (!isRedundant(coordinateArray, newCoordinate))
+			// 					coordinateArray.push(newCoordinate)
+			// 			}
+
+
+
 			return coordinateArray
 
 		},

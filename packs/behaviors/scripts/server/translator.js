@@ -104,7 +104,7 @@ let blockStateTranslator = {
                     "wood_type": "acacia"
                 },
                 "5": {
-                    "wood_type": "dark_Oak"
+                    "wood_type": "dark_oak"
                 }
             }
         },
@@ -2267,7 +2267,7 @@ let blockStateTranslator = {
                     "wood_type": "acacia"
                 },
                 "5": {
-                    "wood_type": "dark_Oak"
+                    "wood_type": "dark_oak"
                 }
             }
         },
@@ -4366,7 +4366,7 @@ let blockStateTranslator = {
                     "top_slot_bit": false
                 },
                 "5": {
-                    "wood_type": "dark_Oak",
+                    "wood_type": "dark_oak",
                     "top_slot_bit": false
                 },
                 "8": {
@@ -4390,7 +4390,7 @@ let blockStateTranslator = {
                     "top_slot_bit": true
                 },
                 "13": {
-                    "wood_type": "dark_Oak",
+                    "wood_type": "dark_oak",
                     "top_slot_bit": true
                 }
             }
@@ -4419,7 +4419,7 @@ let blockStateTranslator = {
                     "top_slot_bit": false
                 },
                 "5": {
-                    "wood_type": "dark_Oak",
+                    "wood_type": "dark_oak",
                     "top_slot_bit": false
                 },
                 "8": {
@@ -4443,7 +4443,7 @@ let blockStateTranslator = {
                     "top_slot_bit": true
                 },
                 "13": {
-                    "wood_type": "dark_Oak",
+                    "wood_type": "dark_oak",
                     "top_slot_bit": true
                 }
             }
@@ -10575,7 +10575,7 @@ let blockStateTranslator = {
                     "stripped_bit": false
                 },
                 "5": {
-                    "wood_type": "dark_Oak",
+                    "wood_type": "dark_oak",
                     "stripped_bit": false
                 },
                 "8": {
@@ -10599,7 +10599,7 @@ let blockStateTranslator = {
                     "stripped_bit": true
                 },
                 "13": {
-                    "wood_type": "dark_Oak",
+                    "wood_type": "dark_oak",
                     "stripped_bit": true
                 }
             }

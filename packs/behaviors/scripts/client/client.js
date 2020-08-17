@@ -101,8 +101,8 @@ clientSystem.initialize = function () {
                             if (eventData.data.additionalData.playerRequest["position"]) serveData.position = position
                             if (eventData.data.additionalData.playerRequest["blockType"]) {
                                 let queryBlockTypeEventData = clientSystem.createEventData("NormaConstructor:queryBlockType")
-                                queryBlockTypeEventData.position = position
-                                queryBlockTypeEventData.playerID = playerID
+                                queryBlockTypeEventData.data.position = position
+                                queryBlockTypeEventData.data.playerID = playerID
                                 clientSystem.broadcastEvent("NormaConstructor:queryBlockType", queryBlockTypeEventData)
                             }
                         }

@@ -400,7 +400,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor({
         description:
-            new Description("Create a solid rectangle with two points.",
+            new Description("Create a solid cube with two points.",
                 new Usage(
                     ["First point", "Second point"],
                     ["BlockType"],
@@ -411,8 +411,8 @@ function displayChat(message) {
                             text: "Toggle quick execution.(Execute on all parameters satisfied)",
                             key: "__executeOnAllSatisfied",
                             data: [
-                                { value: true, text: "On" },
-                                { value: false, text: "Off" }
+                                { value: true, text: "On", dataForUIHandler: "resetPositionArray" },
+                                { value: false, text: "Off", dataForUIHandler: "resetPositionArray" }
                             ]
                         }
                     ])
@@ -477,7 +477,7 @@ function displayChat(message) {
                     return blockArray
                 }
             },
-            UIHandler: function () { }
+            UIHandler: function (data) { if (data == "resetPositionArray") this.positionArray.fill(undefined) }
         }
     }))
 }());

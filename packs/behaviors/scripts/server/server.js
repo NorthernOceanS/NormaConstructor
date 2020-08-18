@@ -7,15 +7,15 @@ import { utils } from '../utils'
 let blockStateToTileDataTable = new Map()
 
 let compiler = {
+    raw: function (blockArray) {
+        return blockArray
+    },
     clone: function ({ startCoordinate, endCoordinate, targetCoordinate }) {
-        displayObject(startCoordinate)
-        displayObject(endCoordinate)
-        displayObject(targetCoordinate)
 
         for (let x = startCoordinate.x; (startCoordinate.x < endCoordinate.x) ? (x <= endCoordinate.x) : (x >= endCoordinate.x); x = x + ((startCoordinate.x < endCoordinate.x) ? 32 : -32))
             for (let y = startCoordinate.y; (startCoordinate.y < endCoordinate.y) ? (y <= endCoordinate.y) : (y >= endCoordinate.y); y = y + ((startCoordinate.y < endCoordinate.y) ? 32 : -32))
                 for (let z = startCoordinate.z; (startCoordinate.z < endCoordinate.z) ? (z <= endCoordinate.z) : (z >= endCoordinate.z); z = z + ((startCoordinate.z < endCoordinate.z) ? 32 : -32)) {
-                    displayObject({ x, y, z })
+
                     serverSystem.executeCommand(`/clone ${x} ${y} ${z} 
                     ${(startCoordinate.x < endCoordinate.x) ? Math.min(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x) : Math.max(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x)} 
                     ${(startCoordinate.y < endCoordinate.y) ? Math.min(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y) : Math.max(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y)} 
@@ -23,10 +23,7 @@ let compiler = {
                     ${targetCoordinate.x + x - startCoordinate.x} 
                     ${targetCoordinate.y + y - startCoordinate.y} 
                     ${targetCoordinate.z + z - startCoordinate.z} 
-                    masked force`,
-                        (commandResultData) => {
-                            displayObject(commandResultData)
-                        })
+                    masked force`, (commandResultData) => { })
                 }
         return []
     },
@@ -58,17 +55,18 @@ let compiler = {
             blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
         }
 
-        displayObject(startCoordinate)
-        displayObject(endCoordinate)
-
         //Bypass the restriction of 32767 blocks
         for (let x = startCoordinate.x; x <= endCoordinate.x; x += 32)
             for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
-                for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32) {
-                    serverSystem.executeCommand(`/fill ${x} ${y} ${z} ${Math.min(x + 31, endCoordinate.x)} ${Math.min(y + 31, endCoordinate.y)} ${Math.min(z + 31, endCoordinate.z)} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
-                        //displayObject(commandResultData)
-                    });
-                }
+                for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32)
+                    serverSystem.executeCommand(`/fill ${x} ${y} ${z} 
+                    ${Math.min(x + 31, endCoordinate.x)} 
+                    ${Math.min(y + 31, endCoordinate.y)} 
+                    ${Math.min(z + 31, endCoordinate.z)} 
+                    ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
+                    ${tileData} replace`, (commandResultData) => { }
+                    );
+
         return []
     }
 }
@@ -168,7 +166,6 @@ serverSystem.initialize = function () {
     //Then the client will process the data. For position, the client will track the position the player is looking at in advance, and with direction it can calculate the block position.
     //Finally...it won't obtain blocktype as additional data ever since...?
     serverSystem.listenForEvent("minecraft:entity_use_item", (eventData) => {
-        displayObject(eventData)
         if (eventData.data.item_stack.__identifier__.startsWith("normaconstructor:")) {
             let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
             let command = eventData.data.item_stack.__identifier__.slice(eventData.data.item_stack.__identifier__.indexOf(":") + 1)
@@ -182,7 +179,7 @@ serverSystem.initialize = function () {
                         "direction": ((command == "get_direction") || playerOption[playerID]["__requestAdditionalDirection"]),
                         "blockType": ((command == "get_air") ? false : playerOption[playerID]["__requestAdditionalBlockType"])
                     },
-                    isGetAir:(command == "get_air")
+                    isGetAir: (command == "get_air")
                 }
                 sendCommand("get_data", playerID, additionalData)
             }

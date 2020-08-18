@@ -55,6 +55,28 @@
                             </div>
                         </div>
                     </div>
+                    <div>
+                        <div style="display: flex;flex-direction: column;justify-content:center;">
+                            <div>
+                                <div style="width: 100%;">Log level:</div>
+                                <div style="width: 100%;display: flex;flex-direction: row;justify-content:center;flex-wrap:wrap;">
+                                    <button class="button" style="padding: 0%;"
+                                        onclick="setLocalOption('__logLevel','verbose')">verbose</button>
+                                    <button class="button" style="padding: 0%;"
+                                        onclick="setLocalOption('__logLevel','debug')">debug</button>
+                                    <button class="button" style="padding: 0%;"
+                                        onclick="setLocalOption('__logLevel','info')">info</button>
+                                    <button class="button" style="padding: 0%;"
+                                        onclick="setLocalOption('__logLevel','warning')">warning</button>
+                                    <button class="button" style="padding: 0%;"
+                                        onclick="setLocalOption('__logLevel','error')">error</button>
+                                    <button class="button" style="padding: 0%;"
+                                        onclick="setLocalOption('__logLevel','fatal')">fatal</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="minecraft-container" style='width: 60%;display:flex;flex-direction: column;'>
@@ -186,6 +208,9 @@
     }
     function setServerSideOption(key, value) {
         scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "setServerSideOption", data: { key: key, value: value } }))
+    }
+    function setLocalOption(key, value) {
+        scriptEngineHandle.triggerEvent(eventDataWrapper({ type: "setLocalOption", data: { key: key, value: value } }))
     }
 
     function chooseNextGenerator() {

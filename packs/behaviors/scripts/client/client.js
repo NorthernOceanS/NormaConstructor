@@ -10,6 +10,28 @@ import { utils } from '../utils'
 let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
 
+let localOption = {
+    "__logLevel": "verbose"
+}
+const logger = {
+    displayChat, displayObject,
+    log: function (level, message) {
+        const colorMap = new Map([
+            ["verbose", { num: 0, color: "§a" }],
+            ["debug", { num: 1, color: "§6" }],
+            ["info", { num: 2, color: "§b" }],
+            ["warning", { num: 3, color: "§e" }],
+            ["error", { num: 4, color: "§c" }],
+            ["fatal", { num: 5, color: "§4" }]
+        ])
+        if (colorMap.get(level).num >= colorMap.get(localOption["__logLevel"]).num)
+            this.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
+    },
+    logObject: function (level, object) {
+        this.log(level, JSON.stringify(object, null, '    '))
+    }
+}
+utils.setter.setLogger(logger)
 
 
 clientSystem.initialize = function () {
@@ -24,6 +46,7 @@ clientSystem.initialize = function () {
 
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
+        logger.logObject("debug", generatorArray)
 
         playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 
@@ -70,7 +93,7 @@ clientSystem.initialize = function () {
         if (playerID == eventData.data.playerID) {
             switch (eventData.data.command) {
                 case "get_data": {
-                    displayObject(eventData.data.additionalData)
+                    logger.logObject("debug", eventData.data.additionalData)
 
                     let serveData = { blockType: undefined, position: undefined, direction: undefined }
 
@@ -82,7 +105,7 @@ clientSystem.initialize = function () {
                     if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
                         let rawCoordinate = coordinatePlayerLookingAt
                         if (rawCoordinate == null) {
-                            displayChat("§c Unable to get the block position. Please retry.")
+                            logger.log("error", "Unable to get the block position. Please retry.")
                         }
                         else {
                             let coordinate = rawCoordinate
@@ -111,36 +134,38 @@ clientSystem.initialize = function () {
                     break;
                 }
                 case "remove_last_position": {
-                    displayChat("Removing the last position...")
+                    logger.log("info", "Removing the last position...")
                     generatorArray[generatorIndex].removePosition()
                     break;
                 }
                 case "remove_last_blocktype": {
-                    displayChat("Removing the last blockType...")
+                    logger.log("info", "Removing the last blockType...")
                     generatorArray[generatorIndex].removeBlockType()
                     break;
                 }
                 case "remove_last_direction": {
-                    displayChat("Removing the last direction...")
+                    logger.log("info", "Removing the last direction...")
                     generatorArray[generatorIndex].removeDirection()
                     break;
                 }
                 case "choose_next_generator": {
-                    displayChat("Choosing next generator...")
+                    logger.log("info", "Choosing next generator...")
                     generatorIndex = (generatorIndex + 1) % generatorArray.length
-                    displayChat("Current generator:")
-                    displayObject(generatorArray[generatorIndex])
+                    logger.log("debug", "Current generator:")
+                    logger.logObject("debug", generatorArray[generatorIndex])
                     break;
                 }
                 case "show_saved_data": {
-                    displayChat("Current positionArray:")
-                    displayObject(generatorArray[generatorIndex].positionArray)
-                    displayChat("Current blockTypeArray:")
-                    displayObject(generatorArray[generatorIndex].blockTypeArray)
-                    displayChat("Current directionArray:")
-                    displayObject(generatorArray[generatorIndex].directionArray)
-                    displayChat("Current option:")
-                    displayObject(generatorArray[generatorIndex].option)
+                    logger.log("info", "Current positionArray:")
+                    logger.logObject("info", generatorArray[generatorIndex].positionArray)
+                    logger.log("info", "Current blockTypeArray:")
+                    logger.logObject("info", generatorArray[generatorIndex].blockTypeArray)
+                    logger.log("info", "Current directionArray:")
+                    logger.logObject("info", generatorArray[generatorIndex].directionArray)
+                    logger.log("info", "Current generator option:")
+                    logger.logObject("info", generatorArray[generatorIndex].option)
+                    logger.log("info", "Current local option:")
+                    logger.logObject("info", localOption)
                     break;
                 }
                 case "execute": {
@@ -157,8 +182,8 @@ clientSystem.initialize = function () {
         }
     })
     clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
-        displayChat("RECEIVE:")
-        displayObject(eventData)
+        logger.log("debug", "RECEIVE:")
+        logger.logObject("debug", eventData)
         if (playerID == eventData.data.playerID) {
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
@@ -223,6 +248,10 @@ clientSystem.initialize = function () {
                     setServerSideOption(uiData.data.key, uiData.data.value)
                     break;
                 }
+                case "setLocalOption": {
+                    setLocalOption(uiData.data.key, uiData.data.value)
+                    break;
+                }
                 case "displayChat": {
                     displayChat(uiData.data)
                     break;
@@ -255,10 +284,8 @@ function storeData(blockType, position, direction) {
 }
 function execute() {
     let validateResult = generatorArray[generatorIndex].validateParameter();
-    if (validateResult != "success")
-        displayChat("§c " + validateResult);
-    else {
-        displayChat("Execution started.");
+    if (validateResult == "success") {
+        logger.log("info", "Execution started.");
 
         //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
         let buildInstructions = generatorArray[generatorIndex].generate();
@@ -276,6 +303,9 @@ function setServerSideOption(key, value) {
     setServerSideOptionEventData.data.option.key = key
     setServerSideOptionEventData.data.option.value = value
     clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
+}
+function setLocalOption(key, value) {
+    localOption[key] = value
 }
 
 function displayObject(object) {
@@ -368,8 +398,8 @@ function displayChat(message) {
 }());*/
 
 (function () {
-    generatorArray.push(
-        new Generator(
+    generatorArray.push(utils.generators.canonical.generatorConstrctor({
+        description:
             new Description("Create a solid rectangle with two points.",
                 new Usage(
                     ["First point", "Second point"],
@@ -387,65 +417,19 @@ function displayChat(message) {
                         }
                     ])
             ),
-
-            [undefined, undefined],
-            [undefined],
-            [],
-            {
-                "positionArrayLengthRequired": 2,
-                "blockTypeArrayLengthRequired": 1,
-                "__executeOnAllSatisfied": false,
-                "generateByServer": true
-            },
-
-            function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
-            },
-            function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
-            },
-            function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
-            },
-
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
-            function () {
+        criteria: {
+            positionArrayLength: 2,
+            blockTypeArrayLength: 1,
+            directionArrayLength: 0
+        },
+        option: {
+            "positionArrayLengthRequired": 2,
+            "blockTypeArrayLengthRequired": 1,
+            "__executeOnAllSatisfied": false,
+            "generateByServer": true
+        },
+        method: {
+            generate: function () {
                 if (this.option.generateByServer) {
                     return [{
                         "type": "fill", "data": {
@@ -458,7 +442,7 @@ function displayChat(message) {
                 else {
                     let blockArray = []
 
-                    displayChat("§b NZ is JULAO!")
+                    logger.log("verbose", "NZ is JULAO!")
 
                     let positionArray = this.positionArray
                     let blockTypeArray = this.blockTypeArray
@@ -473,7 +457,7 @@ function displayChat(message) {
                         Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
                     )
 
-                    displayChat("§b Yes, NZ is JULAO!")
+                    logger.log("verbose", "Yes, NZ is JULAO!")
 
                     for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
                         for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
@@ -492,107 +476,57 @@ function displayChat(message) {
 
                     return blockArray
                 }
-
             },
-            function () {
-                this.positionArray = [undefined, undefined]
-                this.blockTypeArray = [undefined]
-            }
-        )
-    )
+            UIHandler: function () { }
+        }
+    }))
 }());
 
 (function () {
     generatorArray.push(
-        new Generator(
-            new Description("Clone, ignoring direction.",
-                new Usage(
-                    [],
-                    [],
-                    [],
-                    [])
-            ),
-
-            [undefined, undefined, undefined],
-            [],
-            [],
+        utils.generators.canonical.generatorConstrctor(
             {
-                "positionArrayLengthRequired": 3,
-                "blockTypeArrayLengthRequired": 0,
-                "generateByServer": true
-            },
-
-            function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
-            },
-            function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
-            },
-            function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
-            },
-
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
-            function () {
-                if (this.option.generateByServer)
-                    return [{
-                        "type": "clone",
-                        "data": {
-                            startCoordinate: this.positionArray[0].coordinate,
-                            endCoordinate: this.positionArray[1].coordinate,
-                            targetCoordinate: this.positionArray[2].coordinate
-                        }
-                    }]
-                else return []
-            },
-            function () {
-                this.positionArray = [undefined, undefined, undefined]
-                this.blockTypeArray = []
+                description: new Description("Clone, ignoring direction.",
+                    new Usage(
+                        [],
+                        [],
+                        [],
+                        [])
+                ),
+                criteria: {
+                    positionArrayLength: 3,
+                    blockTypeArrayLength: 0,
+                    directionArrayLength: 0
+                },
+                option: {
+                    "positionArrayLengthRequired": 3,
+                    "blockTypeArrayLengthRequired": 0,
+                    "generateByServer": true
+                },
+                method: {
+                    generate: function () {
+                        if (this.option.generateByServer)
+                            return [{
+                                "type": "clone",
+                                "data": {
+                                    startCoordinate: this.positionArray[0].coordinate,
+                                    endCoordinate: this.positionArray[1].coordinate,
+                                    targetCoordinate: this.positionArray[2].coordinate
+                                }
+                            }]
+                        else return []
+                    },
+                    UIHandler: function () { }
+                }
             }
         )
     )
 }());
 
 (function () {
-    generatorArray.push(
-        new Generator(
-            new Description("Create a line with given interval.",
+    generatorArray.push(utils.generators.canonical.generatorConstrctor(
+        {
+            description: new Description("Create a line with given interval.",
                 new Usage(
                     ["Start point"],
                     ["BlockType"],
@@ -610,150 +544,100 @@ function displayChat(message) {
                         }
                     ])
             ),
-
-            [undefined],
-            [undefined],
-            [undefined],
-            {
+            criteria: {
+                positionArrayLength: 1,
+                blockTypeArrayLength: 1,
+                directionArrayLength: 1
+            },
+            option: {
                 "positionArrayLengthRequired": 1,
                 "blockTypeArrayLengthRequired": 1,
                 "directionArrayLengthRequired": 1,
                 "length": 0,
                 "interval": 0
             },
+            method: {
+                generate: function () {
+                    let blockArray = []
 
-            function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
-            },
-            function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
-            },
-            function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
-            },
-            function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
-            },
+                    logger.log("verbose", "NZ is JULAO!")
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (this.directionArray.indexOf(undefined) != -1)
-                    result += "Too few directions!Refusing to execute."
-                if (result == "") result = "success"
+                    let positionArray = this.positionArray
+                    let blockTypeArray = this.blockTypeArray
+                    let directionArray = this.directionArray
 
-                return result;
-            },
-            function () {
-                let blockArray = []
-
-                displayChat("§b NZ is JULAO!")
-
-                let positionArray = this.positionArray
-                let blockTypeArray = this.blockTypeArray
-                let directionArray = this.directionArray
-
-                displayChat("§b Yes, NZ is JULAO!")
+                    logger.log("verbose", "Yes, NZ is JULAO!")
 
 
-                let direction = (function () {
-                    if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
-                    else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
-                    else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
-                    else return "-z"
-                }());
+                    let direction = (function () {
+                        if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                        else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                        else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                        else return "-z"
+                    }());
 
-                switch (direction) {
-                    case "+z": {
-                        let x = positionArray[0].coordinate.x
-                        let y = positionArray[0].coordinate.y
-                        for (let z = positionArray[0].coordinate.z; z < this.option.length + positionArray[0].coordinate.z; z += (this.option.interval + 1))
-                            blockArray.push(new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                blockTypeArray[0])
-                            )
-                        break;
+                    switch (direction) {
+                        case "+z": {
+                            let x = positionArray[0].coordinate.x
+                            let y = positionArray[0].coordinate.y
+                            for (let z = positionArray[0].coordinate.z; z < this.option.length + positionArray[0].coordinate.z; z += (this.option.interval + 1))
+                                blockArray.push(new Block(
+                                    new Position(
+                                        new Coordinate(x, y, z),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    blockTypeArray[0])
+                                )
+                            break;
+                        }
+                        case "-z": {
+                            let x = positionArray[0].coordinate.x
+                            let y = positionArray[0].coordinate.y
+                            for (let z = positionArray[0].coordinate.z; z > -this.option.length + positionArray[0].coordinate.z; z -= (this.option.interval + 1))
+                                blockArray.push(new Block(
+                                    new Position(
+                                        new Coordinate(x, y, z),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    blockTypeArray[0])
+                                )
+                            break;
+                        }
+                        case "+x": {
+                            let z = positionArray[0].coordinate.z
+                            let y = positionArray[0].coordinate.y
+                            for (let x = positionArray[0].coordinate.x; x < this.option.length + positionArray[0].coordinate.x; x += (this.option.interval + 1))
+                                blockArray.push(new Block(
+                                    new Position(
+                                        new Coordinate(x, y, z),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    blockTypeArray[0])
+                                )
+                            break;
+                        }
+                        case "-x": {
+                            let z = positionArray[0].coordinate.z
+                            let y = positionArray[0].coordinate.y
+                            for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.z; x -= (this.option.interval + 1))
+                                blockArray.push(new Block(
+                                    new Position(
+                                        new Coordinate(x, y, z),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    blockTypeArray[0])
+                                )
+                            break;
+                        }
                     }
-                    case "-z": {
-                        let x = positionArray[0].coordinate.x
-                        let y = positionArray[0].coordinate.y
-                        for (let z = positionArray[0].coordinate.z; z > -this.option.length + positionArray[0].coordinate.z; z -= (this.option.interval + 1))
-                            blockArray.push(new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                blockTypeArray[0])
-                            )
-                        break;
-                    }
-                    case "+x": {
-                        let z = positionArray[0].coordinate.z
-                        let y = positionArray[0].coordinate.y
-                        for (let x = positionArray[0].coordinate.x; x < this.option.length + positionArray[0].coordinate.x; x += (this.option.interval + 1))
-                            blockArray.push(new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                blockTypeArray[0])
-                            )
-                        break;
-                    }
-                    case "-x": {
-                        let z = positionArray[0].coordinate.z
-                        let y = positionArray[0].coordinate.y
-                        for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.z; x -= (this.option.interval + 1))
-                            blockArray.push(new Block(
-                                new Position(
-                                    new Coordinate(x, y, z),
-                                    positionArray[0].tickingArea
-                                ),
-                                blockTypeArray[0])
-                            )
-                        break;
-                    }
-                }
 
-                return blockArray
-            },
-            function () {
-                this.positionArray = [undefined]
-                this.blockTypeArray = [undefined]
-                this.directionArray = [undefined]
+                    return blockArray
+                },
+                UIHandler: function () { }
             }
-        )
-    )
+        }
+    ))
+
 }());
 
 (function () {
@@ -826,65 +710,36 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (this.directionArray.indexOf(undefined) != -1)
-                    result += "Too few directions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
-                displayChat("§b NZ is JULAO!")
+                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
 
-                displayChat("§b Yes, NZ is JULAO!")
+                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 //{"blockIdentifier":"minecraft:stained_hardened_clay","blockState":{"color":"cyan"}}
 
@@ -1064,15 +919,15 @@ function displayChat(message) {
             },
             function (data) {
                 if (data == "custom") {
-                    displayChat("Using custom materials.")
-                    displayChat("First block type for surface.")
-                    displayChat("Second for white line.")
-                    displayChat("Third for yellow line.")
-                    displayChat("Fourth for bar.")
+                    logger.log("info", "Using custom materials.")
+                    logger.log("info", "First block type for surface.")
+                    logger.log("info", "Second for white line.")
+                    logger.log("info", "Third for yellow line.")
+                    logger.log("info", "Fourth for bar.")
                     this.blockTypeArray = [undefined, undefined, undefined, undefined]
                 }
                 else {
-                    displayChat("Using preset materials. Custom materials are erased!")
+                    logger.log("info", "Using preset materials. Custom materials are erased!")
                     this.blockTypeArray = []
                 }
             }
@@ -1115,65 +970,35 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (this.directionArray.indexOf(undefined) != -1)
-                    result += "Too few directions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
-                displayChat("§b NZ is JULAO!")
+                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
-
-                displayChat("§b Yes, NZ is JULAO!")
+                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 let directionMark = (function () {
                     if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
@@ -1353,61 +1178,34 @@ function displayChat(message) {
             {},
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
-                displayChat("§b NZ is JULAO!")
+                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
 
-                displayChat("§b Yes, NZ is JULAO!")
+                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 let coordinateArray = utils.coordinateGeometry.generateFilledPlanarTriangle(
                     positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z,
@@ -1453,55 +1251,28 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 if (this.option.generateByServer) {
-                    displayChat("§b NZ is JULAO!")
+                    logger.log("verbose", "NZ is JULAO!")
 
                     let x_min = Math.min(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x)
                     let z_min = Math.min(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z)
@@ -1510,8 +1281,6 @@ function displayChat(message) {
                     let z_max = Math.max(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z)
 
                     let y_start = (Math.abs(this.positionArray[0].coordinate.y - 69) < Math.abs(this.positionArray[1].coordinate.y - 69)) ? this.positionArray[0].coordinate.y : this.positionArray[1].coordinate.y
-
-                    displayChat("§b Yes, NZ is JULAO!")
 
                     return [{
                         "type": "fill",
@@ -1528,7 +1297,7 @@ function displayChat(message) {
                 else {
                     let blockArray = []
 
-                    displayChat("§b NZ is JULAO!")
+                    logger.log("verbose", "NZ is JULAO!")
 
                     let positionArray = this.positionArray
                     let blockTypeArray = this.blockTypeArray
@@ -1540,8 +1309,6 @@ function displayChat(message) {
                     let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
 
                     let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
-
-                    displayChat("§b Yes, NZ is JULAO!")
 
                     for (let x = x_min; x <= x_max; x++) {
                         for (let y = y_start; y <= 256; y++) {
@@ -1602,56 +1369,29 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
-                displayChat("§b NZ is JULAO!")
+                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
 
@@ -1664,7 +1404,6 @@ function displayChat(message) {
                     ))
                 }
 
-                displayObject(coordinateArray)
 
                 for (let coordinate of coordinateArray)
                     blockArray.push(new Block(
@@ -1709,58 +1448,31 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
 
 
-                displayChat("§b NZ is JULAO!")
+                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
@@ -1772,8 +1484,6 @@ function displayChat(message) {
                     coordinateArray.push(new Coordinate(coordinate.x, positionArray[0].coordinate.y, coordinate.y))
                 })
 
-
-                displayObject(coordinateArray)
 
                 for (let coordinate of coordinateArray)
                     blockArray.push(new Block(
@@ -1828,58 +1538,31 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () {
-                let result = new String()
-                if (this.blockTypeArray.indexOf(undefined) != -1)
-                    result += "Too few blockTypes!Refusing to execute.\n"
-                if (this.positionArray.indexOf(undefined) != -1)
-                    result += "Too few positions!Refusing to execute."
-                if (result == "") result = "success"
-
-                return result;
-            },
+            function () { utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
 
 
-                displayChat("§b NZ is JULAO!")
+                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
@@ -1887,11 +1570,6 @@ function displayChat(message) {
                 let coordinateArray = this.option.isHollow ?
                     utils.coordinateGeometry.generateHollowSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r) :
                     utils.coordinateGeometry.generateSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, this.option.r)
-
-
-
-
-                displayObject(coordinateArray)
 
                 for (let coordinate of coordinateArray)
                     blockArray.push(new Block(
@@ -1936,40 +1614,22 @@ function displayChat(message) {
             },
 
             function (position) {
-                displayObject(position)
-                let indexOfVacancy = this.positionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many positions!New one is ignored")
-                else this.positionArray[indexOfVacancy] = position
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
             },
             function (blockType) {
-                displayObject(blockType)
-                let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many blockTypes!New one is ignored")
-                else this.blockTypeArray[indexOfVacancy] = blockType
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
             },
             function (direction) {
-                displayObject(direction)
-                let indexOfVacancy = this.directionArray.indexOf(undefined)
-                if (indexOfVacancy == -1) displayChat("Too many directions!New one is ignored")
-                else this.directionArray[indexOfVacancy] = direction
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
-                if (index >= 0) this.positionArray[index] = undefined
-                displayObject(this.positionArray)
+                utils.generators.canonical.removeFunction(index, this.positionArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
-                if (index >= 0) this.blockTypeArray[index] = undefined
-                displayObject(this.blockTypeArray)
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
             },
             function (index) {
-                if (index === undefined)
-                    for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
-                if (index >= 0) this.directionArray[index] = undefined
-                displayObject(this.directionArray)
+                utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
             function () {
@@ -1985,15 +1645,15 @@ function displayChat(message) {
             },
             function () {
                 let blockArray = []
-                let positionArray=this.positionArray
-                let option=this.option
+                let positionArray = this.positionArray
+                let option = this.option
 
                 for (let x = positionArray[0].coordinate.x; x < positionArray[0].coordinate.x + option.height; x++)
                     for (let y = positionArray[0].coordinate.y; y > positionArray[0].coordinate.y - option.height; y--) {
                         let z = x - positionArray[0].coordinate.x + positionArray[0].coordinate.z;
                         let blockType = (function () {
-                            if ((x-positionArray[0].coordinate.x  <= positionArray[0].coordinate.y - y) && (positionArray[0].coordinate.y - y < option.height-(x-positionArray[0].coordinate.x ))) return new BlockType("minecraft:wool", { "color": "blue" })
-                            else if (positionArray[0].coordinate.y - y < option.height/2) return new BlockType("minecraft:wool", { "color": "yellow" })
+                            if ((x - positionArray[0].coordinate.x <= positionArray[0].coordinate.y - y) && (positionArray[0].coordinate.y - y < option.height - (x - positionArray[0].coordinate.x))) return new BlockType("minecraft:wool", { "color": "blue" })
+                            else if (positionArray[0].coordinate.y - y < option.height / 2) return new BlockType("minecraft:wool", { "color": "yellow" })
                             else return new BlockType("minecraft:wool", { "color": "red" })
                         })()
                         blockArray.push(new Block(new Position(new Coordinate(x, y, z), positionArray[0].tickingArea), blockType))

@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { Coordinate, BlockType, Direction } from "./constructor";
+import { Coordinate, BlockType, Direction, Generator } from "./constructor";
 const blockDirectionTable = {
 	"huge_mushroom_bits": {
 		"default": {
@@ -387,6 +387,11 @@ let translator = {
 	}
 };
 let utils = {
+	setter: {
+		setLogger: function (logger) {
+			utils.logger = logger
+		}
+	},
 	misc: {
 		generatePlayerIDFromUniqueID: function (uniqueID) {
 			let low = uniqueID["64bit_low"]
@@ -394,6 +399,74 @@ let utils = {
 			//hash function:
 
 			return (low + high) * (low + high + 1) / 2 + high;
+		}
+	},
+	generators: {
+		canonical: {
+			addFunction: function (type, data, target) {
+				let indexOfVacancy = target.indexOf(undefined)
+				if (indexOfVacancy == -1) utils.logger.log("warning", `Too many ${type}s!New one is ignored`)
+				else {
+					target[indexOfVacancy] = data
+					utils.logger.log("info", `New ${type} accepted.`)
+				}
+			},
+			removeFunction: function (index, target) {
+				if (index === undefined)
+					for (index = target.length - 1; index >= 0 && target[index] == undefined; index--);
+				if (index >= 0) target[index] = undefined
+				utils.logger.logObject("info", target)
+			},
+			validateParameter: function () {
+				let result = new String()
+				if (this.blockTypeArray.indexOf(undefined) != -1)
+					result += "Too few blockTypes!Refusing to execute.\n"
+				if (this.positionArray.indexOf(undefined) != -1)
+					result += "Too few positions!Refusing to execute.\n"
+				if (this.directionArray.indexOf(undefined) != -1)
+					result += "Too few directions!Refusing to execute."
+				if (result == "") result = "success"
+				else utils.logger.log("error", result)
+
+				return result;
+			},
+			//A generator that is canonical must :
+			//1.have finite fixed numbers of parameters, in which the arrays are initially filled with undefined. 
+			//2.don't need to verifiy options.
+			generatorConstrctor: function ({
+				description,
+				criteria: {
+					positionArrayLength,
+					blockTypeArrayLength,
+					directionArrayLength
+				},
+				option,
+				method: {
+					generate, UIHandler
+				}
+			}) {
+				return new Generator(
+					description,
+					new Array(positionArrayLength).fill(undefined),
+					new Array(blockTypeArrayLength).fill(undefined),
+					new Array(directionArrayLength).fill(undefined),
+					option,
+					function (position) { utils.generators.canonical.addFunction("position", position, this.positionArray) },
+					function (blockType) { utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray) },
+					function (direction) { utils.generators.canonical.addFunction("direction", direction, this.directionArray) },
+					function (index) { utils.generators.canonical.removeFunction(index, this.positionArray) },
+					function (index) { utils.generators.canonical.removeFunction(index, this.blockTypeArray) },
+					function (index) { utils.generators.canonical.removeFunction(index, this.directionArray) },
+					function () { utils.generators.canonical.validateParameter.call(this) },
+					generate,
+					function () {
+						this.positionArray = new Array(positionArrayLength).fill(undefined)
+						this.blockTypeArray = new Array(blockTypeArrayLength).fill(undefined)
+						this.directionArray = new Array(directionArrayLength).fill(undefined)
+					},
+					UIHandler
+				)
+			}
 		}
 	},
 	coordinateGeometry: {

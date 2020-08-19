@@ -46,7 +46,7 @@ clientSystem.initialize = function () {
 
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
-        logger.logObject("debug", generatorArray)
+        logger.logObject("debug", eventData.data.player)
 
         playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 

@@ -524,119 +524,149 @@ function displayChat(message) {
 }());
 
 (function () {
-    generatorArray.push(utils.generators.canonical.generatorConstrctor(
-        {
-            description: new Description("Create a line with given interval.",
-                new Usage(
-                    ["Start point"],
-                    ["BlockType"],
-                    ["Direction"],
-                    [
-                        {
-                            viewtype: "edittext",
-                            text: "Length:",
-                            key: "length",
+
+    generatorArray.push(
+        Object.assign(
+            utils.generators.canonical.generatorConstrctor(
+                {
+                    description: new Description("Create a line with given interval.",
+                        new Usage(
+                            ["Start point"],
+                            ["BlockType"],
+                            ["Direction"],
+                            [
+                                {
+                                    viewtype: "edittext",
+                                    text: "Length:",
+                                    key: "length",
+                                },
+                                {
+                                    viewtype: "edittext",
+                                    text: "Interval:",
+                                    key: "interval",
+                                },
+                                {
+                                    viewtype: "button",
+                                    text: "Overwrite default behaviour:discard old position.",
+                                    key: "doAcceptNewPosition",
+                                    data: [
+                                        { value: false, text: "No" },
+                                        { value: true, text: "Yes" }
+                                    ]
+                                }
+                            ])
+                    ),
+                    criteria: {
+                        positionArrayLength: 1,
+                        blockTypeArrayLength: 1,
+                        directionArrayLength: 1
+                    },
+                    option: {
+                        "positionArrayLengthRequired": 1,
+                        "blockTypeArrayLengthRequired": 1,
+                        "directionArrayLengthRequired": 1,
+                        "length": 0,
+                        "interval": 0,
+                        "doAcceptNewPosition": false
+                    },
+                    method: {
+                        generate: function () {
+                            let blockArray = []
+
+                            logger.log("verbose", "NZ is JULAO!")
+
+                            let positionArray = this.positionArray
+                            let blockTypeArray = this.blockTypeArray
+                            let directionArray = this.directionArray
+
+                            logger.log("verbose", "Yes, NZ is JULAO!")
+
+
+                            let direction = (function () {
+                                if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                                else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                                else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                                else return "-z"
+                            }());
+
+                            switch (direction) {
+                                case "+z": {
+                                    let x = positionArray[0].coordinate.x
+                                    let y = positionArray[0].coordinate.y
+                                    for (let z = positionArray[0].coordinate.z; z < this.option.length + positionArray[0].coordinate.z; z += (this.option.interval + 1))
+                                        blockArray.push(new Block(
+                                            new Position(
+                                                new Coordinate(x, y, z),
+                                                positionArray[0].tickingArea
+                                            ),
+                                            blockTypeArray[0])
+                                        )
+                                    break;
+                                }
+                                case "-z": {
+                                    let x = positionArray[0].coordinate.x
+                                    let y = positionArray[0].coordinate.y
+                                    for (let z = positionArray[0].coordinate.z; z > -this.option.length + positionArray[0].coordinate.z; z -= (this.option.interval + 1))
+                                        blockArray.push(new Block(
+                                            new Position(
+                                                new Coordinate(x, y, z),
+                                                positionArray[0].tickingArea
+                                            ),
+                                            blockTypeArray[0])
+                                        )
+                                    break;
+                                }
+                                case "+x": {
+                                    let z = positionArray[0].coordinate.z
+                                    let y = positionArray[0].coordinate.y
+                                    for (let x = positionArray[0].coordinate.x; x < this.option.length + positionArray[0].coordinate.x; x += (this.option.interval + 1))
+                                        blockArray.push(new Block(
+                                            new Position(
+                                                new Coordinate(x, y, z),
+                                                positionArray[0].tickingArea
+                                            ),
+                                            blockTypeArray[0])
+                                        )
+                                    break;
+                                }
+                                case "-x": {
+                                    let z = positionArray[0].coordinate.z
+                                    let y = positionArray[0].coordinate.y
+                                    for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.z; x -= (this.option.interval + 1))
+                                        blockArray.push(new Block(
+                                            new Position(
+                                                new Coordinate(x, y, z),
+                                                positionArray[0].tickingArea
+                                            ),
+                                            blockTypeArray[0])
+                                        )
+                                    break;
+                                }
+                            }
+
+                            return blockArray
                         },
-                        {
-                            viewtype: "edittext",
-                            text: "Interval:",
-                            key: "interval",
-                        }
-                    ])
-            ),
-            criteria: {
-                positionArrayLength: 1,
-                blockTypeArrayLength: 1,
-                directionArrayLength: 1
-            },
-            option: {
-                "positionArrayLengthRequired": 1,
-                "blockTypeArrayLengthRequired": 1,
-                "directionArrayLengthRequired": 1,
-                "length": 0,
-                "interval": 0
-            },
-            method: {
-                generate: function () {
-                    let blockArray = []
-
-                    logger.log("verbose", "NZ is JULAO!")
-
-                    let positionArray = this.positionArray
-                    let blockTypeArray = this.blockTypeArray
-                    let directionArray = this.directionArray
-
-                    logger.log("verbose", "Yes, NZ is JULAO!")
-
-
-                    let direction = (function () {
-                        if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
-                        else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
-                        else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
-                        else return "-z"
-                    }());
-
-                    switch (direction) {
-                        case "+z": {
-                            let x = positionArray[0].coordinate.x
-                            let y = positionArray[0].coordinate.y
-                            for (let z = positionArray[0].coordinate.z; z < this.option.length + positionArray[0].coordinate.z; z += (this.option.interval + 1))
-                                blockArray.push(new Block(
-                                    new Position(
-                                        new Coordinate(x, y, z),
-                                        positionArray[0].tickingArea
-                                    ),
-                                    blockTypeArray[0])
-                                )
-                            break;
-                        }
-                        case "-z": {
-                            let x = positionArray[0].coordinate.x
-                            let y = positionArray[0].coordinate.y
-                            for (let z = positionArray[0].coordinate.z; z > -this.option.length + positionArray[0].coordinate.z; z -= (this.option.interval + 1))
-                                blockArray.push(new Block(
-                                    new Position(
-                                        new Coordinate(x, y, z),
-                                        positionArray[0].tickingArea
-                                    ),
-                                    blockTypeArray[0])
-                                )
-                            break;
-                        }
-                        case "+x": {
-                            let z = positionArray[0].coordinate.z
-                            let y = positionArray[0].coordinate.y
-                            for (let x = positionArray[0].coordinate.x; x < this.option.length + positionArray[0].coordinate.x; x += (this.option.interval + 1))
-                                blockArray.push(new Block(
-                                    new Position(
-                                        new Coordinate(x, y, z),
-                                        positionArray[0].tickingArea
-                                    ),
-                                    blockTypeArray[0])
-                                )
-                            break;
-                        }
-                        case "-x": {
-                            let z = positionArray[0].coordinate.z
-                            let y = positionArray[0].coordinate.y
-                            for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.z; x -= (this.option.interval + 1))
-                                blockArray.push(new Block(
-                                    new Position(
-                                        new Coordinate(x, y, z),
-                                        positionArray[0].tickingArea
-                                    ),
-                                    blockTypeArray[0])
-                                )
-                            break;
-                        }
+                        UIHandler: function () { }
                     }
+                }
+            ), {
+            addPosition: function (position) {
+                if (this.option.doAcceptNewPosition) {
+                    let indexOfVacancy = this.positionArray.indexOf(undefined)
+                    if (indexOfVacancy == -1) {
+                        logger.log("warning", `Too many positions!Discarding the old one...`)
+                        this.positionArray.slice(0,1)
+                        this.positionArray.push(position)
+                    }
+                    else this.positionArray[indexOfVacancy] = position
+                    logger.log("info", `New position accepted.`)
+                }
+                else utils.generators.canonical.addFunction("position", position, this.positionArray)
 
-                    return blockArray
-                },
-                UIHandler: function () { }
             }
         }
-    ))
+        )
+    )
 
 }());
 

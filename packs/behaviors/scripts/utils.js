@@ -427,11 +427,11 @@ let utils = {
 					result += "Too few directions!Refusing to execute."
 				if (result == "") result = "success"
 				else utils.logger.log("error", result)
-
+				
 				return result;
 			},
 			//A generator that is canonical must :
-			//1.have finite fixed numbers of parameters, in which the arrays are initially filled with undefined. 
+			//1.have finite fixed(?) numbers of parameters, in which the arrays are initially filled with undefined. 
 			//2.don't need to verifiy options.
 			generatorConstrctor: function ({
 				description,
@@ -457,12 +457,12 @@ let utils = {
 					function (index) { utils.generators.canonical.removeFunction(index, this.positionArray) },
 					function (index) { utils.generators.canonical.removeFunction(index, this.blockTypeArray) },
 					function (index) { utils.generators.canonical.removeFunction(index, this.directionArray) },
-					function () { utils.generators.canonical.validateParameter.call(this) },
+					function () { return utils.generators.canonical.validateParameter.call(this) },
 					generate,
 					function () {
-						this.positionArray = new Array(positionArrayLength).fill(undefined)
-						this.blockTypeArray = new Array(blockTypeArrayLength).fill(undefined)
-						this.directionArray = new Array(directionArrayLength).fill(undefined)
+						this.positionArray.fill(undefined)
+						this.blockTypeArray.fill(undefined)
+						this.directionArray.fill(undefined)
 					},
 					UIHandler
 				)

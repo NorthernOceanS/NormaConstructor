@@ -411,8 +411,8 @@ function displayChat(message) {
                             text: "Toggle quick execution.(Execute on all parameters satisfied)",
                             key: "__executeOnAllSatisfied",
                             data: [
-                                { value: true, text: "On", dataForUIHandler: "resetPositionArray" },
-                                { value: false, text: "Off", dataForUIHandler: "resetPositionArray" }
+                                { value: true, text: "On", dataForUIHandler: "resetAll" },
+                                { value: false, text: "Off", dataForUIHandler: "resetAll" }
                             ]
                         }
                     ])
@@ -477,7 +477,13 @@ function displayChat(message) {
                     return blockArray
                 }
             },
-            UIHandler: function (data) { if (data == "resetPositionArray") this.positionArray.fill(undefined) }
+            UIHandler: function (data) {
+                if (data == "resetAll") {
+                    this.positionArray.fill(undefined) 
+                    this.blockTypeArray.fill(undefined)
+                    this.directionArray.fill(undefined)
+                }
+            }
         }
     }))
 }());
@@ -655,7 +661,7 @@ function displayChat(message) {
                     let indexOfVacancy = this.positionArray.indexOf(undefined)
                     if (indexOfVacancy == -1) {
                         logger.log("warning", `Too many positions!Discarding the old one...`)
-                        this.positionArray.slice(0,1)
+                        this.positionArray.slice(0, 1)
                         this.positionArray.push(position)
                     }
                     else this.positionArray[indexOfVacancy] = position

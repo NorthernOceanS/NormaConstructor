@@ -427,12 +427,18 @@ let utils = {
 					result += "Too few directions!Refusing to execute."
 				if (result == "") result = "success"
 				else utils.logger.log("error", result)
-				
+
 				return result;
+			},
+			postGenerate: function () {
+				this.positionArray.fill(undefined)
+				this.blockTypeArray.fill(undefined)
+				this.directionArray.fill(undefined)
 			},
 			//A generator that is canonical must :
 			//1.have finite fixed(?) numbers of parameters, in which the arrays are initially filled with undefined. 
 			//2.don't need to verifiy options.
+			//3.after the generation, the generator only need to reset the array.
 			generatorConstrctor: function ({
 				description,
 				criteria: {
@@ -459,11 +465,7 @@ let utils = {
 					function (index) { utils.generators.canonical.removeFunction(index, this.directionArray) },
 					function () { return utils.generators.canonical.validateParameter.call(this) },
 					generate,
-					function () {
-						this.positionArray.fill(undefined)
-						this.blockTypeArray.fill(undefined)
-						this.directionArray.fill(undefined)
-					},
+					function () { utils.generators.canonical.postGenerate.call(this) },
 					UIHandler
 				)
 			}
@@ -568,21 +570,16 @@ let utils = {
 			const y_step = 1 / 3;
 			const z_step = 1 / 3;
 
-			if (x_span[0] >= x_span[1]) {
-				let temp = x_span[1]
-				x_span[1] = x_span[0]
-				x_span[0] = temp
-			}
-			if (y_span[0] >= y_span[1]) {
-				let temp = y_span[1]
-				y_span[1] = y_span[0]
-				y_span[0] = temp
-			}
-			if (z_span[0] >= z_span[1]) {
-				let temp = z_span[1]
-				z_span[1] = z_span[0]
-				z_span[0] = temp
-			}
+
+			if (x_span[0] >= x_span[1])
+				[x_span[0], x_span[1]] = [x_span[1], x_span[0]]
+
+			if (y_span[0] >= y_span[1])
+				[y_span[0], y_span[1]] = [y_span[1], y_span[0]]
+
+			if (z_span[0] >= z_span[1])
+				[z_span[0], z_span[1]] = [z_span[1], z_span[0]]
+
 
 			function verifier(x, y, z) {
 				for (let _x = Math.max(x - x_step, x_span[0]); _x <= Math.min(x + x_step, x_span[1]); _x += x_step)

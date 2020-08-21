@@ -182,9 +182,10 @@ clientSystem.initialize = function () {
         }
     })
     clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
-        logger.log("debug", "RECEIVE:")
-        logger.logObject("debug", eventData)
+
         if (playerID == eventData.data.playerID) {
+            logger.log("debug", "RECEIVE:")
+            logger.logObject("debug", eventData)
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
         }
@@ -479,7 +480,7 @@ function displayChat(message) {
             },
             UIHandler: function (data) {
                 if (data == "resetAll") {
-                    this.positionArray.fill(undefined) 
+                    this.positionArray.fill(undefined)
                     this.blockTypeArray.fill(undefined)
                     this.directionArray.fill(undefined)
                 }
@@ -661,7 +662,7 @@ function displayChat(message) {
                     let indexOfVacancy = this.positionArray.indexOf(undefined)
                     if (indexOfVacancy == -1) {
                         logger.log("warning", `Too many positions!Discarding the old one...`)
-                        this.positionArray=this.positionArray.slice(1)
+                        this.positionArray = this.positionArray.slice(1)
                         this.positionArray.push(position)
                     }
                     else this.positionArray[indexOfVacancy] = position

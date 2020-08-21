@@ -661,7 +661,7 @@ function displayChat(message) {
                     let indexOfVacancy = this.positionArray.indexOf(undefined)
                     if (indexOfVacancy == -1) {
                         logger.log("warning", `Too many positions!Discarding the old one...`)
-                        this.positionArray.slice(0, 1)
+                        this.positionArray=this.positionArray.slice(1)
                         this.positionArray.push(position)
                     }
                     else this.positionArray[indexOfVacancy] = position

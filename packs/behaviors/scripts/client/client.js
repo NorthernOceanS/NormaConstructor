@@ -820,7 +820,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => z
                             )
-                            break;
                         }
                         case "-x": {
                             return utils.coordinateGeometry.transform(
@@ -828,7 +827,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => 2 * positionArray[0].coordinate.z - z
                             )
-                            break;
                         }
                         case "+z": {
                             return utils.coordinateGeometry.transform(
@@ -836,7 +834,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
                             )
-                            break;
                         }
                         case "-z": {
                             return utils.coordinateGeometry.transform(
@@ -844,7 +841,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
                             )
-                            break;
                         }
                     }
                 }(playerFacingAxis))
@@ -1062,7 +1058,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => z
                             )
-                            break;
                         }
                         case "-x": {
                             return utils.coordinateGeometry.transform(
@@ -1070,7 +1065,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => 2 * positionArray[0].coordinate.z - z
                             )
-                            break;
                         }
                         case "+z": {
                             return utils.coordinateGeometry.transform(
@@ -1078,7 +1072,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
                             )
-                            break;
                         }
                         case "-z": {
                             return utils.coordinateGeometry.transform(
@@ -1086,7 +1079,6 @@ function displayChat(message) {
                                 (x, y, z) => y,
                                 (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
                             )
-                            break;
                         }
                     }
                 }(directionMark))
@@ -1516,10 +1508,10 @@ function displayChat(message) {
 
                 let coordinateArray = []
 
-                utils.coordinateGeometry.withBresenhamAlgorithm.generate2DCircle(positionArray[0].coordinate.x, positionArray[0].coordinate.z, this.option.r
-                ).forEach((coordinate) => {
-                    coordinateArray.push(new Coordinate(coordinate.x, positionArray[0].coordinate.y, coordinate.y))
-                })
+                utils.coordinateGeometry.withBresenhamAlgorithm.generate2DCircle(positionArray[0].coordinate.x, positionArray[0].coordinate.z, this.option.r)
+                    .forEach((coordinate) => {
+                        coordinateArray.push(new Coordinate(coordinate.x, positionArray[0].coordinate.y, coordinate.y))
+                    })
 
 
                 for (let coordinate of coordinateArray)

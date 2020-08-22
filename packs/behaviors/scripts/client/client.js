@@ -1769,9 +1769,9 @@ function displayChat(message) {
 
 
                 const materials = {
-                    "brick": option.useGlass ?
-                        new BlockType("minecraft:glass", null) :
-                        new BlockType("minecraft:stonebrick", { "stone_brick_type": "default" }),
+                    "glass":new BlockType("minecraft:glass", null),
+                    "brick": new BlockType("minecraft:stonebrick", { "stone_brick_type": "default" }),
+                    "prismarine":new BlockType("minecraft:prismarine",{"prismarine_block_type":"bricks"}),
                     "lantern": new BlockType("minecraft:seaLantern", null),
                     "air": new BlockType("minecraft:air", null),
                     "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
@@ -1792,12 +1792,14 @@ function displayChat(message) {
                 //Assuming the building is in +x direction.
                 const recipe = {
                     "void": function (coordinate) { return materials["air"] },
-                    "wall": function (coordinate) { return materials["brick"] },
-                    "ceiling": function (coordinate) { return materials["brick"] },
-                    "ground": function (coordinate) { return materials["brick"] },
+                    "wall": function (coordinate) { return option.useGlass?materials["glass"]:materials["brick"] },
+                    "ceiling": function (coordinate) { return option.useGlass?materials["glass"]:materials["brick"] },
+                    "ground": function (coordinate) { 
+                        return option.useGlass?materials["prismarine"]: materials["brick"] 
+                    },
                     "wall/light": function (coordinate) {
                         if (coordinate.x % 5 == 0) return materials["lantern"]
-                        else return materials["brick"]
+                        else return option.useGlass?materials["glass"]:materials["brick"]
                     },
                     "rail": function (coordinate) { return materials["rail"] },
                     "void/redstone": function (coordinate) {
@@ -1895,10 +1897,30 @@ function displayChat(message) {
                     }
                 }(directionMark))
 
-                let fillStartCoordinate = blockArray[0].position.coordinate
-                let fillEndCoordinate = blockArray[blockArray.length - 1].position.coordinate
+                let fillStartCoordinate = (function(){
+                    let position=positionArray[0]
+                    let rawCoordinate = new Coordinate(0, 5, -3)
+                    let relativeCoordinate = transform(rawCoordinate)
+                    let absoluteCordinate = new Coordinate(
+                        relativeCoordinate.x + position.coordinate.x,
+                        relativeCoordinate.y + position.coordinate.y,
+                        relativeCoordinate.z + position.coordinate.z,
+                    )
+                    return absoluteCordinate
+                })()
+                let fillEndCoordinate = (function(){
+                    let position=positionArray[0]
+                    let rawCoordinate = new Coordinate(option.length-1, 0, 3)
+                    let relativeCoordinate = transform(rawCoordinate)
+                    let absoluteCordinate = new Coordinate(
+                        relativeCoordinate.x + position.coordinate.x,
+                        relativeCoordinate.y + position.coordinate.y,
+                        relativeCoordinate.z + position.coordinate.z,
+                    )
+                    return absoluteCordinate
+                })()
                 blockArray.splice(0, 0, new BuildInstruction("fill", {
-                    blockType: new BlockType("minecraft:air", null),
+                    blockType: new BlockType("minecraft:sponge", { "sponge_type": "dry" }),
                     startCoordinate: fillStartCoordinate,
                     endCoordinate: fillEndCoordinate
                 })

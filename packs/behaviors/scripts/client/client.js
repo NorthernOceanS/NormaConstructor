@@ -5,7 +5,7 @@ var generatorIndex = 0
 var tick = 0
 var buildInstructionsQuery = []
 
-import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator } from '../constructor'
+import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator, BuildInstruction } from '../constructor'
 import { utils } from '../utils'
 let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
@@ -78,7 +78,7 @@ clientSystem.initialize = function () {
         // clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
 
         //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
-        client.log("Logging started")
+        client.log("Logging started. NZ IS JULAO!")
 
 
     })
@@ -284,9 +284,10 @@ function storeData(blockType, position, direction) {
     if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
 }
 function execute() {
+    logger.log("info", "Start validating parameters...");
     let validateResult = generatorArray[generatorIndex].validateParameter();
     if (validateResult == "success") {
-        logger.log("info", "Execution started.");
+        logger.log("info", "Now Execution started.");
 
         //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
         let buildInstructions = generatorArray[generatorIndex].generate();
@@ -765,7 +766,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
@@ -1021,7 +1022,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
@@ -1225,7 +1226,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
@@ -1298,7 +1299,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 if (this.option.generateByServer) {
                     logger.log("verbose", "NZ is JULAO!")
@@ -1416,7 +1417,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
@@ -1495,7 +1496,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
@@ -1585,7 +1586,7 @@ function displayChat(message) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
 
-            function () { utils.generators.canonical.validateParameter.call(this) },
+            function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
@@ -1694,6 +1695,220 @@ function displayChat(message) {
             function () {
                 this.positionArray = [undefined]
                 this.blockTypeArray = []
+            }
+        )
+    )
+}());
+
+(function () {
+    generatorArray.push(
+        new Generator(
+            new Description("Construct subway",
+                new Usage(
+                    [],
+                    [],
+                    [],
+                    [
+                        {
+                            viewtype: "edittext",
+                            text: "Length:",
+                            key: "length",
+                        },
+                        {
+                            viewtype: "checkbox",
+                            text: "Use glass",
+                            key: "useGlass",
+                            data: [
+                                { value: true, text: "Yes" },
+                                { value: false, text: "No" },
+                            ]
+                        }
+                    ])
+            ),
+
+            [undefined],
+            [],
+            [undefined],
+            {
+                "length": 10,
+                "useGlass": false
+            },
+
+            function (position) {
+                utils.generators.canonical.addFunction("position", position, this.positionArray)
+            },
+            function (blockType) {
+                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+            },
+            function (direction) {
+                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+            },
+            function (index) {
+                utils.generators.canonical.removeFunction(index, this.positionArray)
+            },
+            function (index) {
+                utils.generators.canonical.removeFunction(index, this.blockTypeArray)
+            },
+            function (index) {
+                utils.generators.canonical.removeFunction(index, this.directionArray)
+            },
+
+            function () { return utils.generators.canonical.validateParameter.call(this) },
+            function () {
+                let blockArray = []
+
+                logger.log("verbose", "NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+                let directionArray = this.directionArray
+                let option = this.option
+                logger.log("verbose", "Yes, NZ is JULAO!")
+
+                const directionMark = utils.geometry.getDirectionMark.horizontal(directionArray[0].y)
+
+
+                const materials = {
+                    "brick": option.useGlass ?
+                        new BlockType("minecraft:glass", null) :
+                        new BlockType("minecraft:stonebrick", { "stone_brick_type": "default" }),
+                    "lantern": new BlockType("minecraft:seaLantern", null),
+                    "air": new BlockType("minecraft:air", null),
+                    "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
+                    "rail": utils.blockGeometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z"),
+                    "sponge": new BlockType("minecraft:sponge", { "sponge_type": "dry" })
+                }
+
+                const schematics = [
+                    ["void", "ceiling", "ceiling", "ceiling", "ceiling", "ceiling", "void"],
+                    ["wall", "void", "void", "void", "void", "void", "wall"],
+                    ["wall/light", "void", "void", "void", "void", "void", "wall/light"],
+                    ["wall", "void", "void", "void", "void", "void", "wall"],
+                    ["wall", "void", "rail", "void/redstone", "rail", "void", "wall"],
+                    ["ground", "ground", "ground", "ground", "ground", "ground", "ground"]
+                ]
+
+                let offset = { x: 0, y: -5, z: 3 }
+                //Assuming the building is in +x direction.
+                const recipe = {
+                    "void": function (coordinate) { return materials["air"] },
+                    "wall": function (coordinate) { return materials["brick"] },
+                    "ceiling": function (coordinate) { return materials["brick"] },
+                    "ground": function (coordinate) { return materials["brick"] },
+                    "wall/light": function (coordinate) {
+                        if (coordinate.x % 5 == 0) return materials["lantern"]
+                        else return materials["brick"]
+                    },
+                    "rail": function (coordinate) { return materials["rail"] },
+                    "void/redstone": function (coordinate) {
+                        logger.logObject("debug", coordinate)
+                        if (coordinate.x % 16 == 0) return materials["red_stone_torch"]
+                        else return materials["air"]
+                    }
+                }
+                blockArray = (function (position, length, directionMark, schematics, offset, recipe, y_sequence) {
+                    let blockArray = []
+                    if (y_sequence == undefined) {
+                        y_sequence = new Array(schematics.length)
+                        for (let i = 0; i < schematics.length; i++) y_sequence[i] = i
+                    }
+                    let transform = (function (facingAxis) {
+                        switch (facingAxis) {
+                            case "+x": {
+                                return utils.coordinateGeometry.transform(
+                                    (x, y, z) => x,
+                                    (x, y, z) => y,
+                                    (x, y, z) => z
+                                )
+                            }
+                            case "-x": {
+                                return utils.coordinateGeometry.transform(
+                                    (x, y, z) => - x,
+                                    (x, y, z) => y,
+                                    (x, y, z) => - z
+                                )
+                            }
+                            case "+z": {
+                                return utils.coordinateGeometry.transform(
+                                    (x, y, z) => -z,
+                                    (x, y, z) => y,
+                                    (x, y, z) => x
+                                )
+                            }
+                            case "-z": {
+                                return utils.coordinateGeometry.transform(
+                                    (x, y, z) => z,
+                                    (x, y, z) => y,
+                                    (x, y, z) => -x
+                                )
+                            }
+                        }
+                    }(directionMark))
+                    for (let x = 0; x < length; x++)
+                        for (let y of y_sequence)
+                            for (let z = 0; z < schematics[y].length; z++) {
+                                let rawCoordinate = new Coordinate(x - offset.x, -y - offset.y, z - offset.z)
+                                let relativeCoordinate = transform(rawCoordinate)
+                                let absoluteCordinate = new Coordinate(
+                                    relativeCoordinate.x + position.coordinate.x,
+                                    relativeCoordinate.y + position.coordinate.y,
+                                    relativeCoordinate.z + position.coordinate.z,
+                                )
+                                blockArray.push(new Block(
+                                    new Position(absoluteCordinate, position.tickingArea),
+                                    recipe[schematics[y][z]](rawCoordinate)
+                                ))
+                            }
+                    return blockArray
+                }(positionArray[0], option.length, directionMark, schematics, offset, recipe, [0, 1, 2, 3, 5, 4]))
+
+                let transform = (function (facingAxis) {
+                    switch (facingAxis) {
+                        case "+x": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => x,
+                                (x, y, z) => y,
+                                (x, y, z) => z
+                            )
+                        }
+                        case "-x": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => - x,
+                                (x, y, z) => y,
+                                (x, y, z) => - z
+                            )
+                        }
+                        case "+z": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => -z,
+                                (x, y, z) => y,
+                                (x, y, z) => x
+                            )
+                        }
+                        case "-z": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => z,
+                                (x, y, z) => y,
+                                (x, y, z) => -x
+                            )
+                        }
+                    }
+                }(directionMark))
+
+                let fillStartCoordinate = blockArray[0].position.coordinate
+                let fillEndCoordinate = blockArray[blockArray.length - 1].position.coordinate
+                blockArray.splice(0, 0, new BuildInstruction("fill", {
+                    blockType: new BlockType("minecraft:air", null),
+                    startCoordinate: fillStartCoordinate,
+                    endCoordinate: fillEndCoordinate
+                })
+                )
+                return blockArray
+            },
+            function () {
+                this.positionArray = [undefined]
+                this.blockTypeArray = []
+                this.directionArray = [undefined]
             }
         )
     )

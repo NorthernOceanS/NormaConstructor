@@ -471,6 +471,16 @@ let utils = {
 			}
 		}
 	},
+	geometry: {
+		getDirectionMark: {
+			horizontal: function (theta) {
+				if (-45 <= theta && theta <= 45) return "+z"
+				else if (-135 <= theta && theta <= -45) return "+x"
+				else if (45 <= theta && theta <= 135) return "-x"
+				else return "-z"
+			}
+		},
+	},
 	coordinateGeometry: {
 		transform: function (f, g, h) {
 			return (coordinate) => {
@@ -495,7 +505,7 @@ let utils = {
 				)
 			}
 
-			if (t_step == undefined) t_step = 0.0001
+			if (t_step == undefined || t_step < 0.0001/* Prevent performance issue. */) t_step = 0.0001
 			for (let t = t_span[0]; t <= t_span[1]; t += t_step) {
 				let newCoordinate = new Coordinate(Math.round(x(t)), Math.round(y(t)), Math.round(z(t)));
 				if (!isRedundant(coordinateArray, newCoordinate) && constraint(newCoordinate.x, newCoordinate.y, newCoordinate.z, t)) {
@@ -514,7 +524,7 @@ let utils = {
 				(t) => { return ((t - t_span[0]) * x_coefficient + x_start); },
 				(t) => { return ((t - t_span[0]) * y_coefficient + y_start); },
 				(t) => { return ((t - t_span[0]) * z_coefficient + z_start); },
-				t_span, (x, y, z, t) => { return true }, Math.min(1 / x_coefficient, 1 / y_coefficient, 1 / z_coefficient));
+				t_span, (x, y, z, t) => { return true }, Math.min(x_coefficient == 0 ? t_span[1] - t_span[0] : 1 / x_coefficient, y_coefficient == 0 ? t_span[1] - t_span[0] : 1 / y_coefficient, z_coefficient == 0 ? t_span[1] - t_span[0] : 1 / z_coefficient));
 		},
 		generateTriangle: function (x1, y1, z1, x2, y2, z2, x3, y3, z3) {
 			let coordinateArray = [];

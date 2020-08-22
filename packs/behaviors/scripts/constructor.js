@@ -80,4 +80,4 @@ class BuildInstruction{
         this.data=data
     }
 }
-export { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator }
+export { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator,BuildInstruction }

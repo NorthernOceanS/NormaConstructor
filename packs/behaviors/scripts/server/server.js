@@ -68,6 +68,21 @@ let compiler = {
                     );
 
         return []
+    },
+    writeBuildingStructureToLog: function ({ startCoordinate, endCoordinate, referenceCoordinate, tickingArea }) {
+        if (startCoordinate.x >= endCoordinate.x) [startCoordinate.x, endCoordinate.x] = [endCoordinate.x, startCoordinate.x]
+        if (startCoordinate.y >= endCoordinate.y) [startCoordinate.y, endCoordinate.y] = [endCoordinate.y, startCoordinate.y]
+        if (startCoordinate.z >= endCoordinate.z) [startCoordinate.z, endCoordinate.z] = [endCoordinate.z, startCoordinate.z]
+        for (let x = startCoordinate.x; x <= endCoordinate.x; x++)
+            for (let y = startCoordinate.y; y <= endCoordinate.y; y++)
+                for (let z = startCoordinate.z; z <= endCoordinate.z; z++) {
+                    let blockType = new BlockType(undefined, undefined)
+                    let block = serverSystem.getBlock(tickingArea, new Coordinate(x, y, z))
+                    blockType.blockIdentifier = block.__identifier__
+                    blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
+                    server.log(JSON.stringify({ coordinate: new Coordinate(x - referenceCoordinate.x, y - referenceCoordinate.y, z - referenceCoordinate.z), blockType: blockType }, null, '    '))
+                }
+        return []
     }
 }
 

@@ -1769,9 +1769,9 @@ function displayChat(message) {
 
 
                 const materials = {
-                    "glass":new BlockType("minecraft:glass", null),
+                    "glass": new BlockType("minecraft:glass", null),
                     "brick": new BlockType("minecraft:stonebrick", { "stone_brick_type": "default" }),
-                    "prismarine":new BlockType("minecraft:prismarine",{"prismarine_block_type":"bricks"}),
+                    "prismarine": new BlockType("minecraft:prismarine", { "prismarine_block_type": "bricks" }),
                     "lantern": new BlockType("minecraft:seaLantern", null),
                     "air": new BlockType("minecraft:air", null),
                     "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
@@ -1792,14 +1792,14 @@ function displayChat(message) {
                 //Assuming the building is in +x direction.
                 const recipe = {
                     "void": function (coordinate) { return materials["air"] },
-                    "wall": function (coordinate) { return option.useGlass?materials["glass"]:materials["brick"] },
-                    "ceiling": function (coordinate) { return option.useGlass?materials["glass"]:materials["brick"] },
-                    "ground": function (coordinate) { 
-                        return option.useGlass?materials["prismarine"]: materials["brick"] 
+                    "wall": function (coordinate) { return option.useGlass ? materials["glass"] : materials["brick"] },
+                    "ceiling": function (coordinate) { return option.useGlass ? materials["glass"] : materials["brick"] },
+                    "ground": function (coordinate) {
+                        return option.useGlass ? materials["prismarine"] : materials["brick"]
                     },
                     "wall/light": function (coordinate) {
                         if (coordinate.x % 5 == 0) return materials["lantern"]
-                        else return option.useGlass?materials["glass"]:materials["brick"]
+                        else return option.useGlass ? materials["glass"] : materials["brick"]
                     },
                     "rail": function (coordinate) { return materials["rail"] },
                     "void/redstone": function (coordinate) {
@@ -1897,8 +1897,8 @@ function displayChat(message) {
                     }
                 }(directionMark))
 
-                let fillStartCoordinate = (function(){
-                    let position=positionArray[0]
+                let fillStartCoordinate = (function () {
+                    let position = positionArray[0]
                     let rawCoordinate = new Coordinate(0, 5, -3)
                     let relativeCoordinate = transform(rawCoordinate)
                     let absoluteCordinate = new Coordinate(
@@ -1908,9 +1908,9 @@ function displayChat(message) {
                     )
                     return absoluteCordinate
                 })()
-                let fillEndCoordinate = (function(){
-                    let position=positionArray[0]
-                    let rawCoordinate = new Coordinate(option.length-1, 0, 3)
+                let fillEndCoordinate = (function () {
+                    let position = positionArray[0]
+                    let rawCoordinate = new Coordinate(option.length - 1, 0, 3)
                     let relativeCoordinate = transform(rawCoordinate)
                     let absoluteCordinate = new Coordinate(
                         relativeCoordinate.x + position.coordinate.x,
@@ -1935,3 +1935,22 @@ function displayChat(message) {
         )
     )
 }());
+(function () {
+    generatorArray.push(utils.generators.canonical.generatorConstrctor(
+        {
+            description: new Description("Record structure", new Usage([], [], [], [])),
+            criteria: { positionArrayLength: 3, blockTypeArrayLength: 0, directionArrayLength: 0 },
+            option: {},
+            method: {
+                UIHandler: function () { }, generate: function () {
+                    return new BuildInstruction("writeBuildingStructureToLog", {
+                        startCoordinate: this.positionArray[0].coordinate,
+                        endCoordinate: this.positionArray[1].coordinate,
+                        referenceCoordinate: this.positionArray[2].coordinate,
+                        tickingArea: this.positionArray[2].tickingArea
+                    })
+                }
+            }
+        }
+    ))
+})()

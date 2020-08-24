@@ -1725,6 +1725,16 @@ function displayChat(message) {
                                 { value: true, text: "Yes" },
                                 { value: false, text: "No" },
                             ]
+                        },
+                        {
+                            viewtype: "checkbox",
+                            text: "Carnival!\(Require \' Use glass\' to be opened\)",
+                            key: "useColorfulGlass",
+                            data: [
+                                { value: true, text: "Yes" },
+                                { value: false, text: "No" },
+                            ]
+
                         }
                     ])
             ),
@@ -1734,7 +1744,8 @@ function displayChat(message) {
             [undefined],
             {
                 "length": 10,
-                "useGlass": false
+                "useGlass": false,
+                "useColorfulGlass": false
             },
 
             function (position) {
@@ -1792,17 +1803,36 @@ function displayChat(message) {
                 ]
 
                 let offset = { x: 0, y: -5, z: 3 }
+                function getRandomColor() {
+                    const colorSet = ["white",
+                        "orange",
+                        "magenta",
+                        "light_blue",
+                        "yellow",
+                        "lime",
+                        "pink",
+                        "gray",
+                        "silver",
+                        "cyan",
+                        "purple",
+                        "blue",
+                        "brown",
+                        "green",
+                        "red",
+                        "black"]
+                    return colorSet[Math.floor(Math.random() * colorSet.length)]
+                }
                 //Assuming the building is in +x direction.
                 const recipe = {
                     "void": function (coordinate) { return materials["air"] },
-                    "wall": function (coordinate) { return option.useGlass ? materials["glass"] : materials["brick"] },
-                    "ceiling": function (coordinate) { return option.useGlass ? materials["glass"] : materials["brick"] },
+                    "wall": function (coordinate) { return option.useGlass ? (option.useColorfulGlass ? new BlockType("minecraft:stained_glass", { color: getRandomColor() }) : materials["glass"]) : materials["brick"] },
+                    "ceiling": function (coordinate) { return option.useGlass ? (option.useColorfulGlass ? new BlockType("minecraft:stained_glass", { color: getRandomColor() }) : materials["glass"]) : materials["brick"] },
                     "ground": function (coordinate) {
                         return option.useGlass ? materials["prismarine"] : materials["brick"]
                     },
                     "wall/light": function (coordinate) {
                         if (coordinate.x % 5 == 0) return materials["lantern"]
-                        else return option.useGlass ? materials["glass"] : materials["brick"]
+                        else return option.useGlass ? (option.useColorfulGlass ? new BlockType("minecraft:stained_glass", { color: getRandomColor() }) : materials["glass"]) : materials["brick"]
                     },
                     "rail": function (coordinate) { return materials["rail"] },
                     "void/redstone": function (coordinate) {
@@ -1966,7 +1996,7 @@ function displayChat(message) {
             method: {
                 UIHandler: function () { }, generate: function () {
                     let coordinate = this.positionArray[0].coordinate
-                    
+
                     return Array.from(presetBuildings.subway_station, a => new Block(new Position(new Coordinate(
                         coordinate.x + a.coordinate.x, coordinate.y + a.coordinate.y, coordinate.z + a.coordinate.z
                     ), this.positionArray[0].tickingArea), a.blockType))

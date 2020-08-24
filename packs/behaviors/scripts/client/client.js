@@ -7,6 +7,9 @@ var buildInstructionsQuery = []
 
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator, BuildInstruction } from '../constructor'
 import { utils } from '../utils'
+
+import { presetBuildings } from '../presetBuildingsInterface'
+
 let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
 
@@ -1949,6 +1952,25 @@ function displayChat(message) {
                         referenceCoordinate: this.positionArray[2].coordinate,
                         tickingArea: this.positionArray[2].tickingArea
                     })
+                }
+            }
+        }
+    ))
+})();
+(function () {
+    generatorArray.push(utils.generators.canonical.generatorConstrctor(
+        {
+            description: new Description(" aspdf vhfdwvgcmfs", new Usage([], [], [], [])),
+            criteria: { positionArrayLength: 1, blockTypeArrayLength: 0, directionArrayLength: 0 },
+            option: {},
+            method: {
+                UIHandler: function () { }, generate: function () {
+                    let coordinate = this.positionArray[0].coordinate
+                    
+                    return Array.from(presetBuildings.subway_station, a => new Block(new Position(new Coordinate(
+                        coordinate.x + a.coordinate.x, coordinate.y + a.coordinate.y, coordinate.z + a.coordinate.z
+                    ), this.positionArray[0].tickingArea), a.blockType))
+
                 }
             }
         }

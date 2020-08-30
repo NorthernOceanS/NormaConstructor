@@ -643,7 +643,7 @@ function displayChat(message) {
                                 case "-x": {
                                     let z = positionArray[0].coordinate.z
                                     let y = positionArray[0].coordinate.y
-                                    for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.z; x -= (this.option.interval + 1))
+                                    for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.x; x -= (this.option.interval + 1))
                                         blockArray.push(new Block(
                                             new Position(
                                                 new Coordinate(x, y, z),

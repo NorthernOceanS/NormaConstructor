@@ -1318,7 +1318,7 @@ function displayChat(message) {
                     return [{
                         "type": "fill",
                         "data": {
-                            "startCoordinate": new Coordinate(x_min, y_start, z_min),
+                            "startCoordinate": new Coordinate(x_min, y_start+1, z_min),
                             "endCoordinate": new Coordinate(x_max, 255, z_max),
                             "blockType": {
                                 "blockIdentifier": "minecraft:air",

@@ -198,6 +198,15 @@ serverSystem.initialize = function () {
                 }
                 sendCommand("get_data", playerID, additionalData)
             }
+            else if (command == "read_tag") {
+                sendCommand(
+                    command, playerID,
+                    Array.from(serverSystem.getComponent(eventData.data.entity, "minecraft:tag").data, (tag) => {
+                        if (tag.startsWith("nc:")) {
+                            return tag.slice(3)}
+                    })
+                )
+            }
             else sendCommand(command, playerID)
         }
     })

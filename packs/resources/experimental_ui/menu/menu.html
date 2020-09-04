@@ -16,6 +16,20 @@
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
                             <div>
+                                <div style="width: 100%;">Master Switch</div>
+                                <div style="display: flex;flex-direction: row;justify-content:center;">
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setLocalOption('__on',true)">On</button>
+                                    <button class="button" style="width: 50%;padding: 0%;"
+                                        onclick="setLocalOption('__on',false)">Off</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex;flex-direction: column;justify-content:center;">
+                            <div>
                                 <div style="width: 100%;">Request Additional Position</div>
                                 <div style="display: flex;flex-direction: row;justify-content:center;">
                                     <button class="button" style="width: 50%;padding: 0%;"
@@ -60,17 +74,17 @@
                             <div>
                                 <div style="width: 100%;">Log level:</div>
                                 <div style="width: 100%;display: flex;flex-direction: row;justify-content:center;flex-wrap:wrap;">
-                                    <button class="button" style="padding: 0%;"
+                                    <button class="button" style="padding: 0%;width:50%" 
                                         onclick="setLocalOption('__logLevel','verbose')">verbose</button>
-                                    <button class="button" style="padding: 0%;"
+                                    <button class="button" style="padding: 0%;width:50%"
                                         onclick="setLocalOption('__logLevel','debug')">debug</button>
-                                    <button class="button" style="padding: 0%;"
+                                    <button class="button" style="padding: 0%;width:50%"
                                         onclick="setLocalOption('__logLevel','info')">info</button>
-                                    <button class="button" style="padding: 0%;"
+                                    <button class="button" style="padding: 0%;width:50%"
                                         onclick="setLocalOption('__logLevel','warning')">warning</button>
-                                    <button class="button" style="padding: 0%;"
+                                    <button class="button" style="padding: 0%;width:50%"
                                         onclick="setLocalOption('__logLevel','error')">error</button>
-                                    <button class="button" style="padding: 0%;"
+                                    <button class="button" style="padding: 0%;width:50%"
                                         onclick="setLocalOption('__logLevel','fatal')">fatal</button>
                                 </div>
 

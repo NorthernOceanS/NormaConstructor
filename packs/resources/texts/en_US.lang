@@ -8,3 +8,4 @@ item.normaconstructor:remove_last_blocktype.name=Remove Last BlockType
 item.normaconstructor:choose_next_generator.name=Choose Next Generator
 item.normaconstructor:show_menu.name=Show Menu
 item.normaconstructor:show_saved_data.name=Show Saved Data
+item.normaconstructor:read_tag.name=Read Tag

@@ -14,7 +14,8 @@ let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
 
 let localOption = {
-    "__logLevel": "verbose"
+    "__logLevel": "verbose",
+    "__on":true
 }
 const logger = {
     displayChat, displayObject,
@@ -93,7 +94,7 @@ clientSystem.initialize = function () {
             displayChat(eventData.data.message)
     })
     clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
-        if (playerID == eventData.data.playerID) {
+        if (playerID == eventData.data.playerID&&localOption["__on"]) {
             switch (eventData.data.command) {
                 case "get_data": {
                     logger.logObject("debug", eventData.data.additionalData)
@@ -181,12 +182,24 @@ clientSystem.initialize = function () {
                     clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
                     break;
                 }
+                case "read_tag": {
+                    function parseTag(tag) {
+                        let command=tag.split(' ')
+                        if(command[0]=="add"&&command[1]=="b"){
+                            storeData(new BlockType(command[2],JSON.parse(command[3])),undefined,undefined)
+                        }
+                    }
+                    eventData.data.additionalData.forEach((tag) => {
+                        if (tag) parseTag(tag)
+                    })
+                    break;
+                }
             }
         }
     })
     clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
 
-        if (playerID == eventData.data.playerID) {
+        if (playerID == eventData.data.playerID&&localOption["__on"]) {
             logger.log("debug", "RECEIVE:")
             logger.logObject("debug", eventData)
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
@@ -1318,7 +1331,7 @@ function displayChat(message) {
                     return [{
                         "type": "fill",
                         "data": {
-                            "startCoordinate": new Coordinate(x_min, y_start+1, z_min),
+                            "startCoordinate": new Coordinate(x_min, y_start + 1, z_min),
                             "endCoordinate": new Coordinate(x_max, 255, z_max),
                             "blockType": {
                                 "blockIdentifier": "minecraft:air",
@@ -2040,7 +2053,7 @@ function displayChat(message) {
                     "blue_ice": new BlockType("minecraft:blue_ice", null)
                 }
 
-                let schematics=[[],[]]
+                let schematics = [[], []]
 
                 schematics[0].push("glass_pane")
                 schematics[1].push("iron_block")
@@ -2051,13 +2064,13 @@ function displayChat(message) {
                 schematics[0].push("glass_pane")
                 schematics[1].push("iron_block")
 
-                let offset = { x: 0, y: -1, z: Math.ceil(option.widthOfIce/2)  }
+                let offset = { x: 0, y: -1, z: Math.ceil(option.widthOfIce / 2) }
                 //Assuming the building is in +x direction.
                 const recipe = {
-                    "glass_pane": (coordinate)=>materials["glass_pane"],
-                    "iron_block": (coordinate)=>materials["iron_block"],
-                    "air": (coordinate)=>materials["air"],
-                    "blue_ice": (coordinate)=>materials["blue_ice"]
+                    "glass_pane": (coordinate) => materials["glass_pane"],
+                    "iron_block": (coordinate) => materials["iron_block"],
+                    "air": (coordinate) => materials["air"],
+                    "blue_ice": (coordinate) => materials["blue_ice"]
                 }
                 let blockArray = (function (position, length, directionMark, schematics, offset, recipe, y_sequence) {
                     let blockArray = []
@@ -2101,7 +2114,7 @@ function displayChat(message) {
                         for (let y of y_sequence)
                             for (let z = 0; z < schematics[y].length; z++) {
                                 let rawCoordinate = new Coordinate(x - offset.x, -y - offset.y, z - offset.z)
-                                
+
                                 let relativeCoordinate = transform(rawCoordinate)
                                 let absoluteCordinate = new Coordinate(
                                     relativeCoordinate.x + position.coordinate.x,
@@ -2116,7 +2129,7 @@ function displayChat(message) {
                     return blockArray
                 }(positionArray[0], option.length, directionMark, schematics, offset, recipe))
 
-                
+
 
                 return blockArray
             },

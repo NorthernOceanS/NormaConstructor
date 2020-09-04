@@ -34,6 +34,9 @@
       },
       "getAir": {
         "textures": "textures/items/getAir"
+      },
+      "readTag":{
+        "textures": "textures/items/slime.png"
       }
     }
   }

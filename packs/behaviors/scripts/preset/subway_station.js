@@ -1,4 +1,5 @@
-const preset =
+const preset =[]
+/*
     [{
         "coordinate": {
             "x": -8,
@@ -128963,7 +128964,7 @@ const preset =
             "blockState": null
         }
     }
-]
+]*/
 export {
     preset
 }

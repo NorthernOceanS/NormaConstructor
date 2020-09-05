@@ -1029,7 +1029,7 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "长度";
+                            text: "长度",
                             key: "length",
                         },
                         {

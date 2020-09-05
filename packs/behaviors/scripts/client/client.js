@@ -14,22 +14,22 @@ let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
 
 let localOption = {
-    "__logLevel": "verbose",
-    "__on": true
+    "__logLevel": "info",
+    "__on": false
 }
 const logger = {
     displayChat, displayObject,
     log: function (level, message) {
         const colorMap = new Map([
-            ["verbose", { num: 0, color: "§a" }],
-            ["debug", { num: 1, color: "§6" }],
-            ["info", { num: 2, color: "§b" }],
-            ["warning", { num: 3, color: "§e" }],
-            ["error", { num: 4, color: "§c" }],
-            ["fatal", { num: 5, color: "§4" }]
+            ["verbose", { num: 0, color: "§a废话：" }],
+            ["debug", { num: 1, color: "§6调试：" }],
+            ["info", { num: 2, color: "§b信息：" }],
+            ["warning", { num: 3, color: "§e警告：" }],
+            ["error", { num: 4, color: "§c错误：" }],
+            ["fatal", { num: 5, color: "§4致命错误：" }]
         ])
         if (colorMap.get(level).num >= colorMap.get(localOption["__logLevel"]).num)
-            this.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
+            this.displayChat(colorMap.get(level).color + message)
     },
     logObject: function (level, object) {
         this.log(level, JSON.stringify(object, null, '    '))
@@ -62,7 +62,7 @@ clientSystem.initialize = function () {
         clientSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
         //Set default setServerSideOption:(Yes I hate it too)
-        setServerSideOption("__requestAdditionalPosition", false)
+        setServerSideOption("__requestAdditionalPosition", true)
         setServerSideOption("__requestAdditionalBlockType", false)
         setServerSideOption("__requestAdditionalDirection", false)
 
@@ -82,7 +82,7 @@ clientSystem.initialize = function () {
         // clientSystem.broadcastEvent("minecraft:load_ui", loadUIEventData)
 
         //Need to enable "Enable Content Log File" in "General"-"Profile"-"Content Log Settings"
-        client.log("Logging started. NZ IS JULAO!")
+        client.log("开始记录日志。")
 
 
     })
@@ -94,7 +94,7 @@ clientSystem.initialize = function () {
             displayChat(eventData.data.message)
     })
     clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
-        if (playerID == eventData.data.playerID && (localOption["__on"] || eventData.data.command == "show_menu")) {
+        if (playerID == eventData.data.playerID && (localOption["__on"] || eventData.data.command == "show_menu" || eventData.data.command == "choose_next_generator")) {
             switch (eventData.data.command) {
                 case "get_data": {
                     logger.logObject("debug", eventData.data.additionalData)
@@ -109,7 +109,7 @@ clientSystem.initialize = function () {
                     if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
                         let rawCoordinate = coordinatePlayerLookingAt
                         if (rawCoordinate == null) {
-                            logger.log("error", "Unable to get the block position. Please retry.")
+                            logger.log("error", "没有成功获取坐标，请重试。")
                         }
                         else {
                             let coordinate = rawCoordinate
@@ -138,37 +138,34 @@ clientSystem.initialize = function () {
                     break;
                 }
                 case "remove_last_position": {
-                    logger.log("info", "Removing the last position...")
                     generatorArray[generatorIndex].removePosition()
+                    logger.log("info", "已移除最新的坐标。")
                     break;
                 }
                 case "remove_last_blocktype": {
-                    logger.log("info", "Removing the last blockType...")
                     generatorArray[generatorIndex].removeBlockType()
+                    logger.log("info", "已移除最新的方块类型。")
                     break;
                 }
                 case "remove_last_direction": {
-                    logger.log("info", "Removing the last direction...")
                     generatorArray[generatorIndex].removeDirection()
+                    logger.log("info", "已移除最新的方向。")
                     break;
                 }
                 case "choose_next_generator": {
-                    logger.log("info", "Choosing next generator...")
-                    generatorIndex = (generatorIndex + 1) % generatorArray.length
-                    logger.log("debug", "Current generator:")
-                    logger.logObject("debug", generatorArray[generatorIndex])
+                    if (localOption["__on"] == true) {setLocalOption('__on', false);logger.log("info", "插件已禁用")} else{setLocalOption('__on', true);logger.log("info", "插件已启用")};
                     break;
                 }
                 case "show_saved_data": {
-                    logger.log("info", "Current positionArray:")
+                    logger.log("info", "当前坐标：")
                     logger.logObject("info", generatorArray[generatorIndex].positionArray)
-                    logger.log("info", "Current blockTypeArray:")
+                    logger.log("info", "当前方块类型：")
                     logger.logObject("info", generatorArray[generatorIndex].blockTypeArray)
-                    logger.log("info", "Current directionArray:")
+                    logger.log("info", "当前方向：")
                     logger.logObject("info", generatorArray[generatorIndex].directionArray)
-                    logger.log("info", "Current generator option:")
+                    logger.log("info", "当前生成器设置：")
                     logger.logObject("info", generatorArray[generatorIndex].option)
-                    logger.log("info", "Current local option:")
+                    logger.log("info", "当前本地设置：")
                     logger.logObject("info", localOption)
                     break;
                 }
@@ -200,7 +197,7 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
 
         if (playerID == eventData.data.playerID && localOption["__on"]) {
-            logger.log("debug", "RECEIVE:")
+            logger.log("debug", "返回数据：")
             logger.logObject("debug", eventData)
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
@@ -300,10 +297,10 @@ function storeData(blockType, position, direction) {
     if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
 }
 function execute() {
-    logger.log("info", "Start validating parameters...");
+    logger.log("info", "核对参数中……");
     let validateResult = generatorArray[generatorIndex].validateParameter();
     if (validateResult == "success") {
-        logger.log("info", "Now Execution started.");
+        logger.log("info", "开始生成。");
 
         //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
         let buildInstructions = generatorArray[generatorIndex].generate();
@@ -418,7 +415,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor({
         description:
-            new Description("Create a solid cube with two points.",
+            new Description("两点生成长方体",
                 new Usage(
                     ["First point", "Second point"],
                     ["BlockType"],
@@ -426,20 +423,20 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "button",
-                            text: "Toggle quick execution.(Execute on all parameters satisfied)",
+                            text: "自动执行",
                             key: "__executeOnAllSatisfied",
                             data: [
-                                { value: true, text: "On", dataForUIHandler: "resetAll" },
-                                { value: false, text: "Off", dataForUIHandler: "resetAll" }
+                                { value: true, text: "是", dataForUIHandler: "resetAll" },
+                                { value: false, text: "否", dataForUIHandler: "resetAll" }
                             ]
                         },
                         {
                             viewtype: "button",
-                            text: "Infer coordinates from three coordinates.",
+                            text: "取最大XYZ与最小XYZ",
                             key: "inferCoordinates",
                             data: [
-                                { value: true, text: "On", dataForUIHandler: "threeCoordinates" },
-                                { value: false, text: "Off", dataForUIHandler: "twoCoordinates" }
+                                { value: true, text: "是", dataForUIHandler: "threeCoordinates" },
+                                { value: false, text: "否", dataForUIHandler: "twoCoordinates" }
                             ]
                         }
                     ])
@@ -452,9 +449,9 @@ function displayChat(message) {
         option: {
             "positionArrayLengthRequired": 2,
             "blockTypeArrayLengthRequired": 1,
-            "__executeOnAllSatisfied": false,
+            "__executeOnAllSatisfied": true,
             "generateByServer": true,
-            "inferCoordinates": false
+            "inferCoordinates": true
         },
         method: {
             generate: function () {
@@ -540,7 +537,7 @@ function displayChat(message) {
     generatorArray.push(
         utils.generators.canonical.generatorConstrctor(
             {
-                description: new Description("Clone, ignoring direction.",
+                description: new Description("克隆一个区域到另一个点",
                     new Usage(
                         [],
                         [],
@@ -583,7 +580,7 @@ function displayChat(message) {
         Object.assign(
             utils.generators.canonical.generatorConstrctor(
                 {
-                    description: new Description("Create a line with given interval.",
+                    description: new Description("创建线段",
                         new Usage(
                             ["Start point"],
                             ["BlockType"],
@@ -601,16 +598,16 @@ function displayChat(message) {
                                 },
                                 {
                                     viewtype: "button",
-                                    text: "Overwrite default behaviour:discard old position.",
+                                    text: "坐标过多时移除旧坐标",
                                     key: "doAcceptNewPosition",
                                     data: [
-                                        { value: false, text: "No" },
-                                        { value: true, text: "Yes" }
+                                        { value: false, text: "否" },
+                                        { value: true, text: "是" }
                                     ]
                                 },
                                 {
                                     viewtype: "edittext",
-                                    text: "Vertical gradient:",
+                                    text: "垂直斜率",
                                     key: "gradient",
                                 }
                             ])
@@ -714,12 +711,12 @@ function displayChat(message) {
                 if (this.option.doAcceptNewPosition) {
                     let indexOfVacancy = this.positionArray.indexOf(undefined)
                     if (indexOfVacancy == -1) {
-                        logger.log("warning", `Too many positions!Discarding the old one...`)
                         this.positionArray = this.positionArray.slice(1)
                         this.positionArray.push(position)
+                        logger.log("info", "坐标过多，已启用新的坐标。")
                     }
                     else this.positionArray[indexOfVacancy] = position
-                    logger.log("info", `New position accepted.`)
+                    logger.log("info", `已设置新的坐标。`)
                 }
                 else utils.generators.canonical.addFunction("position", position, this.positionArray)
 
@@ -733,7 +730,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("造马路",
+            new Description("铺公路",
                 new Usage(
                     [],
                     [],
@@ -741,22 +738,22 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "长度:",
+                            text: "长度",
                             key: "length",
                         },
                         {
                             viewtype: "button",
-                            text: "马路风格",
+                            text: "类型",
                             key: "roadStyle",
                             data: [
                                 { value: "NS", text: "北冥/南冥", dataForUIHandler: "preset" },
                                 { value: "DB", text: "东沙/冰岛", dataForUIHandler: "preset" },
-                                { value: "custom", text: "自定", dataForUIHandler: "custom" }
+                                { value: "custom", text: "自定义", dataForUIHandler: "custom" }
                             ]
                         },
                         {
                             viewtype: "checkbox",
-                            text: "加护栏",
+                            text: "护栏",
                             key: "isBarred",
                             data: [
                                 { value: true, text: "是" },
@@ -765,22 +762,22 @@ function displayChat(message) {
                         },
                         {
                             viewtype: "edittext",
-                            text: "每一边车道数:",
+                            text: "每一边车道数",
                             key: "numberOfLanesPerSide",
                         },
                         {
                             viewtype: "edittext",
-                            text: "车道宽:",
+                            text: "车道宽度",
                             key: "widthOfLanes",
                         },
                         {
                             viewtype: "edittext",
-                            text: "白线间隔:",
+                            text: "白线间隔",
                             key: "dashLineInterval",
                         },
                         {
                             viewtype: "edittext",
-                            text: "白线长度:",
+                            text: "白线长度",
                             key: "dashLineLength",
                         },
                     ])
@@ -791,22 +788,22 @@ function displayChat(message) {
             [undefined],
             {
                 "length": 10,
-                "roadStyle": "NS",
+                "roadStyle": "DB",
                 "isBarred": false,
                 "numberOfLanesPerSide": 2,
-                "widthOfLanes": 5,
-                "dashLineInterval": 3,
+                "widthOfLanes": 3
+                "dashLineInterval": 2
                 "dashLineLength": 4
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1005,15 +1002,15 @@ function displayChat(message) {
             },
             function (data) {
                 if (data == "custom") {
-                    logger.log("info", "Using custom materials.")
-                    logger.log("info", "First block type for surface.")
-                    logger.log("info", "Second for white line.")
-                    logger.log("info", "Third for yellow line.")
-                    logger.log("info", "Fourth for bar.")
+                    logger.log("info", "已采用自定义设置。)
+                    logger.log("info", "第一个是表面方块的类型。")
+                    logger.log("info", "第二个是白线。")
+                    logger.log("info", "第三个是黄线。")
+                    logger.log("info", "第四个是护栏。")
                     this.blockTypeArray = [undefined, undefined, undefined, undefined]
                 }
                 else {
-                    logger.log("info", "Using preset materials. Custom materials are erased!")
+                    logger.log("info", "使用预设设置，自定义设置将被删除。")
                     this.blockTypeArray = []
                 }
             }
@@ -1024,7 +1021,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Construct railway",
+            new Description("铺铁路",
                 new Usage(
                     [],
                     [],
@@ -1032,12 +1029,12 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Length:",
+                            text: "长度";
                             key: "length",
                         },
                         {
                             viewtype: "checkbox",
-                            text: "加护栏",
+                            text: "护栏",
                             key: "isBarred",
                             data: [
                                 { value: true, text: "是" },
@@ -1246,7 +1243,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Create a triangle.(Broken)",
+            new Description("创建三角形",
                 new Usage(
                     [],
                     [],
@@ -1260,13 +1257,13 @@ function displayChat(message) {
             {},
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1317,7 +1314,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Clear terrain",
+            new Description("清除地形",
                 new Usage(
                     [],
                     [],
@@ -1333,13 +1330,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1423,7 +1420,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Create polygon.",
+            new Description("创建多边形",
                 new Usage(
                     [],
                     [],
@@ -1431,12 +1428,12 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Number of sides:",
+                            text: "边数",
                             key: "numberOfSides",
                         },
                         {
                             viewtype: "edittext",
-                            text: "Radius:",
+                            text: "半径",
                             key: "r",
                         }
                     ])
@@ -1508,7 +1505,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Create circle.(on xz plane)",
+            new Description("创建平面圆形",
                 new Usage(
                     [],
                     [],
@@ -1516,7 +1513,7 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Radius:(Must be integer?)",
+                            text: "半径",
                             key: "r",
                         }
                     ])
@@ -1588,7 +1585,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Create sphere.",
+            new Description("创建球体",
                 new Usage(
                     [],
                     [],
@@ -1596,16 +1593,16 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Radius:",
+                            text: "半径",
                             key: "r",
                         },
                         {
                             viewtype: "button",
-                            text: "Hollow",
+                            text: "镂空",
                             key: "isHollow",
                             data: [
-                                { value: true, text: "Yes" },
-                                { value: false, text: "No" }
+                                { value: true, text: "是" },
+                                { value: false, text: "否" }
                             ]
                         }
                     ])
@@ -1674,7 +1671,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Generate The Flag of Norma Federal Republic",
+            new Description("创建诺玛联邦共和国旗帜",
                 new Usage(
                     [],
                     [],
@@ -1682,7 +1679,7 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Height:(Must be even)",
+                            text: "旗帜宽度",
                             key: "height",
                         }
                     ])
@@ -1720,7 +1717,7 @@ function displayChat(message) {
                     result += "Too few blockTypes!Refusing to execute.\n"
                 if (this.positionArray.indexOf(undefined) != -1)
                     result += "Too few positions!Refusing to execute."
-                if (this.option.height % 2 != 0) result += "The height is odd!"
+                if (this.option.height % 2 != 0) result += "无法使用奇数宽度。"
                 if (result == "") result = "success"
 
                 return result;
@@ -1755,7 +1752,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Construct subway",
+            new Description("创建地铁站",
                 new Usage(
                     [],
                     [],
@@ -1763,25 +1760,25 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Length:",
+                            text: "长度",
                             key: "length",
                         },
                         {
                             viewtype: "checkbox",
-                            text: "Use glass",
+                            text: "使用玻璃",
                             key: "useGlass",
                             data: [
-                                { value: true, text: "Yes" },
-                                { value: false, text: "No" },
+                                { value: true, text: "是" },
+                                { value: false, text: "否" },
                             ]
                         },
                         {
                             viewtype: "checkbox",
-                            text: "Carnival!\(Require \' Use glass\' to be opened\)",
+                            text: "使用有节日气息的染色玻璃（请确保“使用玻璃”为开启状态）",
                             key: "useColorfulGlass",
                             data: [
-                                { value: true, text: "Yes" },
-                                { value: false, text: "No" },
+                                { value: true, text: "是" },
+                                { value: false, text: "否" },
                             ]
 
                         }
@@ -2021,7 +2018,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("Construct blue ice \"railway\"",
+            new Description("创建蓝冰高铁",
                 new Usage(
                     [],
                     [],
@@ -2029,12 +2026,12 @@ function displayChat(message) {
                     [
                         {
                             viewtype: "edittext",
-                            text: "Length:",
+                            text: "长度",
                             key: "length",
                         },
                         {
                             viewtype: "edittext",
-                            text: "Width of the ice:",
+                            text: "蓝冰宽度",
                             key: "widthOfIce"
                         }
                     ])
@@ -2050,13 +2047,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)

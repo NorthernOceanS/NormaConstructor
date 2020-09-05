@@ -432,6 +432,15 @@ function displayChat(message) {
                                 { value: true, text: "On", dataForUIHandler: "resetAll" },
                                 { value: false, text: "Off", dataForUIHandler: "resetAll" }
                             ]
+                        },
+                        {
+                            viewtype: "button",
+                            text: "Infer coordinates from three coordinates.",
+                            key: "inferCoordinates",
+                            data: [
+                                { value: true, text: "On", dataForUIHandler: "threeCoordinates" },
+                                { value: false, text: "Off", dataForUIHandler: "twoCoordinates" }
+                            ]
                         }
                     ])
             ),
@@ -444,11 +453,26 @@ function displayChat(message) {
             "positionArrayLengthRequired": 2,
             "blockTypeArrayLengthRequired": 1,
             "__executeOnAllSatisfied": false,
-            "generateByServer": true
+            "generateByServer": true,
+            "inferCoordinates": false
         },
         method: {
             generate: function () {
                 if (this.option.generateByServer) {
+                    if (this.option.inferCoordinates) {
+                        [this.positionArray[0].coordinate, this.positionArray[1].coordinate] = [
+                            new Coordinate(
+                                Math.min(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x, this.positionArray[2].coordinate.x),
+                                Math.min(this.positionArray[0].coordinate.y, this.positionArray[1].coordinate.y, this.positionArray[2].coordinate.y),
+                                Math.min(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z, this.positionArray[2].coordinate.z)
+                                ),
+                                new Coordinate(
+                                    Math.max(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x, this.positionArray[2].coordinate.x),
+                                    Math.max(this.positionArray[0].coordinate.y, this.positionArray[1].coordinate.y, this.positionArray[2].coordinate.y),
+                                    Math.max(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z, this.positionArray[2].coordinate.z)
+                                    )
+                        ]
+                    }
                     return [{
                         "type": "fill", "data": {
                             blockType: this.blockTypeArray[0],
@@ -500,6 +524,12 @@ function displayChat(message) {
                     this.positionArray.fill(undefined)
                     this.blockTypeArray.fill(undefined)
                     this.directionArray.fill(undefined)
+                }
+                if (data == "threeCoordinates") {
+                    this.positionArray.push(undefined)
+                }
+                if (data == "twoCoordinates") {
+                    this.positionArray.pop()
                 }
             }
         }

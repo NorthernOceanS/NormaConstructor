@@ -588,12 +588,12 @@ function displayChat(message) {
                             [
                                 {
                                     viewtype: "edittext",
-                                    text: "Length:",
+                                    text: "长度",
                                     key: "length",
                                 },
                                 {
                                     viewtype: "edittext",
-                                    text: "Interval:",
+                                    text: "间隔",
                                     key: "interval",
                                 },
                                 {
@@ -624,7 +624,7 @@ function displayChat(message) {
                         "length": 0,
                         "interval": 0,
                         "gradient": 0,
-                        "doAcceptNewPosition": false
+                        "doAcceptNewPosition": true
                     },
                     method: {
                         generate: function () {
@@ -1774,7 +1774,7 @@ function displayChat(message) {
                         },
                         {
                             viewtype: "checkbox",
-                            text: "使用有节日气息的染色玻璃（请确保“使用玻璃”为开启状态）",
+                            text: "使用染色玻璃（请确保“使用玻璃”为开启状态）",
                             key: "useColorfulGlass",
                             data: [
                                 { value: true, text: "是" },

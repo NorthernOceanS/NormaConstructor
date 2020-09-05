@@ -15,7 +15,7 @@ let coordinatePlayerLookingAt = undefined
 
 let localOption = {
     "__logLevel": "verbose",
-    "__on":true
+    "__on": true
 }
 const logger = {
     displayChat, displayObject,
@@ -94,7 +94,7 @@ clientSystem.initialize = function () {
             displayChat(eventData.data.message)
     })
     clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
-        if (playerID == eventData.data.playerID&&(localOption["__on"]||eventData.data.command=="show_menu")) {
+        if (playerID == eventData.data.playerID && (localOption["__on"] || eventData.data.command == "show_menu")) {
             switch (eventData.data.command) {
                 case "get_data": {
                     logger.logObject("debug", eventData.data.additionalData)
@@ -184,9 +184,9 @@ clientSystem.initialize = function () {
                 }
                 case "read_tag": {
                     function parseTag(tag) {
-                        let command=tag.split(' ')
-                        if(command[0]=="add"&&command[1]=="b"){
-                            storeData(new BlockType(command[2],JSON.parse(command[3])),undefined,undefined)
+                        let command = tag.split(' ')
+                        if (command[0] == "add" && command[1] == "b") {
+                            storeData(new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
                         }
                     }
                     eventData.data.additionalData.forEach((tag) => {
@@ -199,7 +199,7 @@ clientSystem.initialize = function () {
     })
     clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
 
-        if (playerID == eventData.data.playerID&&localOption["__on"]) {
+        if (playerID == eventData.data.playerID && localOption["__on"]) {
             logger.log("debug", "RECEIVE:")
             logger.logObject("debug", eventData)
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
@@ -577,6 +577,11 @@ function displayChat(message) {
                                         { value: false, text: "No" },
                                         { value: true, text: "Yes" }
                                     ]
+                                },
+                                {
+                                    viewtype: "edittext",
+                                    text: "Vertical gradient:",
+                                    key: "gradient",
                                 }
                             ])
                     ),
@@ -591,6 +596,7 @@ function displayChat(message) {
                         "directionArrayLengthRequired": 1,
                         "length": 0,
                         "interval": 0,
+                        "gradient": 0,
                         "doAcceptNewPosition": false
                     },
                     method: {
@@ -620,7 +626,7 @@ function displayChat(message) {
                                     for (let z = positionArray[0].coordinate.z; z < this.option.length + positionArray[0].coordinate.z; z += (this.option.interval + 1))
                                         blockArray.push(new Block(
                                             new Position(
-                                                new Coordinate(x, y, z),
+                                                new Coordinate(x, this.option.gradient * (z - positionArray[0].coordinate.z) + y, z),
                                                 positionArray[0].tickingArea
                                             ),
                                             blockTypeArray[0])
@@ -633,7 +639,7 @@ function displayChat(message) {
                                     for (let z = positionArray[0].coordinate.z; z > -this.option.length + positionArray[0].coordinate.z; z -= (this.option.interval + 1))
                                         blockArray.push(new Block(
                                             new Position(
-                                                new Coordinate(x, y, z),
+                                                new Coordinate(x, -this.option.gradient * (z - positionArray[0].coordinate.z) + y, z),
                                                 positionArray[0].tickingArea
                                             ),
                                             blockTypeArray[0])
@@ -646,7 +652,7 @@ function displayChat(message) {
                                     for (let x = positionArray[0].coordinate.x; x < this.option.length + positionArray[0].coordinate.x; x += (this.option.interval + 1))
                                         blockArray.push(new Block(
                                             new Position(
-                                                new Coordinate(x, y, z),
+                                                new Coordinate(x, this.option.gradient * (x - positionArray[0].coordinate.x) + y, z),
                                                 positionArray[0].tickingArea
                                             ),
                                             blockTypeArray[0])
@@ -659,7 +665,7 @@ function displayChat(message) {
                                     for (let x = positionArray[0].coordinate.x; x > -this.option.length + positionArray[0].coordinate.x; x -= (this.option.interval + 1))
                                         blockArray.push(new Block(
                                             new Position(
-                                                new Coordinate(x, y, z),
+                                                new Coordinate(x, -this.option.gradient * (x - positionArray[0].coordinate.x) + y, z),
                                                 positionArray[0].tickingArea
                                             ),
                                             blockTypeArray[0])

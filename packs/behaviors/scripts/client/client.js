@@ -153,7 +153,7 @@ clientSystem.initialize = function () {
                     break;
                 }
                 case "choose_next_generator": {
-                    if (localOption["__on"] == true) {setLocalOption('__on', false);logger.log("info", "插件已禁用")} else{setLocalOption('__on', true);logger.log("info", "插件已启用")};
+                    if (localOption["__on"] == true) setLocalOption('__on', false);logger.log("info", "插件已禁用") else setLocalOption('__on', true);logger.log("info", "插件已启用")
                     break;
                 }
                 case "show_saved_data": {

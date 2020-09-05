@@ -16,12 +16,12 @@
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
                             <div>
-                                <div style="width: 100%;">Master Switch</div>
+                                <div style="width: 100%;">允许插件运行</div>
                                 <div style="display: flex;flex-direction: row;justify-content:center;">
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setLocalOption('__on',true)">On</button>
+                                        onclick="setLocalOption('__on',true)">是</button>
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setLocalOption('__on',false)">Off</button>
+                                        onclick="setLocalOption('__on',false)">否</button>
                                 </div>
 
                             </div>
@@ -30,12 +30,12 @@
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
                             <div>
-                                <div style="width: 100%;">Request Additional Position</div>
+                                <div style="width: 100%;">自动获取坐标</div>
                                 <div style="display: flex;flex-direction: row;justify-content:center;">
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setServerSideOption('__requestAdditionalPosition',true)">On</button>
+                                        onclick="setServerSideOption('__requestAdditionalPosition',true)">是</button>
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setServerSideOption('__requestAdditionalPosition',false)">Off</button>
+                                        onclick="setServerSideOption('__requestAdditionalPosition',false)">否</button>
                                 </div>
 
                             </div>
@@ -44,12 +44,12 @@
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
                             <div>
-                                <div style="width: 100%;">Request Additional BlockType</div>
+                                <div style="width: 100%;">自动获取方块类型</div>
                                 <div style="display: flex;flex-direction: row;justify-content:center;">
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setServerSideOption('__requestAdditionalBlockType',true)">On</button>
+                                        onclick="setServerSideOption('__requestAdditionalBlockType',true)">是</button>
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setServerSideOption('__requestAdditionalBlockType',false)">Off</button>
+                                        onclick="setServerSideOption('__requestAdditionalBlockType',false)">否</button>
                                 </div>
 
                             </div>
@@ -58,12 +58,12 @@
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
                             <div>
-                                <div style="width: 100%;">Request Additional Direction</div>
+                                <div style="width: 100%;">自动获取方向</div>
                                 <div style="display: flex;flex-direction: row;justify-content:center;">
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setServerSideOption('__requestAdditionalDirection',true)">On</button>
+                                        onclick="setServerSideOption('__requestAdditionalDirection',true)">是</button>
                                     <button class="button" style="width: 50%;padding: 0%;"
-                                        onclick="setServerSideOption('__requestAdditionalDirection',false)">Off</button>
+                                        onclick="setServerSideOption('__requestAdditionalDirection',false)">否</button>
                                 </div>
 
                             </div>
@@ -72,20 +72,20 @@
                     <div>
                         <div style="display: flex;flex-direction: column;justify-content:center;">
                             <div>
-                                <div style="width: 100%;">Log level:</div>
+                                <div style="width: 100%;">日志最低等级</div>
                                 <div style="width: 100%;display: flex;flex-direction: row;justify-content:center;flex-wrap:wrap;">
                                     <button class="button" style="padding: 0%;width:50%" 
-                                        onclick="setLocalOption('__logLevel','verbose')">verbose</button>
+                                        onclick="setLocalOption('__logLevel','verbose')">NZISJULAO</button>
                                     <button class="button" style="padding: 0%;width:50%"
-                                        onclick="setLocalOption('__logLevel','debug')">debug</button>
+                                        onclick="setLocalOption('__logLevel','debug')">调试</button>
                                     <button class="button" style="padding: 0%;width:50%"
-                                        onclick="setLocalOption('__logLevel','info')">info</button>
+                                        onclick="setLocalOption('__logLevel','info')">信息</button>
                                     <button class="button" style="padding: 0%;width:50%"
-                                        onclick="setLocalOption('__logLevel','warning')">warning</button>
+                                        onclick="setLocalOption('__logLevel','warning')">警告</button>
                                     <button class="button" style="padding: 0%;width:50%"
-                                        onclick="setLocalOption('__logLevel','error')">error</button>
+                                        onclick="setLocalOption('__logLevel','error')">错误</button>
                                     <button class="button" style="padding: 0%;width:50%"
-                                        onclick="setLocalOption('__logLevel','fatal')">fatal</button>
+                                        onclick="setLocalOption('__logLevel','fatal')">爆炸</button>
                                 </div>
 
                             </div>
@@ -171,9 +171,9 @@
                             <div
                                 style="padding-left: 6px;padding-right: 0px;width:20%;height:auto;display: flex;flex-direction: column;">
                                 <button class="button" style="width: 100%;padding: 0%;height: 30%;"
-                                    onclick="handleEditTextInput('d')">Del</button>
+                                    onclick="handleEditTextInput('d')">删除</button>
                                 <button class="button" style="width: 100%;padding: 0%;height: 30%;"
-                                    onclick="setNumber()">Ent</button>
+                                    onclick="setNumber()">确定</button>
                             </div>
                         </div>
 

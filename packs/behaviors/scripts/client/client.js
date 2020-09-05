@@ -139,21 +139,21 @@ clientSystem.initialize = function () {
                 }
                 case "remove_last_position": {
                     generatorArray[generatorIndex].removePosition()
-                    logger.log("info", "已移除最新的坐标。")
+                    logger.log("info", "已移除上一个坐标。")
                     break;
                 }
                 case "remove_last_blocktype": {
                     generatorArray[generatorIndex].removeBlockType()
-                    logger.log("info", "已移除最新的方块类型。")
+                    logger.log("info", "已移除上一个方块类型。")
                     break;
                 }
                 case "remove_last_direction": {
                     generatorArray[generatorIndex].removeDirection()
-                    logger.log("info", "已移除最新的方向。")
+                    logger.log("info", "已移除上一个方向。")
                     break;
                 }
                 case "choose_next_generator": {
-                    if (localOption["__on"] == true) setLocalOption('__on', false);logger.log("info", "插件已禁用") else setLocalOption('__on', true);logger.log("info", "插件已启用")
+                    if (localOption["__on"]) {setLocalOption('__on', false);logger.log("info", "插件已禁用")} else{setLocalOption('__on', true);logger.log("info", "插件已启用")}
                     break;
                 }
                 case "show_saved_data": {
@@ -713,7 +713,7 @@ function displayChat(message) {
                     if (indexOfVacancy == -1) {
                         this.positionArray = this.positionArray.slice(1)
                         this.positionArray.push(position)
-                        logger.log("info", "坐标过多，已启用新的坐标。")
+                        logger.log("info", "坐标过多，已移除旧坐标。")
                     }
                     else this.positionArray[indexOfVacancy] = position
                     logger.log("info", `已设置新的坐标。`)
@@ -791,8 +791,8 @@ function displayChat(message) {
                 "roadStyle": "DB",
                 "isBarred": false,
                 "numberOfLanesPerSide": 2,
-                "widthOfLanes": 3
-                "dashLineInterval": 2
+                "widthOfLanes": 3,
+                "dashLineInterval": 2,
                 "dashLineLength": 4
             },
 
@@ -1002,7 +1002,7 @@ function displayChat(message) {
             },
             function (data) {
                 if (data == "custom") {
-                    logger.log("info", "已采用自定义设置。)
+                    logger.log("info", "已采用自定义设置。")
                     logger.log("info", "第一个是表面方块的类型。")
                     logger.log("info", "第二个是白线。")
                     logger.log("info", "第三个是黄线。")

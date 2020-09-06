@@ -6,6 +6,6 @@ item.normaconstructor:remove_last_position.name=删除上一个坐标
 item.normaconstructor:remove_last_direction.name=删除上一个方向
 item.normaconstructor:remove_last_blocktype.name=删除上一个方块类型
 item.normaconstructor:choose_next_generator.name=全局开关
-item.normaconstructor:show_menu.name=菜单
+item.normaconstructor:show_menu.name=打开生成器控制面板
 item.normaconstructor:show_saved_data.name=查看设置
 item.normaconstructor:read_tag.name=读取标签

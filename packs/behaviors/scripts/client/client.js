@@ -26,7 +26,7 @@ const logger = {
             ["info", { num: 2, color: "§b信息：" }],
             ["warning", { num: 3, color: "§e警告：" }],
             ["error", { num: 4, color: "§c错误：" }],
-            ["fatal", { num: 5, color: "§4致命错误：" }]
+            ["fatal", { num: 5, color: "§4严重错误（请截图上报到：https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439）：" }]
         ])
         if (colorMap.get(level).num >= colorMap.get(localOption["__logLevel"]).num)
             this.displayChat(colorMap.get(level).color + message)
@@ -64,7 +64,7 @@ clientSystem.initialize = function () {
         //Set default setServerSideOption:(Yes I hate it too)
         setServerSideOption("__requestAdditionalPosition", true)
         setServerSideOption("__requestAdditionalBlockType", false)
-        setServerSideOption("__requestAdditionalDirection", false)
+        setServerSideOption("__requestAdditionalDirection", true)
 
         //Wait until the mobile version officially supports scripting API.
 
@@ -451,7 +451,7 @@ function displayChat(message) {
             "blockTypeArrayLengthRequired": 1,
             "__executeOnAllSatisfied": true,
             "generateByServer": true,
-            "inferCoordinates": true
+            "inferCoordinates": false
         },
         method: {
             generate: function () {

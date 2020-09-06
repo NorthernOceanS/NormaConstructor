@@ -405,10 +405,10 @@ let utils = {
 		canonical: {
 			addFunction: function (type, data, target) {
 				let indexOfVacancy = target.indexOf(undefined)
-				if (indexOfVacancy == -1) utils.logger.log("warning", `Too many ${type}s!New one is ignored`)
+				if (indexOfVacancy == -1) utils.logger.log("warning", `${type}过多，已移除新$type。`)
 				else {
 					target[indexOfVacancy] = data
-					utils.logger.log("info", `New ${type} accepted.`)
+					utils.logger.log("info", `已设置新的${type}。`)
 				}
 			},
 			removeFunction: function (index, target) {
@@ -420,11 +420,11 @@ let utils = {
 			validateParameter: function () {
 				let result = new String()
 				if (this.blockTypeArray.indexOf(undefined) != -1)
-					result += "Too few blockTypes!Refusing to execute.\n"
+					result += "缺失方块类型，运行失败。\n"
 				if (this.positionArray.indexOf(undefined) != -1)
-					result += "Too few positions!Refusing to execute.\n"
+					result += "缺失坐标，运行失败。\n"
 				if (this.directionArray.indexOf(undefined) != -1)
-					result += "Too few directions!Refusing to execute."
+					result += "缺失方向，运行失败。"
 				if (result == "") result = "success"
 				else utils.logger.log("error", result)
 

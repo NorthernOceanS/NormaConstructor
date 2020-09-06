@@ -1053,13 +1053,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1448,13 +1448,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1527,13 +1527,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1617,13 +1617,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1693,13 +1693,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)
@@ -1795,13 +1795,13 @@ function displayChat(message) {
             },
 
             function (position) {
-                utils.generators.canonical.addFunction("position", position, this.positionArray)
+                utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
             function (blockType) {
-                utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray)
+                utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
             },
             function (direction) {
-                utils.generators.canonical.addFunction("direction", direction, this.directionArray)
+                utils.generators.canonical.addFunction("方向", direction, this.directionArray)
             },
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.positionArray)

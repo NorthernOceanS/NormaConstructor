@@ -7,7 +7,7 @@
     },
     "components": {
       "minecraft:icon": "removeLastBlockType",
-      "minecraft:render_offsets": "apple"
+      "minecraft:render_offsets": null
     }
   }
 }

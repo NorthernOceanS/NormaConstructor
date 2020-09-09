@@ -22,12 +22,12 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 - 稳定性差
 - 用户群体在减少
 #### 脚本API
-- 支持大部分的基岩版  
-- 没有任何广告,并且算法开源  
-- 算法在不断更新  
-- 安装步骤简单  
-- 可以在服务器(pm/nk等除外)或领域使用  
-- 1.12左右就能使用脚本API了  
+- 支持大部分的基岩版
+- 没有任何广告,并且算法开源
+- 算法在不断更新
+- 安装步骤简单
+- 可以在服务器(pm/nk等除外)或领域使用
+- 1.12左右就能使用脚本API了
 - 巨大的未被发掘的潜力
 ### 什么是诺玛建工（NormaConstructor）
 前面提到诺玛建工是一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，可以加快您的建筑过程。
@@ -59,7 +59,7 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 如果你是iOS：由于环境过于封闭，可能需要越狱，此处不再赘述
 如果你是Windows 10：请关闭您的反病毒程序（如360）
 ##### 聊天栏出现“Script Error：XXXX”
-请截图并在[QQ群](https://jq.qq.com/k=wt2uYSnW "加群")上报
+请截图并在[QQ群](https://jq.qq.com/?_wv=1027&k=wt2uYSnW "加群")上报
 #### 正常进入
 请在聊天栏运行`/function getTools`获取全套工具或运行`/function getGTools`获取本人认为有用的工具。（如出现未找到相关功能请重新安装此附加包或退出重新进入Minecraft）
 ### 开始使用

@@ -7,7 +7,7 @@
     },
     "components": {
       "minecraft:icon": "getAir",
-      "minecraft:render_offsets": null
+      "minecraft:render_offsets": "apple"
     }
   }
 }

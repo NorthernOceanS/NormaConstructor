@@ -7,7 +7,7 @@
     },
     "components": {
       "minecraft:icon": "execute",
-      "minecraft:render_offsets": null
+      "minecraft:render_offsets": "apple"
     }
   }
 }

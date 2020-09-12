@@ -59,7 +59,7 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 如果你是iOS：由于环境过于封闭，可能需要越狱，此处不再赘述
 如果你是Windows 10：请关闭您的反病毒程序（如360）
 ##### 聊天栏出现“Script Error：XXXX”
-请截图并在[QQ群](https://jq.qq.com/k=wt2uYSnW "加群")上报
+请截图并在[QQ群](https://jq.qq.com/?_wv=1027&k=p3IjjMWN "加群")上报
 #### 正常进入
 请在聊天栏运行`/function getTools`获取全套工具或运行`/function getGTools`获取本人认为有用的工具。（如出现未找到相关功能请重新安装此附加包或退出重新进入Minecraft）
 ### 开始使用

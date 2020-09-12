@@ -122,7 +122,15 @@ let's all shout:NZ IS JULAO!|直接运行某项功能
 间隔|生成的线的间隔|0
 坐标|确定两点坐标|2个
 方块类型|确定填充物|1个
-# 未完
+# 未完 后面是未处理部分
+## WARNING: The addon use @AtomicBlom 's toolchain, but modified. Before building, please open  `node_modules\minecraft-addon-toolchain-browserify\index.js` and change line 31:
+```
+this.bundleSources = ["scripts/**/*.js" ];
+```
+## to
+```
+this.bundleSources = ["scripts/**/*.*" ];
+```
 ## Credit
 Credits to reimarPB for CSS  
 Credits to WavePlayz for block.js  

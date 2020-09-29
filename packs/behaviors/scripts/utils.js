@@ -348,7 +348,6 @@ const blockDirectionTable = {
 	},
 	"vine_direction_bits": {
 		"default": {
-			"pass": 0,
 			"+z": 1,
 			"-x": 2,
 			"-x+z": 3,

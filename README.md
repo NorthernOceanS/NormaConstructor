@@ -4,7 +4,7 @@
 
 Speed up your construction.Created by NorthernOceanS.
 
-## WARNING: The addon use @AtomicBlom 's toolchain, but modified. Before building, please open  `node_modules\minecraft-addon-toolchain-browserify\index.js` and change line 31:
+## WARNING: The addon use @AtomicBlom 's toolchain, but modified.
 ```
 this.bundleSources = ["scripts/**/*.js" ];
 ```

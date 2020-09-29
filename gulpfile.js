@@ -4,6 +4,7 @@ const BrowserifySupport = require("minecraft-addon-toolchain-browserify");
 const builder = new MinecraftAddonBuilder("NormaConstructor");
 
 //!!!!!!!!!!!!!!!!!!!!
+const browserifySupport = new BrowserifySupport();
 browserifySupport.bundleSources = ["scripts/**/*.js" ];
 
 builder.addPlugin(new BrowserifySupport());

@@ -98,8 +98,8 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 NZ IS JULAO|当前生成器
 So HUGE NZ is!|普通注释
 How huge NZ is:|输入文本（一般为数字，无法输入可以用旁边的小键盘）
-Is NZ the one and only JULAO?|切换可选功能
-let's all shout:NZ IS JULAO!|直接运行某项功能
+Is NZ the one and only JULAO?|切换真伪
+let's all shout:NZ IS JULAO!|切换多项功能
 #### 生成器
 ##### 两点生成长方体
 设置两点坐标并选择方块即可生成长方体

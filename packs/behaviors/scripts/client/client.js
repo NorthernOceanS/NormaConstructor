@@ -481,8 +481,6 @@ function displayChat(message) {
                 else {
                     let blockArray = []
 
-                    logger.log("verbose", "NZ is JULAO!")
-
                     let positionArray = this.positionArray
                     let blockTypeArray = this.blockTypeArray
                     let minCoordinate = new Coordinate(
@@ -496,7 +494,6 @@ function displayChat(message) {
                         Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
                     )
 
-                    logger.log("verbose", "Yes, NZ is JULAO!")
 
                     for (let x = minCoordinate.x; x <= maxCoordinate.x; x++) {
                         for (let y = minCoordinate.y; y <= maxCoordinate.y; y++) {
@@ -630,13 +627,11 @@ function displayChat(message) {
                         generate: function () {
                             let blockArray = []
 
-                            logger.log("verbose", "NZ is JULAO!")
 
                             let positionArray = this.positionArray
                             let blockTypeArray = this.blockTypeArray
                             let directionArray = this.directionArray
 
-                            logger.log("verbose", "Yes, NZ is JULAO!")
 
 
                             let direction = (function () {
@@ -819,14 +814,11 @@ function displayChat(message) {
             function () {
                 let blockArray = []
 
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
-
-                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 //{"blockIdentifier":"minecraft:stained_hardened_clay","blockState":{"color":"cyan"}}
 
@@ -1075,13 +1067,11 @@ function displayChat(message) {
             function () {
                 let blockArray = []
 
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
-                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 let directionMark = (function () {
                     if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
@@ -1240,10 +1230,10 @@ function displayChat(message) {
     )
 }());
 
-(function () {
+/*(function () {
     generatorArray.push(
         new Generator(
-            new Description("像素字(全角)",
+            new Description("创建像素字",
                 new Usage(
                     [],
                     [],
@@ -1253,15 +1243,25 @@ function displayChat(message) {
                             viewtype: "edittext",
                             text: "内容",
                             key: "keyText",
+                        /*
                         },
                         {
                             viewtype: "checkbox",
-                            text: "平放",
-                            key: "isFlat",
+                            text: "垂直",
+                            key: "isVertical",
                             data: [
                                 { value: true, text: "是" },
                                 { value: false, text: "否" },
                             ]
+                        },
+                        {
+                            viewtype: "checkbox",
+                            text: "放倒",
+                            key: "isFlat",
+                            data: [
+                                { value: true, text: "是" },
+                                { value: false, text: "否" },
+                            ]*\
                         }
                     ])
             ),
@@ -1270,10 +1270,10 @@ function displayChat(message) {
             [undefined],
             [undefined],
             {
-                "keyText": "NZ IS JULAO",
-                "isFlat": false
+                "keyText": "test"//,
+                //"isFlat": false,
+                //"isVertical": false
             },
-            /*
             function (position) {
                 utils.generators.canonical.addFunction("坐标", position, this.positionArray)
             },
@@ -1292,36 +1292,27 @@ function displayChat(message) {
             function (index) {
                 utils.generators.canonical.removeFunction(index, this.directionArray)
             },
-
+            
             function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 let blockArray = []
 
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
-                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 let directionMark = (function () {
                     if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
                     else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
                     else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
                     else return "-z"
-                }());
-
-                let materials = {
-                    "glass_pane": new BlockType("minecraft:glass_pane", null),
-                    "iron_block": new BlockType("minecraft:iron_block", null),
-                    "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
-                    "rail": utils.blockGeometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z")
-                }
+                }())
 
 
 
-                //This assumes the original facing axis is +x.
+                //This assumes the original facing axis is +x.*\
                 let transform = (function (facingAxis) {
                     switch (facingAxis) {
                         case "+x": {
@@ -1354,14 +1345,14 @@ function displayChat(message) {
                         }
                     }
                 }(directionMark))
-
-                let palette = ["rail", "redstone", "rail"];
-
-                if (option["isBarred"]) {
-                    palette.unshift("edge")
-                    palette.push("edge")
+                /*
+                new function getfont(text) {
+                    for (let i = 0; i < text.length; i++) {
+                        l.push(mcfont[charCodeAt(text[i])])
+                    }
+                    return(i)
                 }
-
+                
                 const offset = (palette.length - 1) / 2;
                 for (let i = 0; i < palette.length; i++) {
                     switch (palette[i]) {
@@ -1450,17 +1441,17 @@ function displayChat(message) {
                         }
                     }
                 }
-
-                return blockArray */
+*\
+                return blockArray
             },
             function () {
                 this.positionArray = [undefined]
-                this.blockTypeArray = []
+                this.blockTypeArray = [undefined]
                 this.directionArray = [undefined]
             }
         )
     )
-}());
+}());*/
 
 (function () {
     generatorArray.push(
@@ -1501,12 +1492,10 @@ function displayChat(message) {
             function () {
                 let blockArray = []
 
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
 
-                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 let coordinateArray = utils.coordinateGeometry.generateFilledPlanarTriangle(
                     positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z,
@@ -1573,7 +1562,6 @@ function displayChat(message) {
             function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
                 if (this.option.generateByServer) {
-                    logger.log("verbose", "NZ is JULAO!")
 
                     let x_min = Math.min(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x)
                     let z_min = Math.min(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z)
@@ -1597,8 +1585,6 @@ function displayChat(message) {
                 }
                 else {
                     let blockArray = []
-
-                    logger.log("verbose", "NZ is JULAO!")
 
                     let positionArray = this.positionArray
                     let blockTypeArray = this.blockTypeArray
@@ -1692,7 +1678,6 @@ function displayChat(message) {
             function () {
                 let blockArray = []
 
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
 
@@ -1772,8 +1757,6 @@ function displayChat(message) {
                 let blockArray = []
 
 
-
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
@@ -1861,9 +1844,6 @@ function displayChat(message) {
             function () {
                 let blockArray = []
 
-
-
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
@@ -2039,13 +2019,10 @@ function displayChat(message) {
             function () {
                 let blockArray = []
 
-                logger.log("verbose", "NZ is JULAO!")
-
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
-                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 const directionMark = utils.geometry.getDirectionMark.horizontal(directionArray[0].y)
 
@@ -2290,13 +2267,11 @@ function displayChat(message) {
             function () { return utils.generators.canonical.validateParameter.call(this) },
             function () {
 
-                logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
                 let blockTypeArray = this.blockTypeArray
                 let directionArray = this.directionArray
                 let option = this.option
-                logger.log("verbose", "Yes, NZ is JULAO!")
 
                 const directionMark = utils.geometry.getDirectionMark.horizontal(directionArray[0].y)
 

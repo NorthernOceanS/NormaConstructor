@@ -348,7 +348,7 @@ const blockDirectionTable = {
 	},
 	"vine_direction_bits": {
 		"default": {
-			"NZ IS JULAO": 0,
+			"pass": 0,
 			"+z": 1,
 			"-x": 2,
 			"-x+z": 3,
@@ -405,7 +405,7 @@ let utils = {
 		canonical: {
 			addFunction: function (type, data, target) {
 				let indexOfVacancy = target.indexOf(undefined)
-				if (indexOfVacancy == -1) utils.logger.log("warning", `${type}过多，已移除新$type。`)
+				if (indexOfVacancy == -1) utils.logger.log("warning", `${type}过多，已移除新${type}。`)
 				else {
 					target[indexOfVacancy] = data
 					utils.logger.log("info", `已设置新的${type}。`)
@@ -457,9 +457,9 @@ let utils = {
 					new Array(blockTypeArrayLength).fill(undefined),
 					new Array(directionArrayLength).fill(undefined),
 					option,
-					function (position) { utils.generators.canonical.addFunction("position", position, this.positionArray) },
-					function (blockType) { utils.generators.canonical.addFunction("block type", blockType, this.blockTypeArray) },
-					function (direction) { utils.generators.canonical.addFunction("direction", direction, this.directionArray) },
+					function (position) { utils.generators.canonical.addFunction("坐标", position, this.positionArray) },
+					function (blockType) { utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray) },
+					function (direction) { utils.generators.canonical.addFunction("方向", direction, this.directionArray) },
 					function (index) { utils.generators.canonical.removeFunction(index, this.positionArray) },
 					function (index) { utils.generators.canonical.removeFunction(index, this.blockTypeArray) },
 					function (index) { utils.generators.canonical.removeFunction(index, this.directionArray) },

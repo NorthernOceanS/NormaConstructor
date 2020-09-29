@@ -5,7 +5,7 @@ const builder = new MinecraftAddonBuilder("NormaConstructor");
 
 //!!!!!!!!!!!!!!!!!!!!
 const browserifySupport = new BrowserifySupport();
-browserifySupport.bundleSources = ["scripts/**/*.*" ];
+browserifySupport.bundleSources.push("scripts/**/*.*");
 
 builder.addPlugin(browserifySupport);
 

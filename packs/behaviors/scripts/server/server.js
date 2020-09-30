@@ -12,19 +12,47 @@ let compiler = {
     },
     clone: function ({ startCoordinate, endCoordinate, targetCoordinate }) {
 
-        for (let x = startCoordinate.x; (startCoordinate.x < endCoordinate.x) ? (x <= endCoordinate.x) : (x >= endCoordinate.x); x = x + ((startCoordinate.x < endCoordinate.x) ? 32 : -32))
-            for (let y = startCoordinate.y; (startCoordinate.y < endCoordinate.y) ? (y <= endCoordinate.y) : (y >= endCoordinate.y); y = y + ((startCoordinate.y < endCoordinate.y) ? 32 : -32))
-                for (let z = startCoordinate.z; (startCoordinate.z < endCoordinate.z) ? (z <= endCoordinate.z) : (z >= endCoordinate.z); z = z + ((startCoordinate.z < endCoordinate.z) ? 32 : -32)) {
+        // for (let x = startCoordinate.x; (startCoordinate.x < endCoordinate.x) ? (x <= endCoordinate.x) : (x >= endCoordinate.x); x = x + ((startCoordinate.x < endCoordinate.x) ? 32 : -32))
+        //     for (let y = startCoordinate.y; (startCoordinate.y < endCoordinate.y) ? (y <= endCoordinate.y) : (y >= endCoordinate.y); y = y + ((startCoordinate.y < endCoordinate.y) ? 32 : -32))
+        //         for (let z = startCoordinate.z; (startCoordinate.z < endCoordinate.z) ? (z <= endCoordinate.z) : (z >= endCoordinate.z); z = z + ((startCoordinate.z < endCoordinate.z) ? 32 : -32)) {
 
+        //             serverSystem.executeCommand(`/clone ${x} ${y} ${z} 
+        //             ${(startCoordinate.x < endCoordinate.x) ? Math.min(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x) : Math.max(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x)} 
+        //             ${(startCoordinate.y < endCoordinate.y) ? Math.min(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y) : Math.max(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y)} 
+        //             ${(startCoordinate.z < endCoordinate.z) ? Math.min(z + 31 * ((startCoordinate.z < endCoordinate.z) ? 1 : -1), endCoordinate.z) : Math.max(z + 31 * ((startCoordinate.z < endCoordinate.z) ? 1 : -1), endCoordinate.z)} 
+        //             ${targetCoordinate.x + x - startCoordinate.x} 
+        //             ${targetCoordinate.y + y - startCoordinate.y} 
+        //             ${targetCoordinate.z + z - startCoordinate.z} 
+        //             masked force`, (commandResultData) => { })
+        //         }
+
+        if (startCoordinate.x >= endCoordinate.x) {
+            let temp = startCoordinate.x
+            startCoordinate.x = endCoordinate.x
+            endCoordinate.x = temp
+        }
+        if (startCoordinate.y >= endCoordinate.y) {
+            let temp = startCoordinate.y
+            startCoordinate.y = endCoordinate.y
+            endCoordinate.y = temp
+        }
+        if (startCoordinate.z >= endCoordinate.z) {
+            let temp = startCoordinate.z
+            startCoordinate.z = endCoordinate.z
+            endCoordinate.z = temp
+        }
+        for (let x = startCoordinate.x; x <= endCoordinate.x; x += 32)
+            for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
+                for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32)
                     serverSystem.executeCommand(`/clone ${x} ${y} ${z} 
-                    ${(startCoordinate.x < endCoordinate.x) ? Math.min(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x) : Math.max(x + 31 * ((startCoordinate.x < endCoordinate.x) ? 1 : -1), endCoordinate.x)} 
-                    ${(startCoordinate.y < endCoordinate.y) ? Math.min(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y) : Math.max(y + 31 * ((startCoordinate.y < endCoordinate.y) ? 1 : -1), endCoordinate.y)} 
-                    ${(startCoordinate.z < endCoordinate.z) ? Math.min(z + 31 * ((startCoordinate.z < endCoordinate.z) ? 1 : -1), endCoordinate.z) : Math.max(z + 31 * ((startCoordinate.z < endCoordinate.z) ? 1 : -1), endCoordinate.z)} 
+                    ${Math.min(x + 31, endCoordinate.x)} 
+                    ${Math.min(y + 31, endCoordinate.y)} 
+                    ${Math.min(z + 31, endCoordinate.z)} 
                     ${targetCoordinate.x + x - startCoordinate.x} 
                     ${targetCoordinate.y + y - startCoordinate.y} 
                     ${targetCoordinate.z + z - startCoordinate.z} 
-                    masked force`, (commandResultData) => { })
-                }
+                    masked force`, (commandResultData) => { });
+
         return []
     },
     fill: function ({ blockType, startCoordinate, endCoordinate }) {
@@ -203,7 +231,8 @@ serverSystem.initialize = function () {
                     command, playerID,
                     Array.from(serverSystem.getComponent(eventData.data.entity, "minecraft:tag").data, (tag) => {
                         if (tag.startsWith("nc:")) {
-                            return tag.slice(3)}
+                            return tag.slice(3)
+                        }
                     })
                 )
             }

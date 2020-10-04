@@ -3,8 +3,8 @@
 [![icon](/.github/workflows/icon.png "诺玛")](https://github.com/NorthernOceanS/NormaConstructor)  
 [诺玛建工](https://github.com/NorthernOceanS/NormaConstructor "前往原仓库")，一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。  
 如果你正在寻找适合Minecraft基岩版的“小木斧”，那么恭喜你来对地方了！  
-原作者虽然是中国人但是为了发展选择了使用英文。  
-本人将此附加包进行了人工翻译，并且进行了一些优化。
+原作者虽然是中国人但是为了保持格式选择了使用英文。  
+本人将此附加包进行了人工翻译，进行了一些优化，添加了一些feature。
 ## 介绍
 ### 什么是Minecraft 脚本引擎（Minecraft Script Engine）
 Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的基岩版附加包功能。  
@@ -44,6 +44,7 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 #### Linux
 使用Minecraft 基岩版打开文件
 #### Android
+(即将到来的版本将会修复这个使用BlockLauncher才能启动的BUG)
 在文件管理中找到下载的.mcaddon文件，长按使用Minecraft打开，安装完成后退出游戏。
 使用blocklauncher进入游戏
 #### 其他版本也大同小异，此处不再赘述
@@ -55,8 +56,8 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 点击行为包并装载NormaConstructor Behavior
 #### 进入世界后出现错误
 ##### “您的设备不支持运行脚本”
-如果你是Android：请确定已使用Block Launcher进入游戏
-如果你是iOS：由于环境过于封闭，可能需要越狱，此处不再赘述
+如果你是Android：请确定已使用Block Launcher进入游戏(即将到来的版本将会修复这个BUG)
+如果你是iOS：由于环境过于封闭，可能需要越狱，此处不再赘述(即将到来的版本将会修复这个BUG)
 如果你是Windows 10：请关闭您的反病毒程序（如360）
 ##### 聊天栏出现“Script Error：XXXX”
 请截图并在[QQ群](https://jq.qq.com/?_wv=1027&k=p3IjjMWN "加群")上报

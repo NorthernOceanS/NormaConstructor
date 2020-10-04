@@ -1,18 +1,18 @@
 {
   "format_version": 1,
-  "header": {
-    "name": "NormaConstructor Resources",
-    "description": "Speed up your construction.Created by NorthernOceanS.",
-    "uuid": "8b9a64ef-054c-4b3f-a247-820b4d0f15b6",
-    "version": [
-      1,
-      0,
-      2
-    ]
-  },
+    "header": {
+        "name": "诺玛建工资源包",
+        "description": "诺玛建工（Create by NorthernOceanS and MCDRZF），一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。",
+        "uuid": "8b9a64ef-054c-4b3f-a247-820b4d0f15b6",
+        "version": [
+            1,
+            0,
+            2
+        ]
+    },
   "modules": [
     {
-      "description": "Resources for NormaConstructor",
+      "description": "诺玛建工材质包",
       "type": "resources",
       "uuid": "24ab1bd5-c617-4d67-a2de-7589f2407506",
       "version": [

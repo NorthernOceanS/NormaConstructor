@@ -404,7 +404,7 @@ let utils = {
 		canonical: {
 			addFunction: function (type, data, target) {
 				let indexOfVacancy = target.indexOf(undefined)
-				if (indexOfVacancy == -1) utils.logger.log("warning", `${type}过多，已移除新${type}。`)
+				if (indexOfVacancy == -1) utils.logger.log("warning", `${type}过多，已移除新的${type}。`)
 				else {
 					target[indexOfVacancy] = data
 					utils.logger.log("info", `已设置新的${type}。`)

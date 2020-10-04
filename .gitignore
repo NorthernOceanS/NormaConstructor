@@ -2,4 +2,3 @@ node_modules
 out
 /.vs
 /packs/behaviors/scripts/test.js
-/packs/behaviors/scripts/preset/font.json

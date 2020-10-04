@@ -147,6 +147,13 @@ serverSystem.initialize = function () {
         direction: undefined,
         playerID: undefined
     })
+
+    serverSystem.registerEventData("NormaConstructor:blockFetchResponse", {
+        blockType: undefined,
+        playerID: undefined,
+        requestID: undefined
+    })
+
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
     serverSystem.listenForEvent("NormaConstructor:setServerSideOption", (eventData) => {
@@ -199,6 +206,18 @@ serverSystem.initialize = function () {
         serveDataEventData.data.blockType = blockType
         serveDataEventData.data.playerID = eventData.data.playerID
         serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
+    })
+    serverSystem.listenForEvent("NormaConstructor:blockFetchRequest", (eventData) => {
+        let blockType = new BlockType(undefined, undefined)
+        let block = serverSystem.getBlock(eventData.data.position.tickingArea, eventData.data.position.coordinate)
+        blockType.blockIdentifier = block.__identifier__
+        blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
+
+        let blockFetchResponseEventData = serverSystem.createEventData("NormaConstructor:blockFetchResponse")
+        blockFetchResponseEventData.data.blockType = blockType
+        blockFetchResponseEventData.data.playerID = eventData.data.playerID
+        blockFetchResponseEventData.data.requestID = eventData.data.requestID
+        serverSystem.broadcastEvent("NormaConstructor:blockFetchResponse", blockFetchResponseEventData)
     })
 
     //I suppose I have to make an explanation.

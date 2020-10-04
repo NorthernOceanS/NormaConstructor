@@ -47,6 +47,12 @@ clientSystem.initialize = function () {
         playerID: undefined,
         position: undefined
     })
+    //TODO:Incorporate the following with the event above.
+    clientSystem.registerEventData("NormaConstructor:blockFetchRequest", {
+        playerID: undefined,
+        position: undefined,
+        requestID: undefined
+    })
 
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
@@ -279,6 +285,8 @@ clientSystem.initialize = function () {
             }
         }
     })
+
+    
 };
 
 clientSystem.update = function () {
@@ -302,14 +310,17 @@ function storeData(blockType, position, direction) {
     if (direction != undefined) generatorArray[generatorIndex].addDirection(direction)
     if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
 }
-function execute() {
+async function execute() {
     logger.log("info", "Start validating parameters...");
     let validateResult = generatorArray[generatorIndex].validateParameter();
     if (validateResult == "success") {
         logger.log("info", "Now Execution started.");
 
         //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
-        let buildInstructions = generatorArray[generatorIndex].generate();
+        let buildInstructions = await generatorArray[generatorIndex].generate();
+
+        logger.logObject("verbose", buildInstructions)
+
         buildInstructionsQuery = buildInstructionsQuery.concat(buildInstructions)
         //The following line is the original code which append the array to the query. Sadly, it will throw an error when there's too many blocks.
         //I...am not even sure if it is fixed.
@@ -337,6 +348,44 @@ function displayChat(message) {
     eventData.data.message = message;
     clientSystem.broadcastEvent("minecraft:display_chat_event", eventData);
 
+}
+
+class BlockFetch {
+    constructor() {
+        this.idToResolve = new Map()
+        clientSystem.listenForEvent("NormaConstructor:blockFetchResponse", function(eventData) {
+            if (eventData.data.playerID == playerID) {
+                let resolve = this.idToResolve.get(eventData.data.requestID)
+                resolve(eventData.data.blockType)
+                this.idToResolve.delete(eventData.data.requestID)
+            }
+        }.bind(this))
+    }
+    registerRequest(id, resolve) {
+        this.idToResolve.set(id, resolve)
+    }
+    get(tickingArea, x, y, z) {
+        let position = new Position(new Coordinate(x, y, z), tickingArea)
+        let blockFetchRequestEventData = clientSystem.createEventData("NormaConstructor:blockFetchRequest")
+        blockFetchRequestEventData.data.position = position
+        blockFetchRequestEventData.data.playerID = playerID
+        let requestID
+        do {
+            requestID = Math.random()
+        }
+        while (this.idToResolve.has(requestID))
+        blockFetchRequestEventData.data.requestID = requestID
+        clientSystem.broadcastEvent("NormaConstructor:blockFetchRequest", blockFetchRequestEventData)
+        return new Promise((resolve, reject) => {
+            this.registerRequest(requestID, resolve)
+        })
+    }
+}
+
+const blockFetch = new BlockFetch()
+async function getBlock(tickingArea, x, y, z) {
+    let blockType = await blockFetch.get(tickingArea, x, y, z)
+    return blockType
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2218,4 +2267,4 @@ function displayChat(message) {
             }
         }
     ))
-})()
+})();

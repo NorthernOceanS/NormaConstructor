@@ -185,6 +185,9 @@ clientSystem.initialize = function () {
                         if (command[0] == "add" && command[1] == "b") {
                             storeData(new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
                         }
+                        else if (command[0] == "set" && command[1] == "o") {
+                            generatorArray[generatorIndex].option[command[2]] = command[3]
+                        }
                     }
                     eventData.data.additionalData.forEach((tag) => {
                         if (tag) parseTag(tag)
@@ -462,12 +465,12 @@ function displayChat(message) {
                                 Math.min(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x, this.positionArray[2].coordinate.x),
                                 Math.min(this.positionArray[0].coordinate.y, this.positionArray[1].coordinate.y, this.positionArray[2].coordinate.y),
                                 Math.min(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z, this.positionArray[2].coordinate.z)
-                                ),
-                                new Coordinate(
-                                    Math.max(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x, this.positionArray[2].coordinate.x),
-                                    Math.max(this.positionArray[0].coordinate.y, this.positionArray[1].coordinate.y, this.positionArray[2].coordinate.y),
-                                    Math.max(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z, this.positionArray[2].coordinate.z)
-                                    )
+                            ),
+                            new Coordinate(
+                                Math.max(this.positionArray[0].coordinate.x, this.positionArray[1].coordinate.x, this.positionArray[2].coordinate.x),
+                                Math.max(this.positionArray[0].coordinate.y, this.positionArray[1].coordinate.y, this.positionArray[2].coordinate.y),
+                                Math.max(this.positionArray[0].coordinate.z, this.positionArray[1].coordinate.z, this.positionArray[2].coordinate.z)
+                            )
                         ]
                     }
                     return [{

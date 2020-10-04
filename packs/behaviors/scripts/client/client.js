@@ -1325,7 +1325,7 @@ function displayChat(message) {
                     }
                     return(l)
                 })(option["keyText"],mcfont)
-                let tempPosition = [-1,13,0]
+                let tempPosition = [0,15,0]
                 //t = 每个字
                 //i = 每列
                 //z = 每行

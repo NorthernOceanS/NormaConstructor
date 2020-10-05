@@ -148,11 +148,12 @@ serverSystem.initialize = function () {
         playerID: undefined
     })
 
-    serverSystem.registerEventData("NormaConstructor:blockFetchResponse", {
+    serverSystem.registerEventData("NZConstructor:blockFetchResponse", {
         blockType: undefined,
         playerID: undefined,
         requestID: undefined
     })
+
 
     serverSystem.registerEventData("NormaConstructor:ExecutionRequest", { playerID: undefined })
 
@@ -207,17 +208,21 @@ serverSystem.initialize = function () {
         serveDataEventData.data.playerID = eventData.data.playerID
         serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
     })
-    serverSystem.listenForEvent("NormaConstructor:blockFetchRequest", (eventData) => {
+    serverSystem.listenForEvent("NZConstructor:blockFetchRequest", (eventData) => {
         let blockType = new BlockType(undefined, undefined)
         let block = serverSystem.getBlock(eventData.data.position.tickingArea, eventData.data.position.coordinate)
         blockType.blockIdentifier = block.__identifier__
         blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
 
-        let blockFetchResponseEventData = serverSystem.createEventData("NormaConstructor:blockFetchResponse")
+        let blockFetchResponseEventData = serverSystem.createEventData("NZConstructor:blockFetchResponse")
         blockFetchResponseEventData.data.blockType = blockType
         blockFetchResponseEventData.data.playerID = eventData.data.playerID
         blockFetchResponseEventData.data.requestID = eventData.data.requestID
-        serverSystem.broadcastEvent("NormaConstructor:blockFetchResponse", blockFetchResponseEventData)
+        serverSystem.broadcastEvent("NZConstructor:blockFetchResponse", blockFetchResponseEventData)
+    })
+    serverSystem.listenForEvent("NZConstructor:setBlock", (eventData) => {
+        let { x, y, z, blockIdentifier, tileData } = eventData.data
+        serverSystem.executeCommand(`/setblock ${x} ${y} ${z} ${blockIdentifier.slice(blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => { })
     })
 
     //I suppose I have to make an explanation.
@@ -270,6 +275,7 @@ serverSystem.initialize = function () {
             }
         }
     })
+
 }
 
 serverSystem.update = function () {

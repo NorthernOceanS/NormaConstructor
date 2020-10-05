@@ -48,10 +48,19 @@ clientSystem.initialize = function () {
         position: undefined
     })
     //TODO:Incorporate the following with the event above.
-    clientSystem.registerEventData("NormaConstructor:blockFetchRequest", {
+    clientSystem.registerEventData("NZConstructor:blockFetchRequest", {
         playerID: undefined,
         position: undefined,
         requestID: undefined
+    })
+
+    clientSystem.registerEventData("NZConstructor:setBlock",{
+        x:undefined,
+        y:undefined,
+        z:undefined,
+        blockIdentifier:undefined,
+        tileData:undefined,
+        playerID:undefined
     })
 
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
@@ -286,7 +295,7 @@ clientSystem.initialize = function () {
         }
     })
 
-    
+
 };
 
 clientSystem.update = function () {
@@ -353,7 +362,7 @@ function displayChat(message) {
 class BlockFetch {
     constructor() {
         this.idToResolve = new Map()
-        clientSystem.listenForEvent("NormaConstructor:blockFetchResponse", function(eventData) {
+        clientSystem.listenForEvent("NZConstructor:blockFetchResponse", function (eventData) {
             if (eventData.data.playerID == playerID) {
                 let resolve = this.idToResolve.get(eventData.data.requestID)
                 resolve(eventData.data.blockType)
@@ -366,7 +375,7 @@ class BlockFetch {
     }
     get(tickingArea, x, y, z) {
         let position = new Position(new Coordinate(x, y, z), tickingArea)
-        let blockFetchRequestEventData = clientSystem.createEventData("NormaConstructor:blockFetchRequest")
+        let blockFetchRequestEventData = clientSystem.createEventData("NZConstructor:blockFetchRequest")
         blockFetchRequestEventData.data.position = position
         blockFetchRequestEventData.data.playerID = playerID
         let requestID
@@ -375,7 +384,7 @@ class BlockFetch {
         }
         while (this.idToResolve.has(requestID))
         blockFetchRequestEventData.data.requestID = requestID
-        clientSystem.broadcastEvent("NormaConstructor:blockFetchRequest", blockFetchRequestEventData)
+        clientSystem.broadcastEvent("NZConstructor:blockFetchRequest", blockFetchRequestEventData)
         return new Promise((resolve, reject) => {
             this.registerRequest(requestID, resolve)
         })
@@ -387,7 +396,13 @@ async function getBlock(tickingArea, x, y, z) {
     let blockType = await blockFetch.get(tickingArea, x, y, z)
     return blockType
 }
-
+function setBlock(x, y, z, blockIdentifier, tileData) {
+    logger.log("verbose","NZ is JULAO")
+    let setBlockEventData = clientSystem.createEventData("NZConstructor:setBlock")
+    setBlockEventData.data = { x: x, y: y, z: z, blockIdentifier: blockIdentifier, tileData: tileData, playerID: playerID }
+    clientSystem.broadcastEvent("NZConstructor:setBlock",setBlockEventData)
+    logger.logObject("verbose",setBlockEventData)
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Generators://////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

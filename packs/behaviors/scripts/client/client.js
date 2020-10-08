@@ -1272,26 +1272,25 @@ function displayChat(message) {
                         {
                             viewtype: "edittext",
                             text: "内容",
-                            key: "keyText",
-                        /*
+                            key: "keyText"
                         },
                         {
                             viewtype: "checkbox",
-                            text: "垂直",
+                            text: "垂直（向下延伸）",
                             key: "isVertical",
                             data: [
                                 { value: true, text: "是" },
-                                { value: false, text: "否" },
+                                { value: false, text: "否" }
                             ]
                         },
                         {
                             viewtype: "checkbox",
-                            text: "放倒",
+                            text: "平面",
                             key: "isFlat",
                             data: [
                                 { value: true, text: "是" },
-                                { value: false, text: "否" },
-                            ]*/
+                                { value: false, text: "否" }
+                            ]
                         }
                     ])
             ),
@@ -1300,9 +1299,9 @@ function displayChat(message) {
             [undefined],
             [undefined],
             {
-                "keyText": "NZ IS JULAO"//,
-                //"isFlat": false,
-                //"isVertical": false
+                "keyText": "NZ IS JULAO",
+                "isFlat": false,
+                "isVertical": false
             },
             function (position) {
                 utils.generators.canonical.addFunction("坐标", position, this.positionArray)
@@ -1351,8 +1350,11 @@ function displayChat(message) {
                         }
                     }
                     return(l)
-                })(option["keyText"],mcfont)
-                let tempPosition = [0,15,0]
+                })(option["keyText"], mcfont)
+                let tempPosition = [0, 15, 0]
+                if (option["isVertical"]) {
+                    tempPosition[1] = 0
+                }
                 //t = 每个字
                 //i = 每列
                 //z = 每行
@@ -1361,42 +1363,79 @@ function displayChat(message) {
                     for (let i = 0; i < 16; i++) {
                         for (let z = 0; z < 16; z++) {
                             if (rawText[t][i * 16 + z]) {
-                                if (directionMark == "-z") {
-                                    blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[2] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
-                                } else
-                                    if (directionMark == "+x") {
-                                        blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[2], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                if (option["isFlat"]) {
+                                    if (directionMark == "-z") {
+                                        blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z - tempPosition[1] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
                                     } else
-                                        if (directionMark == "+z") {
-                                            blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[2] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                        if (directionMark == "+x") {
+                                            blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[1], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z + tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
                                         } else
-                                            if (directionMark == "-x") {
-                                                blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[2], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z - tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
-                                            }
+                                            if (directionMark == "+z") {
+                                                blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z + tempPosition[1] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                            } else
+                                                if (directionMark == "-x") {
+                                                    blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[1], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z - tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                                }
+                                } else {
+                                    if (directionMark == "-z") {
+                                        blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[2] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                    } else
+                                        if (directionMark == "+x") {
+                                            blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[2], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                        } else
+                                            if (directionMark == "+z") {
+                                                blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[2] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                            } else
+                                                if (directionMark == "-x") {
+                                                    blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[2], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z - tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                                }
+                                }
                             }
                             tempPosition[0] += 1
                         }
                         tempPosition[1] += -1
                         tempPosition[0] += -16
                     }
-                    tempPosition[1] += 16
-                    for (let d = 0; d < 16; d++) {
-                        u = 0
-                        for (let q = 0; q < 16; q++) {
-                            if (rawText[t][q * 16 + 15 - d] != 1) {
-                                u++
+                    if (t + 2 > rawText.length) {
+                        break
+                    }
+                    if (option["isVertical"]) {
+                        for (let d = 0; d < 16; d++) {
+                            u = 0
+                            for (let q = 0; q < 16; q++) {
+                                if (rawText[t + 1][d * 16 + 15 - q] != 1) {
+                                    u++
+                                }
+                            }
+                            if (u == 16) {
+                                tempPosition[1] += 1
+                            } else {
+                                break
                             }
                         }
-                        if (u == 16) {
-                            tempPosition[0] += -1
-                        } else {
-                            break
+                        if (rawText[t] == 0) {
+                            tempPosition[1] += -8
                         }
+                    } else {
+                        tempPosition[1] += 16
+                        for (let d = 0; d < 16; d++) {
+                            u = 0
+                            for (let q = 0; q < 16; q++) {
+                                if (rawText[t][q * 16 + 15 - d] != 1) {
+                                    u++
+                                }
+                            }
+                            if (u == 16) {
+                                tempPosition[0] += -1
+                            } else {
+                                break
+                            }
+                        }
+                        if (rawText[t] == 0) {
+                            tempPosition[0] += 8
+                        }
+                        tempPosition[0] += 17
                     }
-                    if (rawText[t] == 0) {
-                        tempPosition[0] += 8
-                    }
-                    tempPosition[0] += 17
                 }
                 return blockArray
             },

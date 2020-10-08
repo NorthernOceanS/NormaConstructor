@@ -1949,7 +1949,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("创建地铁站",
+            new Description("创建地铁隧道",
                 new Usage(
                     [],
                     [],
@@ -2370,7 +2370,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor(
         {
-            description: new Description("Record structure", new Usage([], [], [], [])),
+            description: new Description("记录结构到日志（调试）", new Usage([], [], [], [])),
             criteria: { positionArrayLength: 3, blockTypeArrayLength: 0, directionArrayLength: 0 },
             option: {},
             method: {
@@ -2389,7 +2389,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor(
         {
-            description: new Description(" aspdf vhfdwvgcmfs", new Usage([], [], [], [])),
+            description: new Description("生成结构（调试）", new Usage([], [], [], [])),
             criteria: { positionArrayLength: 1, blockTypeArrayLength: 0, directionArrayLength: 0 },
             option: {},
             method: {

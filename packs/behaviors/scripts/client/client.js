@@ -41,7 +41,7 @@ let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
 
 let localOption = {
-    "__logLevel": "info",
+    "__logLevel": 2,
     "__on": false
 }
 const logger = {
@@ -66,9 +66,9 @@ const logger = {
         if (4 >= localOption["__logLevel"])
             this.displayChat("§c" + JSON.stringify(message))
     },
-    fatal: function (message) {
-        if (0 >= localOption["__logLevel"])
-            this.displayChat("§4【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + JSON.stringify(message))
+    force: function (message) {
+        if (5 >= localOption["__logLevel"])
+            this.displayChat("§c§l【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + JSON.stringify(message))
     }
 }
 utils.setter.setLogger(logger)
@@ -236,8 +236,8 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
 
         if (playerID == eventData.data.playerID && localOption["__on"]) {
-            logger.log("debug", "返回数据：")
-            logger.debug( eventData)
+            logger.debug("返回数据：")
+            logger.debug(eventData)
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
         }

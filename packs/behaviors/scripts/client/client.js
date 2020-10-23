@@ -41,7 +41,7 @@ let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
 
 let localOption = {
-    "__logLevel": "info",
+    "__logLevel": 2,
     "__on": false
 }
 const logger = {
@@ -67,7 +67,7 @@ const logger = {
             this.displayChat("§c" + JSON.stringify(message))
     },
     fatal: function (message) {
-        if (0 >= localOption["__logLevel"])
+        if (5 >= localOption["__logLevel"])
             this.displayChat("§4【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + JSON.stringify(message))
     }
 }

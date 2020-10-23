@@ -404,17 +404,17 @@ let utils = {
 		canonical: {
 			addFunction: function (type, data, target) {
 				let indexOfVacancy = target.indexOf(undefined)
-				if (indexOfVacancy == -1) utils.logger.log("warning", `${type}过多，已移除新的${type}。`)
+				if (indexOfVacancy == -1) utils.logger.warn(`${type}过多，已移除新的${type}。`)
 				else {
 					target[indexOfVacancy] = data
-					utils.logger.log("info", `已设置新的${type}。`)
+					utils.logger.info(`已设置新的${type}。`)
 				}
 			},
 			removeFunction: function (index, target) {
 				if (index === undefined)
 					for (index = target.length - 1; index >= 0 && target[index] == undefined; index--);
 				if (index >= 0) target[index] = undefined
-				utils.logger.logObject("info", target)
+				utils.logger.info(target)
 			},
 			validateParameter: function () {
 				let result = new String()
@@ -425,7 +425,7 @@ let utils = {
 				if (this.directionArray.indexOf(undefined) != -1)
 					result += "缺失方向，运行失败。"
 				if (result == "") result = "success"
-				else utils.logger.log("error", result)
+				else utils.logger.error(result)
 
 				return result;
 			},

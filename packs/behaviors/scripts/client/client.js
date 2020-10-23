@@ -45,21 +45,30 @@ let localOption = {
     "__on": false
 }
 const logger = {
-    displayChat, displayObject,
-    log: function (level, message) {
-        const colorMap = new Map([
-            ["verbose", { num: 0, color: "§a废话：" }],
-            ["debug", { num: 1, color: "§6调试：" }],
-            ["info", { num: 2, color: "§b信息：" }],
-            ["warning", { num: 3, color: "§e警告：" }],
-            ["error", { num: 4, color: "§c错误：" }],
-            ["fatal", { num: 5, color: "§4严重错误（请截图上报到：https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439）：" }]
-        ])
-        if (colorMap.get(level).num >= colorMap.get(localOption["__logLevel"]).num)
-            this.displayChat(colorMap.get(level).color + message)
+    displayChat,
+    verbose: function (message) {
+        if (0 >= localOption["__logLevel"])
+            this.displayChat("§k" + JSON.stringify(message))
     },
-    logObject: function (level, object) {
-        this.log(level, JSON.stringify(object, null, '    '))
+    debug: function (message) {
+        if (1 >= localOption["__logLevel"])
+            this.displayChat("§7" + JSON.stringify(message))
+    },
+    info: function (message) {
+        if (2 >= localOption["__logLevel"])
+            this.displayChat("§f" + JSON.stringify(message))
+    },
+    warn: function (message) {
+        if (3 >= localOption["__logLevel"])
+            this.displayChat("§e" + JSON.stringify(message))
+    },
+    error: function (message) {
+        if (4 >= localOption["__logLevel"])
+            this.displayChat("§c" + JSON.stringify(message))
+    },
+    fatal: function (message) {
+        if (0 >= localOption["__logLevel"])
+            this.displayChat("§4【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + JSON.stringify(message))
     }
 }
 utils.setter.setLogger(logger)
@@ -77,7 +86,7 @@ clientSystem.initialize = function () {
 
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
-        logger.logObject("debug", eventData.data.player)
+        logger.debug( eventData.data.player)
 
         playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 
@@ -124,7 +133,7 @@ clientSystem.initialize = function () {
         if (playerID == eventData.data.playerID && (localOption["__on"] || eventData.data.command == "show_menu" || eventData.data.command == "choose_next_generator")) {
             switch (eventData.data.command) {
                 case "get_data": {
-                    logger.logObject("debug", eventData.data.additionalData)
+                    logger.debug( eventData.data.additionalData)
 
                     let serveData = { blockType: undefined, position: undefined, direction: undefined }
 
@@ -136,7 +145,7 @@ clientSystem.initialize = function () {
                     if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
                         let rawCoordinate = coordinatePlayerLookingAt
                         if (rawCoordinate == null) {
-                            logger.log("error", "没有成功获取坐标，请重试。")
+                            logger.error( "没有成功获取坐标，请重试。")
                         }
                         else {
                             let coordinate = rawCoordinate
@@ -166,34 +175,34 @@ clientSystem.initialize = function () {
                 }
                 case "remove_last_position": {
                     generatorArray[generatorIndex].removePosition()
-                    logger.log("info", "已移除上一个坐标。")
+                    logger.info( "已移除上一个坐标。")
                     break;
                 }
                 case "remove_last_blocktype": {
                     generatorArray[generatorIndex].removeBlockType()
-                    logger.log("info", "已移除上一个方块类型。")
+                    logger.info( "已移除上一个方块类型。")
                     break;
                 }
                 case "remove_last_direction": {
                     generatorArray[generatorIndex].removeDirection()
-                    logger.log("info", "已移除上一个方向。")
+                    logger.info( "已移除上一个方向。")
                     break;
                 }
                 case "choose_next_generator": {
-                    if (localOption["__on"]) {setLocalOption('__on', false);logger.log("info", "插件已禁用")} else{setLocalOption('__on', true);logger.log("info", "插件已启用")}
+                    if (localOption["__on"]) {setLocalOption('__on', false);logger.info( "插件已禁用")} else{setLocalOption('__on', true);logger.info( "插件已启用")}
                     break;
                 }
                 case "show_saved_data": {
-                    logger.log("info", "当前坐标：")
-                    logger.logObject("info", generatorArray[generatorIndex].positionArray)
-                    logger.log("info", "当前方块类型：")
-                    logger.logObject("info", generatorArray[generatorIndex].blockTypeArray)
-                    logger.log("info", "当前方向：")
-                    logger.logObject("info", generatorArray[generatorIndex].directionArray)
-                    logger.log("info", "当前生成器设置：")
-                    logger.logObject("info", generatorArray[generatorIndex].option)
-                    logger.log("info", "当前本地设置：")
-                    logger.logObject("info", localOption)
+                    logger.info( "当前坐标：")
+                    logger.info( generatorArray[generatorIndex].positionArray)
+                    logger.info( "当前方块类型：")
+                    logger.info( generatorArray[generatorIndex].blockTypeArray)
+                    logger.info( "当前方向：")
+                    logger.info( generatorArray[generatorIndex].directionArray)
+                    logger.info( "当前生成器设置：")
+                    logger.info( generatorArray[generatorIndex].option)
+                    logger.info( "当前本地设置：")
+                    logger.info( localOption)
                     break;
                 }
                 case "execute": {
@@ -228,7 +237,7 @@ clientSystem.initialize = function () {
 
         if (playerID == eventData.data.playerID && localOption["__on"]) {
             logger.log("debug", "返回数据：")
-            logger.logObject("debug", eventData)
+            logger.debug( eventData)
             storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
         }
@@ -327,10 +336,10 @@ function storeData(blockType, position, direction) {
     if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
 }
 function execute() {
-    logger.log("info", "核对参数中……");
+    logger.info( "核对参数中……");
     let validateResult = generatorArray[generatorIndex].validateParameter();
     if (validateResult == "success") {
-        logger.log("info", "开始生成。");
+        logger.info( "开始生成。");
 
         //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
         let buildInstructions = generatorArray[generatorIndex].generate();
@@ -738,10 +747,10 @@ function displayChat(message) {
                     if (indexOfVacancy == -1) {
                         this.positionArray = this.positionArray.slice(1)
                         this.positionArray.push(position)
-                        logger.log("info", "坐标过多，已移除旧坐标。")
+                        logger.info( "坐标过多，已移除旧坐标。")
                     }
                     else this.positionArray[indexOfVacancy] = position
-                    logger.log("info", `已设置新的坐标。`)
+                    logger.info( `已设置新的坐标。`)
                 }
                 else utils.generators.canonical.addFunction("position", position, this.positionArray)
 
@@ -1024,15 +1033,15 @@ function displayChat(message) {
             },
             function (data) {
                 if (data == "custom") {
-                    logger.log("info", "已采用自定义设置。")
-                    logger.log("info", "第一个是表面方块的类型。")
-                    logger.log("info", "第二个是白线。")
-                    logger.log("info", "第三个是黄线。")
-                    logger.log("info", "第四个是护栏。")
+                    logger.info( "已采用自定义设置。")
+                    logger.info( "第一个是表面方块的类型。")
+                    logger.info( "第二个是白线。")
+                    logger.info( "第三个是黄线。")
+                    logger.info( "第四个是护栏。")
                     this.blockTypeArray = [undefined, undefined, undefined, undefined]
                 }
                 else {
-                    logger.log("info", "使用预设设置，自定义设置将被删除。")
+                    logger.info( "使用预设设置，自定义设置将被删除。")
                     this.blockTypeArray = []
                 }
             }
@@ -2076,7 +2085,7 @@ function displayChat(message) {
                     },
                     "rail": function (coordinate) { return materials["rail"] },
                     "void/redstone": function (coordinate) {
-                        logger.logObject("debug", coordinate)
+                        logger.debug( coordinate)
                         if (coordinate.x % 16 == 0) return materials["red_stone_torch"]
                         else return materials["air"]
                     }

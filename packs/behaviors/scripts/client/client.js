@@ -34,7 +34,6 @@ var buildInstructionsQuery = []
 
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator, BuildInstruction } from '../constructor'
 import { utils } from '../utils'
-const mcfont = require("../preset/font.json")
 import { presetBuildings } from '../presetBuildingsInterface'
 
 let generatorArray = [];
@@ -1347,8 +1346,39 @@ function displayChat(message) {
                     else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
                     else return "-z"
                 }())
-                
-                let rawText = (function (text,mcfont) {
+
+                let rawText = (function (text, mcfont) {//新版mcfont的解码
+                    let rawTextArray = []
+                    for (let i = 0; i < text.length; i++) {//i 每个字
+                        rawTextArray.push((function (text, mcfont) {
+                            if (text == " ") {//空格return 0
+                                return 0
+                            }
+                            let cnm = mcfont[0].substring(text.charCodeAt() * 16, text.charCodeAt() * 16 + 16)
+                            let wdnmd = []
+                            let p
+                            let u
+                            for (let d = 0; d < 16; d++) {//d 16个Unicode
+                                p = cnm.charCodeAt(d)
+                                u = 65536
+                                for (let m = 0; m < 16; m++) {// m 每次减少
+                                    u /= 2
+                                    if (p - u >= 0) {
+                                        p -= u
+                                        wdnmd.push(1)
+                                    }
+                                    else {
+                                        wdnmd.push(0)
+                                    }
+                                }
+                            }
+                            return wdnmd
+                        }
+                        )(text[i], mcfont))
+                    }
+                    return rawTextArray
+                })(option["keyText"], presetBuildings.mcfont)
+                /*let rawText = (function (text,mcfont) {
                     let l
                     l = []
                     for (let i = 0; i < text.length; i++) {
@@ -1359,7 +1389,7 @@ function displayChat(message) {
                         }
                     }
                     return(l)
-                })(option["keyText"], mcfont)
+                })(option["keyText"], presetBuildings.mcfont)*/ //旧版mcfont的解码
                 let tempPosition = [0, 15, 0]
                 if (option["isVertical"]) {
                     tempPosition[1] = 0

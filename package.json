@@ -1,15 +1,27 @@
 {
-  "name": "normaconstructor",
-  "private": true,
-  "scripts": {
-    "build": "gulp build",
-    "watch": "gulp watch",
-    "installaddon": "gulp install",
-    "uninstalladdon": "gulp uninstall",
-    "packageaddon": "gulp package"
-  },
-  "devDependencies": {
-    "minecraft-addon-toolchain": "^1.0.3",
-    "minecraft-addon-toolchain-browserify": "^1.0.3"
-  }
+    "name": "MakeReleaseForNC",
+    "version": "1.1.0",
+    "description": "诺玛二建的发行版制作器",
+    "private": true,
+    "main": "makeRelease.js",
+    "dependencies": {
+        "archiver": "^5.0.2",
+        "webpack": "^5.4.0",
+        "webpack-cli": "^4.2.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "NZISJULAO": "node ./makeRelease.js",
+        "test": "echo \"NZ IS JULAO\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MCDRZF/NormaConstructor.git"
+    },
+    "author": "MCDRZF",
+    "license": "SEE LICENSE IN LICENSE",
+    "bugs": {
+        "url": "https://github.com/MCDRZF/NormaConstructor/issues"
+    },
+    "homepage": "https://github.com/MCDRZF/NormaConstructor#readme"
 }

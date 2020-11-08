@@ -125,14 +125,6 @@ let's all shout:NZ IS JULAO!|切换多项功能
 方块类型|确定填充物|1个
 # 未完 后面是未处理部分
 
-## WARNING: The addon use @AtomicBlom 's toolchain, but modified.
-```
-this.bundleSources = ["scripts/**/*.js" ];
-```
-## to
-```
-this.bundleSources = ["scripts/**/*.*" ];
-```
 # Credit
 Credits to reimarPB for CSS  
 Credits to WavePlayz for block.js  

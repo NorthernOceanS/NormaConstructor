@@ -1,18 +1,18 @@
 {
   "format_version": 1,
     "header": {
-        "name": "诺玛建工行为包",
-        "description": "诺玛建工（Create by NorthernOceanS and MCDRZF），一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。",
+        "name": "诺玛二建（NC）行为包",
+        "description": "诺玛二建（Create by NorthernOceanS and MCDRZF），一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。",
         "uuid": "7ba71189-28c4-47d1-85d3-aae28f4430b1",
         "version": [
             0,
-            7,
-            2
+            9,
+            0
         ]
     },
   "modules": [
     {
-        "description": "诺玛建工行为包",
+        "description": "诺玛二建（NC）行为包",
         "type": "client_data",
         "uuid": "6a95ee02-ac8e-456e-9f41-11a39ab3f93d",
         "version": [

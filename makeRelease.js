@@ -1,3 +1,7 @@
+const ar = require("archiver")
+const fs = require("fs")
+const cp = require('child_process')
+const path = require("path")
 function starter(path) {//重置release目录 禁止套娃
     var files = [];
     if (fs.existsSync(path)) {
@@ -13,11 +17,6 @@ function starter(path) {//重置release目录 禁止套娃
         });
     }
 }
-starter(path.resolve("./release/"))
-const ar = require("archiver")
-const fs = require("fs")
-const cp = require('child_process')
-const path = require("path")
 function CopyDirectory(src, dest) {
     if (fs.existsSync(dest) == false) {
         fs.mkdirSync(dest);
@@ -50,6 +49,7 @@ function delOutOfDir(path) {
         });
     }
 };
+starter(path.resolve("./release/"))
 fs.mkdir(path.resolve("./release/"), function (e) { })
 fs.mkdir(path.resolve("./release/item/"), function (e) { })
 CopyDirectory(path.resolve("./packs/"), path.resolve("./release/item/"))

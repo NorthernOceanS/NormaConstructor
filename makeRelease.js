@@ -1,7 +1,8 @@
 const ar = require("archiver")
 const fs = require("fs")
 const cp = require('child_process')
-const path = require("path")
+const path = require("path");
+const { resolve } = require("path");
 function starter(path) {//重置release目录 禁止套娃
     var files = [];
     if (fs.existsSync(path)) {
@@ -17,7 +18,23 @@ function starter(path) {//重置release目录 禁止套娃
         });
     }
 }
-function CopyDirectory(src, dest) {
+function delPath(path) {//清除目录
+    var files = [];
+    if (fs.existsSync(path)) {
+        files = fs.readdirSync(path);
+        files.forEach(function (file, index) {
+            var curPath = path + "/" + file;
+            if (fs.statSync(curPath).isDirectory()) {
+                deleteall(curPath);
+            } else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+};
+
+function CopyDirectory(src, dest) { //完整复制文件
     if (fs.existsSync(dest) == false) {
         fs.mkdirSync(dest);
     }
@@ -35,25 +52,12 @@ function CopyDirectory(src, dest) {
         }
     });
 }
-function delOutOfDir(path) {
-    var files = [];
-    if (fs.existsSync(path)) {
-        files = fs.readdirSync(path);
-        files.forEach(function (file, index) {
-            var curPath = path + "/" + file;
-            if (fs.statSync(curPath).isDirectory()) {
-                delOutOfDir(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-        });
-    }
-};
 starter(path.resolve("./release/"))
 fs.mkdir(path.resolve("./release/"), function (e) { })
 fs.mkdir(path.resolve("./release/item/"), function (e) { })
 CopyDirectory(path.resolve("./packs/"), path.resolve("./release/item/"))
-delOutOfDir(path.resolve("./release/item/behaviors/scripts/"))
+delPath(path.resolve("./release/item/behaviors/scripts/"))
+fs.mkdirSync(path.resolve("./release/item/behaviors/scripts/"))
 cp.execSync("webpack ./packs/behaviors/scripts/client/client.js -o ./release/item/behaviors/scripts/client")
 fs.renameSync(path.resolve("./release/item/behaviors/scripts/client/main.js"), path.resolve("./release/item/behaviors/scripts/client/client.js"))
 cp.execSync("webpack ./packs/behaviors/scripts/server/server.js -o ./release/item/behaviors/scripts/server")
@@ -65,4 +69,4 @@ releasezip.append(fs.createReadStream(path.resolve("./release/item/LICENSE")), {
 releasezip.directory(path.resolve('./release/item/behaviors/'), 'behaviors')
 releasezip.directory(path.resolve('./release/item/resources/'), 'resources')
 releasezip.finalize()
-fs.rename(fs.createWriteStream("./release/push/Release.zip"), fs.createWriteStream("./release/push/Release.mcaddon"))
+fs.renameSync(path.resolve("./release/push/Release.zip"), path.resolve("./release/push/Release.mcaddon"))

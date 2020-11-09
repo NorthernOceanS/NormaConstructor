@@ -2,7 +2,6 @@ const ar = require("archiver")
 const fs = require("fs")
 const cp = require('child_process')
 const path = require("path");
-const { resolve } = require("path");
 function starter(path) {//重置release目录 禁止套娃
     var files = [];
     if (fs.existsSync(path)) {
@@ -25,7 +24,7 @@ function delPath(path) {//清除目录
         files.forEach(function (file, index) {
             var curPath = path + "/" + file;
             if (fs.statSync(curPath).isDirectory()) {
-                deleteall(curPath);
+                delPath(curPath);
             } else {
                 fs.unlinkSync(curPath);
             }
@@ -65,7 +64,7 @@ fs.renameSync(path.resolve("./release/item/behaviors/scripts/server/main.js"), p
 let releasezip = ar('zip')
 fs.mkdir(path.resolve("./release/push/"), function (e) { })
 releasezip.pipe(fs.createWriteStream("./release/push/Release.zip"))
-releasezip.append(fs.createReadStream(path.resolve("./release/item/LICENSE")), { name: 'LICENSE' })
+releasezip.append(fs.createReadStream(path.resolve("./LICENSE")), { name: 'LICENSE' })
 releasezip.directory(path.resolve('./release/item/behaviors/'), 'behaviors')
 releasezip.directory(path.resolve('./release/item/resources/'), 'resources')
 releasezip.finalize()

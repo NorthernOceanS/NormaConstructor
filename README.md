@@ -29,7 +29,7 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 - 可以在服务器(pm/nk等除外)或领域使用  
 - 1.12左右就能使用脚本API了  
 - 巨大的未被发掘的潜力
-### 什么是诺玛建工（NormaConstructor）
+### 诺玛二建（NormaConstructor）附加包能干什么？
 前面提到诺玛建工是一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，可以加快您的建筑过程。
 - 用更少的时间创建更令人印象深刻且更大的建筑  
 - 在几秒钟内快速创建，替换或删除数万个方块  
@@ -38,7 +38,7 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 这个附加包是完全开源的，您可以fork这个项目并参与到开发当中。
 ## 使用方法
 ### 前置条件
-请前往[Releases](https://github.com/MCDRZF/NormaConstructor/releases "前往")下载最新版本的.mcaddon文件
+请前往[Releases](https://github.com/MCDRZF/NormaConstructor/releases/latest "前往")下载最新版本的`Release.mcaddon`文件
 #### Windows 10
 双击文件并使用Minecraft打开
 #### Linux
@@ -121,7 +121,7 @@ let's all shout:NZ IS JULAO!|切换多项功能
 |-|-|-
 长度|决定线的长度|0
 间隔|生成的线的间隔|0
-坐标|确定两点坐标|2个
+坐标|确定开始坐标|1个
 方块类型|确定填充物|1个
 # 未完 后面是未处理部分
 

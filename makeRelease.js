@@ -29,7 +29,7 @@ function CopyDirectory(src, dest) { //完整复制文件
         var item_path = path.join(src, item);
         var temp = fs.statSync(item_path);
         if (temp.isFile()) {
-            fs.copyFileSync(item_path, path.join(dest, item));
+            fs.copyFile(item_path, path.join(dest, item), (e) => { });
         } else if (temp.isDirectory()) {
             CopyDirectory(item_path, path.join(dest, item));
         }

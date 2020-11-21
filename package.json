@@ -5,8 +5,8 @@
     "private": true,
     "main": "makeRelease.js",
     "dependencies": {
-        "archiver": "^5.0.2",
-        "webpack": "^5.4.0",
+        "archiver": "^5.1.0",
+        "webpack": "^5.6.0",
         "webpack-cli": "^4.2.0"
     },
     "devDependencies": {},

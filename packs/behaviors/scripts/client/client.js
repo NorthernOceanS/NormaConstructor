@@ -1354,7 +1354,7 @@ function displayChat(message) {
                             if (text == " ") {//空格return 0
                                 return 0
                             }
-                            let cnm = mcfont[0].substring(text.charCodeAt() * 16, text.charCodeAt() * 16 + 16)
+                            let cnm = mcfont.substring(text.charCodeAt() * 16, text.charCodeAt() * 16 + 16)
                             let wdnmd = []
                             let p
                             let u

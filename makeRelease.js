@@ -2,21 +2,6 @@ const ar = require("archiver")
 const fs = require("fs")
 const cp = require('child_process')
 const path = require("path");
-function starter(path) {//重置release目录 禁止套娃
-    var files = [];
-    if (fs.existsSync(path)) {
-        files = fs.readdirSync(path);
-        files.forEach(function (file, index) {
-            var curPath = path + "/" + file;
-            if (fs.statSync(curPath).isDirectory()) {
-                starter(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-            fs.rmdir(path, function (e) { })
-        });
-    }
-}
 function delPath(path) {//清除目录
     var files = [];
     if (fs.existsSync(path)) {
@@ -32,10 +17,9 @@ function delPath(path) {//清除目录
         fs.rmdirSync(path);
     }
 };
-
 function CopyDirectory(src, dest) { //完整复制文件
     if (fs.existsSync(dest) == false) {
-        fs.mkdirSync(dest);
+        fs.mkdir(dest, (e) => { });
     }
     if (fs.existsSync(src) == false) {
         return false;
@@ -51,17 +35,20 @@ function CopyDirectory(src, dest) { //完整复制文件
         }
     });
 }
-starter(path.resolve("./release/"))
-fs.mkdir(path.resolve("./release/"), function (e) { })
-fs.mkdir(path.resolve("./release/item/"), function (e) { })
+delPath(path.resolve("./release/"))
+fs.mkdir(path.resolve("./release/"), (e) => { })
+fs.mkdir(path.resolve("./release/item/"), (e) => { })
 CopyDirectory(path.resolve("./packs/"), path.resolve("./release/item/"))
 delPath(path.resolve("./release/item/behaviors/scripts/"))
-fs.mkdirSync(path.resolve("./release/item/behaviors/scripts/"))
 cp.execSync("webpack ./packs/behaviors/scripts/client/client.js -o ./release/item/behaviors/scripts/client")
-fs.renameSync(path.resolve("./release/item/behaviors/scripts/client/main.js"), path.resolve("./release/item/behaviors/scripts/client/client.js"))
+//非定制版的代码：fs.renameSync(path.resolve("./release/item/behaviors/scripts/client/main.js"), path.resolve("./release/item/behaviors/scripts/client/client.js"))
+//nc定制功能——防傻逼scriptingAPI的解码错误 {
+fs.writeFileSync(path.resolve("./release/item/behaviors/scripts/client/client.js"), fs.readFileSync(path.resolve("./release/item/behaviors/scripts/client/main.js"), { encoding: "utf-8" }).replace('"this is a debug message"', fs.readFileSync(path.resolve("./packs/behaviors/scripts/preset/font.real"), { encoding: "utf-8" })), { encoding: "utf-8" })
+fs.unlinkSync(path.resolve("./release/item/behaviors/scripts/client/main.js"))
+//}
 cp.execSync("webpack ./packs/behaviors/scripts/server/server.js -o ./release/item/behaviors/scripts/server")
 fs.renameSync(path.resolve("./release/item/behaviors/scripts/server/main.js"), path.resolve("./release/item/behaviors/scripts/server/server.js"))
-let releasezip = ar('zip')
+let releasezip = ar('zip', { zlib: { level: 9 } }) 
 fs.mkdir(path.resolve("./release/push/"), function (e) { })
 releasezip.pipe(fs.createWriteStream("./release/push/Release.zip"))
 releasezip.append(fs.createReadStream(path.resolve("./LICENSE")), { name: 'LICENSE' })

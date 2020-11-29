@@ -7,16 +7,21 @@ function DelDirectory(dest) { //删除文件夹
     if (fs.existsSync(dest) == false) {
         return false;
     }
-    var dirs = fs.readdirSync(dest);
-    dirs.forEach(function (item) {
-        var item_path = path.join(dest, item);
-        var temp = fs.statSync(item_path);
-        if (temp.isFile()) {
-            fs.unlink(item_path, (err) => {  });
-        } else if (temp.isDirectory()) {
-            DelDirectory(item_path);
-        }
-    });
+    var stat = fs.statSync(dest)
+    if (stat.isFile()) {
+        fs.unlink(dest, (err) => { })
+    } else {
+        var dirs = fs.readdirSync(dest);
+        dirs.forEach(function (item) {
+            var item_path = path.join(dest, item);
+            var temp = fs.statSync(item_path);
+            if (temp.isFile()) {
+                fs.unlink(item_path, (err) => { });
+            } else if (temp.isDirectory()) {
+                DelDirectory(item_path);
+            }
+        })
+    }
     fs.rmdir(dest, (err) => {  })
 }
 function CopyDirectory(src, dest) { //完整复制文件

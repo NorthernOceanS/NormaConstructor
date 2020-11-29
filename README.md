@@ -1,5 +1,5 @@
 # 诺玛建工
-除非另有声明，本仓库内容采用[BSD 2-Clause](https://github.com/NorthernOceanS/NormaConstructor/LICENSE "BSD 2-Clause")授权。  
+除非另有声明，本仓库内容采用[Mozilla Public License 2.0](https://github.com/NorthernOceanS/NormaConstructor/LICENSE "Mozilla Public License 2.0")授权。  
 [![icon](/.github/workflows/icon.png "诺玛")](https://github.com/NorthernOceanS/NormaConstructor)  
 [诺玛建工](https://github.com/NorthernOceanS/NormaConstructor "前往原仓库")，一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。  
 如果你正在寻找适合Minecraft基岩版的“小木斧”，那么恭喜你来对地方了！  

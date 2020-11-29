@@ -1,30 +1,3 @@
-/*
-BSD 2-Clause License
-
-Copyright (c) 2020, NorthernOceanS and MCDRZF
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 var clientSystem = client.registerSystem(0, 0);
 
 var playerID = undefined
@@ -47,27 +20,27 @@ const logger = {
     displayChat,
     verbose: function (message) {
         if (0 >= localOption["__logLevel"])
-            this.displayChat("§k" + JSON.stringify(message))
+            this.displayChat("§k" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
     },
     debug: function (message) {
         if (1 >= localOption["__logLevel"])
-            this.displayChat("§7" + JSON.stringify(message))
+            this.displayChat("§7" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
     },
     info: function (message) {
         if (2 >= localOption["__logLevel"])
-            this.displayChat("§f" + JSON.stringify(message))
+            this.displayChat("§f" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
     },
     warn: function (message) {
         if (3 >= localOption["__logLevel"])
-            this.displayChat("§e" + JSON.stringify(message))
+            this.displayChat("§e" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
     },
     error: function (message) {
         if (4 >= localOption["__logLevel"])
-            this.displayChat("§c" + JSON.stringify(message))
+            this.displayChat("§c" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
     },
-    force: function (message) {
+    fatal: function (message) {
         if (5 >= localOption["__logLevel"])
-            this.displayChat("§c§l【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + JSON.stringify(message))
+            this.displayChat("§c§l【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + typeof (message) == "string" ? message :JSON.stringify(message))
     }
 }
 utils.setter.setLogger(logger)

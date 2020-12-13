@@ -5,6 +5,8 @@ var generatorIndex = 0
 var tick = 0
 var buildInstructionsQuery = []
 
+import { drzf } from "../drzaofu-lib"
+
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator, BuildInstruction } from '../constructor'
 import { utils } from '../utils'
 import { presetBuildings } from '../presetBuildingsInterface'
@@ -19,28 +21,34 @@ let localOption = {
 const logger = {
     displayChat,
     verbose: function (message) {
-        if (0 >= localOption["__logLevel"])
-            this.displayChat("§k" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
+        if (0 >= localOption["__logLevel"]) {
+            this.displayChat("§k" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message, null, 4))
+        }
     },
     debug: function (message) {
-        if (1 >= localOption["__logLevel"])
-            this.displayChat("§7" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
+        if (1 >= localOption["__logLevel"]) {
+            this.displayChat("§7" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message, null, 4))
+        }
     },
     info: function (message) {
-        if (2 >= localOption["__logLevel"])
-            this.displayChat("§f" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
+        if (2 >= localOption["__logLevel"]) {
+            this.displayChat("§f" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message, null, 4))
+        }
     },
     warn: function (message) {
-        if (3 >= localOption["__logLevel"])
-            this.displayChat("§e" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
+        if (3 >= localOption["__logLevel"]) {
+            this.displayChat("§e" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message, null, 4))
+        }
     },
     error: function (message) {
-        if (4 >= localOption["__logLevel"])
-            this.displayChat("§c" + typeof (message) == "string" ? message : JSON.stringify(message, null, 4))
+        if (4 >= localOption["__logLevel"]) {
+            this.displayChat("§c" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message, null, 4))
+        }
     },
     fatal: function (message) {
-        if (5 >= localOption["__logLevel"])
-            this.displayChat("§c§l【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + typeof (message) == "string" ? message :JSON.stringify(message))
+        if (5 >= localOption["__logLevel"]) {
+            this.displayChat("§c§l【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message))
+        }
     }
 }
 utils.setter.setLogger(logger)
@@ -1665,7 +1673,7 @@ function displayChat(message) {
                         running_position[1] += tmp_big_array.length
                     }
                 )
-                blockArray.splice(0, 0, { "type": "fill", "data": { blockType: style[option.style][0], startCoordinate: blockArray[0].data.startCoordinate, endCoordinate: blockArray[blockArray.length - 1].data.endCoordinate } })
+                blockArray.splice(0, 0, { "type": "fill", "data": { blockType: new BlockType("minecraft:sponge", { "sponge_type": "dry" }), startCoordinate: blockArray[0].data.startCoordinate, endCoordinate: blockArray[blockArray.length - 1].data.endCoordinate } } )
                 logger.debug(blockArray[0])
                 logger.debug(blockArray[1])
                 if (sections[option.Type][4]) {
@@ -2129,7 +2137,7 @@ function displayChat(message) {
             ),
 
             [undefined],
-            [],
+            [undefined],
             [],
             {
                 "numberOfSides": 6,
@@ -2161,6 +2169,7 @@ function displayChat(message) {
 
 
                 let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
 
                 let coordinateArray = []
 
@@ -2178,14 +2187,14 @@ function displayChat(message) {
                             coordinate,
                             positionArray[0].tickingArea
                         ),
-                        new BlockType("minecraft:stained_hardened_clay", { "color": "cyan" })
+                        blockTypeArray[0]
                     ))
 
                 return blockArray
             },
             function () {
                 this.positionArray = [undefined]
-                this.blockTypeArray = []
+                this.blockTypeArray = [undefined]
             }
         )
     )

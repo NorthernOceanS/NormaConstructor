@@ -1,3 +1,4 @@
 /node_modules
 /.vs
 /out
+/packs/behaviors/scripts/client/jsconfig.json

@@ -1,5 +1,5 @@
 let TODO
-const __drzf = {
+const drzf = {
     replace: function (text, before, after) {
         return text.split(before).join(after)
     },
@@ -29,7 +29,7 @@ const __drzf = {
             last = response_text
             response_text = fillchar + response_text + fillchar
         }
-        for (let i = 0; response_text.length > length;i++) {
+        for (let i = 0; response_text.length > length; i++) {
             if (response_text.length % 2 == 0) {
                 response_text = response_text.substring(1, response_text.length - 1)
             } else if (i % 2 == 0) {
@@ -40,7 +40,7 @@ const __drzf = {
         }
         return response_text
     },
-    arrayMUL: function (length,array) {
+    arrayMUL: function (length, array) {
         let response_array = []
         for (let i = 0; i < length; i++) {
             response_array = response_array.concat(array)
@@ -58,7 +58,7 @@ const __drzf = {
             }*/
         },
         choice: function (array) {
-            return array[this.int(0,array.length)]
+            return array[this.int(0, array.length)]
         }
     },
     strip: TODO,//python的strip方法
@@ -66,16 +66,6 @@ const __drzf = {
     rstrip: TODO,//python的rstrip方法
     PIL: TODO,//python的pil的image操作，传入大小等等，返回一个array，里面是相对坐标
     nc: {
-        pigeon: function (length) {
-            let return_ = ""
-            let 鸽子用语 = "咕？！。鸽".split("")
-            for (let 咕 = 0; 咕 <= length; 咕++) {
-                return_ += drzf.random.choice(鸽子用语)
-                console.log(drzf.random.choice(鸽子用语))
-                console.log(return_)
-            }
-            return "咕咕咕？"+return_
-        },
         position: function (x, y, z, tickingArea) {
             if (Object.prototype.toString.call(x) === '[object Object]') {
                 return [x.coordinate.x, x.coordinate.y, x.coordinate.z, x.tickingArea]
@@ -147,7 +137,7 @@ const __drzf = {
                 }
             }
         },
-        __generator: function (option_form, positions_number, blocks_number, directions_number, default_option, generate_algorithm) {//这个东西咕了，因为有utils.generators.canonical.generatorConstrctor
+        generator: function (option_form, positions_number, blocks_number, directions_number, default_option, generate_algorithm, UIHandler, onFunc) {//这个东西咕了，因为有utils.generators.canonical.generatorConstrctor
             //TODO
             //减少new Generator时的参数
             return {
@@ -155,32 +145,65 @@ const __drzf = {
                     "positionUsage": [],
                     "blockTypeUsage": [],
                     "directionUsage": [],
-                    "optionUsage": option_form,//TODO 重置掉dzx的垃圾api，重新写一套
+                    "optionUsage": [option_form],//TODO 重置掉dzx的垃圾api，重新写一套
                 },
-                "positionArray": drzf.arrayMUL(positions_number, [undefined]),
-                "blockTypeArray": drzf.arrayMUL(blocks_number, [undefined]),
-                "directionArray": drzf.arrayMUL(directions_number, [undefined]),
+                "positionArray": new Array(positions_number).fill(undefined),
+                "blockTypeArray": new Array(blocks_number).fill(undefined),
+                "directionArray": new Array(directions_number).fill(undefined),
                 "option": default_option,//TODO 重置掉dzx的垃圾api，重新写一套
                 "addPosition": function (position) {
-                    utils.generators.canonical.addFunction("坐标", position, this.positionArray)
+                    let indexOfVacancy = this.positionArray.indexOf(undefined)
+                    if (indexOfVacancy == -1) logger.warn(`坐标过多，已移除新的坐标。`)
+                    else {
+                        this.positionArray[indexOfVacancy] = position
+                        logger.info(`已设置新的坐标。`)
+                    }
                 },
-                "addBlockType": function(blockType) {
-                    utils.generators.canonical.addFunction("方块类型", blockType, this.blockTypeArray)
+                "addBlockType": function (blockType) {
+                    let indexOfVacancy = this.blockTypeArray.indexOf(undefined)
+                    if (indexOfVacancy == -1) logger.warn(`方块类型过多，已移除新的方块类型。`)
+                    else {
+                        this.blockTypeArray[indexOfVacancy] = blockType
+                        logger.info(`已设置新的方块类型。`)
+                    }
                 },
-                "addDirection": function(direction) {
-                    utils.generators.canonical.addFunction("方向", direction, this.directionArray)
+                "addDirection": function (direction) {
+                    let indexOfVacancy = this.directionArray.indexOf(undefined)
+                    if (indexOfVacancy == -1) logger.warn(`方向过多，已移除新的方向。`)
+                    else {
+                        this.directionArray[indexOfVacancy] = direction
+                        logger.info(`已设置新的方向。`)
+                    }
                 },
-                "removePosition": function(index) {
-                    utils.generators.canonical.removeFunction(index, this.positionArray)
+                "removePosition": function (index) {
+                    if (index === undefined)
+                        for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                    if (index >= 0) this.positionArray[index] = undefined
+                    logger.info(this.positionArray)
                 },
-                "removeBlockType": function(index) {
-                    utils.generators.canonical.removeFunction(index, this.blockTypeArray)
+                "removeBlockType": function (index) {
+                    if (index === undefined)
+                        for (index = this.blockTypeArray.length - 1; index >= 0 && this.blockTypeArray[index] == undefined; index--);
+                    if (index >= 0) this.blockTypeArray[index] = undefined
+                    logger.info(this.blockTypeArray)
                 },
-                "removeDirection": function(index) {
-                    utils.generators.canonical.removeFunction(index, this.directionArray)
+                "removeDirection": function (index) {
+                    if (index === undefined)
+                        for (index = this.directionArray.length - 1; index >= 0 && this.directionArray[index] == undefined; index--);
+                    if (index >= 0) this.directionArray[index] = undefined
+                    logger.info(this.directionArray)
                 },
-                "validateParameter": function() {
-                    return utils.generators.canonical.validateParameter.call(this)
+                "validateParameter": function () {
+                    let result = new String()
+                    if (this.blockTypeArray.indexOf(undefined) != -1)
+                        result += "缺失方块类型，运行失败。\n"
+                    if (this.positionArray.indexOf(undefined) != -1)
+                        result += "缺失坐标，运行失败。\n"
+                    if (this.directionArray.indexOf(undefined) != -1)
+                        result += "缺失方向，运行失败。"
+                    if (result == "") result = "success"
+                    else logger.error(result)
+                    return result;
                 },
                 "generate": generate_algorithm,
                 "postGenerate": function () {
@@ -188,10 +211,10 @@ const __drzf = {
                     this.blockTypeArray = this.blockTypeArray.fill(undefined)
                     this.directionArray = this.directionArray.fill(undefined)
                 },
-                "UIHandler": undefined,
+                "UIHandler": UIHandler,
+                "tag_func": tag_func
             }
         }
     }
 }
-let drzf = {}
 export { drzf }

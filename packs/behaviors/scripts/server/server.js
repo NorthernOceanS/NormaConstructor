@@ -231,6 +231,7 @@ serverSystem.initialize = function () {
                     command, playerID,
                     Array.from(serverSystem.getComponent(eventData.data.entity, "minecraft:tag").data, (tag) => {
                         if (tag.startsWith("nc:")) {
+                            serverSystem.executeCommand(`/tag @a remove ${JSON.stringify(tag)}`, (commandResultData) => { });
                             return tag.slice(3)
                         }
                     })

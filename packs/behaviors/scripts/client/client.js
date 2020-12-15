@@ -202,7 +202,10 @@ clientSystem.initialize = function () {
                             storeData(new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
                         }
                         else if (command[0] == "set" && command[1] == "o") {
-                            generatorArray[generatorIndex].option[command[2]] = command[3]
+                            generatorArray[generatorIndex].option[command[2]] = command.slice(3).join(" ")
+                        }
+                        else if (command[0] == "func") {
+                            generatorArray[generatorIndex].tag_func(command.slice(1).join(" "))
                         }
                     }
                     eventData.data.additionalData.forEach((tag) => {
@@ -1725,6 +1728,190 @@ function displayChat(message) {
 
 (function () {
     generatorArray.push(
+        drzf.nc.generator(
+            {
+                viewtype: "edittext",
+                text: "内容",
+                key: "keyText"
+            },
+            {
+                viewtype: "checkbox",
+                text: "垂直（向下延伸）",
+                key: "isVertical",
+                data: [
+                    { value: true, text: "是" },
+                    { value: false, text: "否" }
+                ]
+            },
+            {
+                viewtype: "checkbox",
+                text: "平面",
+                key: "isFlat",
+                data: [
+                    { value: true, text: "是" },
+                    { value: false, text: "否" }
+                ]
+            },
+            1,
+            1,
+            1,
+            function () {
+                let blockArray = []
+
+
+                let positionArray = this.positionArray
+                let blockTypeArray = this.blockTypeArray
+                let directionArray = this.directionArray
+                let option = this.option
+
+                let directionMark = (function () {
+                    if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                    else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                    else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                    else return "-z"
+                }())
+
+                let rawText = (function (text, mcfont) {//新版mcfont的解码
+                    let rawTextArray = []
+                    for (let i = 0; i < text.length; i++) {//i 每个字
+                        rawTextArray.push((function (text, mcfont) {
+                            if (text == " ") {//空格return 0
+                                return 0
+                            }
+                            let cnm = mcfont.substring(text.charCodeAt() * 16, text.charCodeAt() * 16 + 16)
+                            let wdnmd = []
+                            let p
+                            let u
+                            for (let d = 0; d < 16; d++) {//d 16个Unicode
+                                p = cnm.charCodeAt(d)
+                                u = 65536
+                                for (let m = 0; m < 16; m++) {// m 每次减少
+                                    u /= 2
+                                    if (p - u >= 0) {
+                                        p -= u
+                                        wdnmd.push(1)
+                                    }
+                                    else {
+                                        wdnmd.push(0)
+                                    }
+                                }
+                            }
+                            return wdnmd
+                        }
+                        )(text[i], mcfont))
+                    }
+                    return rawTextArray
+                })(option["keyText"], presetBuildings.mcfont)
+                //let rawText = (function (text,mcfont) {
+                //    let l
+                //    l = []
+                //    for (let i = 0; i < text.length; i++) {
+                //        if (text[i] == " ") {
+                //            l.push(0)
+                //        } else {
+                //            l.push(mcfont[text.charCodeAt(i)])
+                //        }
+                //    }
+                //    return(l)
+                //})(option["keyText"], presetBuildings.mcfont) //旧版mcfont的解码
+                let tempPosition = [0, 15, 0]
+                if (option["isVertical"]) {
+                    tempPosition[1] = 0
+                }
+                //t = 每个字
+                //i = 每列
+                //z = 每行
+                let u
+                for (let t = 0; t < rawText.length; t++) {
+                    for (let i = 0; i < 16; i++) {
+                        for (let z = 0; z < 16; z++) {
+                            if (rawText[t][i * 16 + z]) {
+                                if (option["isFlat"]) {
+                                    if (directionMark == "-z") {
+                                        blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z - tempPosition[1] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                    } else
+                                        if (directionMark == "+x") {
+                                            blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[1], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z + tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                        } else
+                                            if (directionMark == "+z") {
+                                                blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z + tempPosition[1] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                            } else
+                                                if (directionMark == "-x") {
+                                                    blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[1], "y": positionArray[0].coordinate.y + tempPosition[2], "z": positionArray[0].coordinate.z - tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                                }
+                                } else {
+                                    if (directionMark == "-z") {
+                                        blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[2] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                    } else
+                                        if (directionMark == "+x") {
+                                            blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[2], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                        } else
+                                            if (directionMark == "+z") {
+                                                blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x - tempPosition[0], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z + tempPosition[2] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                            } else
+                                                if (directionMark == "-x") {
+                                                    blockArray.push({ "position": { "coordinate": { "x": positionArray[0].coordinate.x + tempPosition[2], "y": positionArray[0].coordinate.y + tempPosition[1], "z": positionArray[0].coordinate.z - tempPosition[0] }, "tickingArea": positionArray[0].tickingArea }, "blockType": blockTypeArray[0] })
+                                                }
+                                }
+                            }
+                            tempPosition[0] += 1
+                        }
+                        tempPosition[1] += -1
+                        tempPosition[0] += -16
+                    }
+                    if (t + 2 > rawText.length) {
+                        break
+                    }
+                    if (option["isVertical"]) {
+                        for (let d = 0; d < 16; d++) {
+                            u = 0
+                            for (let q = 0; q < 16; q++) {
+                                if (rawText[t + 1][d * 16 + 15 - q] != 1) {
+                                    u++
+                                }
+                            }
+                            if (u == 16) {
+                                tempPosition[1] += 1
+                            } else {
+                                break
+                            }
+                        }
+                        if (rawText[t] == 0) {
+                            tempPosition[1] += -8
+                        }
+                    } else {
+                        tempPosition[1] += 16
+                        for (let d = 0; d < 16; d++) {
+                            u = 0
+                            for (let q = 0; q < 16; q++) {
+                                if (rawText[t][q * 16 + 15 - d] != 1) {
+                                    u++
+                                }
+                            }
+                            if (u == 16) {
+                                tempPosition[0] += -1
+                            } else {
+                                break
+                            }
+                        }
+                        if (rawText[t] == 0) {
+                            tempPosition[0] += 8
+                        }
+                        tempPosition[0] += 17
+                    }
+                }
+                return blockArray
+            },
+            function (data) { },
+            function (data) {
+                this.option.keyText = data
+            }
+        )
+    )
+}());
+
+(function () {
+    generatorArray.push(
         new Generator(
             new Description("创建像素字",
                 new Usage(
@@ -1833,18 +2020,18 @@ function displayChat(message) {
                     }
                     return rawTextArray
                 })(option["keyText"], presetBuildings.mcfont)
-                /*let rawText = (function (text,mcfont) {
-                    let l
-                    l = []
-                    for (let i = 0; i < text.length; i++) {
-                        if (text[i] == " ") {
-                            l.push(0)
-                        } else {
-                            l.push(mcfont[text.charCodeAt(i)])
-                        }
-                    }
-                    return(l)
-                })(option["keyText"], presetBuildings.mcfont)*/ //旧版mcfont的解码
+                //let rawText = (function (text,mcfont) {
+                //    let l
+                //    l = []
+                //    for (let i = 0; i < text.length; i++) {
+                //        if (text[i] == " ") {
+                //            l.push(0)
+                //        } else {
+                //            l.push(mcfont[text.charCodeAt(i)])
+                //        }
+                //    }
+                //    return(l)
+                //})(option["keyText"], presetBuildings.mcfont) //旧版mcfont的解码
                 let tempPosition = [0, 15, 0]
                 if (option["isVertical"]) {
                     tempPosition[1] = 0
@@ -1937,10 +2124,14 @@ function displayChat(message) {
                 this.positionArray = [undefined]
                 this.blockTypeArray = [undefined]
                 this.directionArray = [undefined]
+            },
+            function (data) {},
+            function (data) {
+                this.option.keyText = data
             }
         )
     )
-}());
+}/*()*/);
 
 (function () {
     generatorArray.push(

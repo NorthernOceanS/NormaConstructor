@@ -1,7 +1,7 @@
-# 诺玛建工
+# NormaConstructor
 除非另有声明，本仓库内容采用[Mozilla Public License 2.0](/LICENSE "Mozilla Public License 2.0")授权。  
-[![icon](/.github/workflows/icon.png "诺玛")](https://github.com/NorthernOceanS/NormaConstructor)  
-[诺玛建工](https://github.com/NorthernOceanS/NormaConstructor "前往原仓库")，一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。  
+[![icon](/.github/workflows/icon.png "NormaConstructor")](https://github.com/NorthernOceanS/NormaConstructor)  
+[NormaConstructor](https://github.com/NorthernOceanS/NormaConstructor "前往原仓库")，一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。  
 如果你正在寻找适合Minecraft基岩版的“小木斧”，那么恭喜你来对地方了！  
 本人将此附加包进行了人工翻译，进行了一些优化，添加了一些feature。
 ## 介绍
@@ -28,11 +28,11 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 - 可以在服务器(pm/nk等除外)或领域使用  
 - 1.12左右就能使用脚本API了  
 - 巨大的未被发掘的潜力
-### 诺玛二建（NormaConstructor）附加包能干什么？
-前面提到诺玛建工是一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，可以加快您的建筑过程。
+### NormaConstructor能干什么？
+前面提到NormaConstructor是一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，可以加快您的建筑过程。
 - 用更少的时间创建更令人印象深刻且更大的建筑  
 - 在几秒钟内快速创建，替换或删除数万个方块  
-- 生成球体，圆，多边形，铁路，地铁站等复杂几何结构  
+- 生成球体，圆，多边形，铁路，地铁站甚至像素字等复杂几何结构  
 - 迷失于各种绝妙的功能之中！
 这个附加包是完全开源的，您可以fork这个项目并参与到开发当中。
 ## 使用方法
@@ -49,7 +49,7 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 #### 其他版本也大同小异，此处不再赘述
 ### 配置并装载
 #### 配置
-进入Minecraft，打开你要使用诺玛建工的世界的设置  
+进入Minecraft，打开你要使用NormaConstructor的世界的设置  
 启用实验玩法  
 在左侧点击资源包并装载NormaConstructor Resource  
 点击行为包并装载NormaConstructor Behavior

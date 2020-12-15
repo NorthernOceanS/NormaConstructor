@@ -2,7 +2,7 @@
 除非另有声明，本仓库内容采用[Mozilla Public License 2.0](https://github.com/NorthernOceanS/NormaConstructor/LICENSE "Mozilla Public License 2.0")授权。  
 [![icon](/.github/workflows/icon.png "诺玛")](https://github.com/NorthernOceanS/NormaConstructor)  
 [诺玛建工](https://github.com/NorthernOceanS/NormaConstructor "前往原仓库")，一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。  
-# WARNING:此Add-On已经停止维护，~诈尸~时间未定。
+;# WARNING:此Add-On已经停止维护，~诈尸~时间未定。
 如果你正在寻找适合Minecraft基岩版的“小木斧”，那么恭喜你来对地方了！  
 原作者虽然是中国人但是为了保持格式选择了使用英文。  
 本人将此附加包进行了人工翻译，进行了一些优化，添加了一些feature。

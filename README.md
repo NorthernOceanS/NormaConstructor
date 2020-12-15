@@ -1,5 +1,5 @@
 # 诺玛建工
-除非另有声明，本仓库内容采用[Mozilla Public License 2.0](https://github.com/NorthernOceanS/NormaConstructor/LICENSE "Mozilla Public License 2.0")授权。  
+除非另有声明，本仓库内容采用[Mozilla Public License 2.0](/LICENSE "Mozilla Public License 2.0")授权。  
 [![icon](/.github/workflows/icon.png "诺玛")](https://github.com/NorthernOceanS/NormaConstructor)  
 [诺玛建工](https://github.com/NorthernOceanS/NormaConstructor "前往原仓库")，一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。  
 如果你正在寻找适合Minecraft基岩版的“小木斧”，那么恭喜你来对地方了！  
@@ -68,20 +68,20 @@ Minecraft 脚本引擎（Minecraft Script Engine）是一套使用JavaScript的�
 |名称|功能
 |-|-
 任何方块|设置放置的方块为生成器的方块
-![全局开关](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/chooseNextGenerator.png "全局开关")|切换“生成器控制面板”中的“允许插件运行”（默认关闭）。
-![空气](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/getAir.png "空气")|设置方块种类为空气，也就是执行后将拆除一片区域（可以与“自动获取坐标”搭配使用）。
-![打开生成器控制面板](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/showMenu.png "打开生成器控制面板")|打开生成器控制面板
-![设置坐标](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/getPosition.png "设置坐标")|设置点击的点为生成器的坐标
-![设置方向](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/getDirection.png "设置方向")|添加点击时玩家的方向为生成器的方向
-![删除上一个坐标](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/removeLastPosition.png "删除上一个坐标")|删除最新设置的坐标
-![删除上一个方向](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/removeLastDirection.png "删除上一个方向")|删除最新设置的方向
-![删除上一个方块类型](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/removeLastBlockType.png "删除上一个方块类型")|删除最新设置的方块类型
-![查看设置](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/showSavedData.png "查看设置")|查看存储的设置
-![读取标签](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/readTag.png "读取标签")|开发者选项
-![开始生成](https://github.com/DrZaofu/NormaConstructor/raw/master/packs/resources/textures/items/execute.png "开始生成")|开始生成
+![全局开关](/raw/master/packs/resources/textures/items/chooseNextGenerator.png "全局开关")|切换“生成器控制面板”中的“允许插件运行”（默认关闭）。
+![空气](/raw/master/packs/resources/textures/items/getAir.png "空气")|设置方块种类为空气，也就是执行后将拆除一片区域（可以与“自动获取坐标”搭配使用）。
+![打开生成器控制面板](/raw/master/packs/resources/textures/items/showMenu.png "打开生成器控制面板")|打开生成器控制面板
+![设置坐标](/raw/master/packs/resources/textures/items/getPosition.png "设置坐标")|设置点击的点为生成器的坐标
+![设置方向](/raw/master/packs/resources/textures/items/getDirection.png "设置方向")|添加点击时玩家的方向为生成器的方向
+![删除上一个坐标](/raw/master/packs/resources/textures/items/removeLastPosition.png "删除上一个坐标")|删除最新设置的坐标
+![删除上一个方向](/raw/master/packs/resources/textures/items/removeLastDirection.png "删除上一个方向")|删除最新设置的方向
+![删除上一个方块类型](/raw/master/packs/resources/textures/items/removeLastBlockType.png "删除上一个方块类型")|删除最新设置的方块类型
+![查看设置](/raw/master/packs/resources/textures/items/showSavedData.png "查看设置")|查看存储的设置
+![读取标签](/raw/master/packs/resources/textures/items/readTag.png "读取标签")|开发者选项
+![开始生成](/raw/master/packs/resources/textures/items/execute.png "开始生成")|开始生成
 #### 了解UI
 请使用“打开生成器控制面板”打开UI  
-![UI](https://github.com/DrZaofu/NormaConstructor/raw/master/.github/workflows/UI.png "UI")
+![UI](/raw/master/.github/workflows/UI.png "UI")
 你应该会看到类似图片上的一个UI
 ##### 左边的全局设置
 项目|功能|默认

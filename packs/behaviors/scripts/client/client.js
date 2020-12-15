@@ -47,7 +47,7 @@ const logger = {
     },
     fatal: function (message) {
         if (5 >= localOption["__logLevel"]) {
-            this.displayChat("§c§l【截图上报至https://github.com/MCDRZF/NormaConstructor/issues 或QQ群820683439】" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message))
+            this.displayChat("§c§l【截图上报至https://github.com/DrZaofu/NormaConstructor/issues 或QQ群820683439】" + (message instanceof String) || ((typeof message).toLowerCase() == 'string') ? message : JSON.stringify(message))
         }
     }
 }
@@ -765,7 +765,7 @@ function displayChat(message) {
                             data: [
                                 { value: "NS", text: "北冥/南冥", dataForUIHandler: "preset" },
                                 { value: "DB", text: "东沙/冰岛", dataForUIHandler: "preset" },
-                                { value: "ZF", text: "MCDRZF定制的道路", dataForUIHandler: "preset" },
+                                { value: "ZF", text: "DrZaofu定制的道路", dataForUIHandler: "preset" },
                                 { value: "custom", text: "自定义", dataForUIHandler: "custom" }
                             ]
                         },
@@ -1264,7 +1264,7 @@ function displayChat(message) {
 (function () {
     generatorArray.push(
         new Generator(
-            new Description("铁路生成器（MCDRZF版）",
+            new Description("铁路生成器（DrZaofu版）",
                 new Usage(
                     [],
                     [],

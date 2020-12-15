@@ -2,7 +2,7 @@
     "format_version": 2,
     "header": {
         "name": "诺玛二建（NC）资源包",
-        "description": "诺玛二建（by MCDRZF），一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。\nhttps://github.com/DrZaofu/NormaConstructor",
+        "description": "诺玛二建（by DrZaofu），一个为Minecraft基岩版设计的，基于Minecraft 脚本引擎的快速建造附加包，加快您的建筑过程。\nhttps://github.com/DrZaofu/NormaConstructor",
         "uuid": "8b9a64ef-054c-4b3f-a247-820b4d0f15b6",
         "version": [
             1,

@@ -1,4 +1,7 @@
 /node_modules
-/.vs
+/.vscode
 /out
 /packs/behaviors/scripts/client/jsconfig.json
+/DevOp Asset
+__*
+.DS_Store

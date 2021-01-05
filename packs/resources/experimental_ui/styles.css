@@ -4,12 +4,8 @@
   This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
 */
 @font-face {
-  font-family:"Minecraftia";
-  src:url("fonts/Minecraftia.ttf");
-}
-@font-face {
   font-family:"NotoSerifSC-Regular";
-  src:url("fonts/NotoSerifSC-Regular.otf");
+  src:url(id://NotoSansCJK-Regular);
 }
 * {
 	font-family:"NotoSerifSC-Regular";

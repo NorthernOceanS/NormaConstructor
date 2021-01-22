@@ -77,4 +77,10 @@ export class UserSystem {
         }
         this._system.removeUser(this);
     }
+    function _createRuntime(plugin) {
+        return this._system.createRuntime({
+            user: this,
+            plugin,
+        })
+    }
 }

@@ -63,6 +63,54 @@ export class UserSystem {
         }
         this._generatorIndex = 0;
     }
+    function nextGenerator() {
+        this._generatorIndex++;
+    }
+    function perviousGenerator() {
+        this._generatorIndex++;
+    }
+    function addPosition(position) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onAddPosition({
+            position,
+            runtime: this._createRuntime(gen),
+        })
+    }
+    function addBlockType(blockType) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onAddBlockType({
+            blockType,
+            runtime: this._createRuntime(gen),
+        })
+    }
+    function addDirection(direction) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onAddDirection({
+            direction,
+            runtime: this._createRuntime(gen),
+        })
+    }
+    function removePosition(index) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onRemovePosition({
+            index,
+            runtime: this._createRuntime(gen),
+        })
+    }
+    function removeBlockType(index) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onRemoveBlockType({
+            index,
+            runtime: this._createRuntime(gen),
+        })
+    }
+    function removeDirection(index) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onRemoveDirection({
+            index,
+            runtime: this._createRuntime(gen),
+        })
+    }
     function exit() {
         for(let i = 0; i < this._generatorStates.length; ++i) {
             this._generators[i].onExit({

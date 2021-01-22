@@ -46,6 +46,7 @@ export class UserSystem {
     constructor(system) {
         this._system = system;
         this._system.addUser(this);
+        this._generators = system.getGenerators();
     }
     function exit() {
         this._system.removeUser(this);

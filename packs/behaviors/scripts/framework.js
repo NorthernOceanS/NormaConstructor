@@ -37,6 +37,7 @@ export class System {
     createRuntime(auth) {
         let runtime = Object.assign({},this._platform);
         runtime.user = undefined;
+        return runtime;
     }
     /*
     ** Following functions are register API of system.

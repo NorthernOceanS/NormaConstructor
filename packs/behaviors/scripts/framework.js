@@ -61,6 +61,7 @@ export class UserSystem {
                 runtime: this._createRuntime(this._generators[i]),
             });
         }
+        this._generatorIndex = 0;
     }
     function exit() {
         for(let i = 0; i < this._generatorStates.length; ++i) {

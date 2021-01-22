@@ -58,10 +58,7 @@ export class UserSystem {
         for(let i = 0; i < this._generatorStates.length; ++i) {
             this._generators[i].onInit({
                 state: this._generatorStates[i],
-                runtime: this._system.createRuntime({
-                    user: this,
-                    plugin: this._generators[i],
-                }),
+                runtime: this._createRuntime(this._generators[i]),
             });
         }
     }
@@ -69,10 +66,7 @@ export class UserSystem {
         for(let i = 0; i < this._generatorStates.length; ++i) {
             this._generators[i].onExit({
                 state: this._generatorStates[i],
-                runtime: this._system.createRuntime({
-                    user: this,
-                    plugin: this._generators[i],
-                }),
+                runtime: this._createRuntime(this._generators[i]),
             });
         }
         this._system.removeUser(this);

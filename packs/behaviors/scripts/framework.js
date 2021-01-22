@@ -25,6 +25,12 @@ export class System {
     ** If you are a generator developer,
     ** please don't rely on these functions.
     */
+    addUser(user) {
+        // no-op
+    }
+    removeUser(user) {
+        // no-op
+    }
     getGenerators() {
         return Array.from(this._generators);
     }
@@ -39,5 +45,9 @@ export class System {
 export class UserSystem {
     constructor(system) {
         this._system = system;
+        this._system.addUser(this);
+    }
+    function exit() {
+        this._system.removeUser(this);
     }
 }

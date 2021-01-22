@@ -35,3 +35,9 @@ export class System {
         this._generators.push(generator);
     }
 }
+
+export class UserSystem {
+    constructor(system) {
+        this._system = system;
+    }
+}

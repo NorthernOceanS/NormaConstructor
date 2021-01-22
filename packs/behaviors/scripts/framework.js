@@ -47,6 +47,10 @@ export class UserSystem {
         this._system = system;
         this._system.addUser(this);
         this._generators = system.getGenerators();
+        this._generatorStates = Array(this._generators.length);
+        for(let i = 0; i < this._generatorStates.length; ++i) {
+            this._generatorStates[i] = {};
+        }
     }
     function exit() {
         this._system.removeUser(this);

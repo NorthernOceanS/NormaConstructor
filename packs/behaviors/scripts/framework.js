@@ -34,6 +34,10 @@ export class System {
     getGenerators() {
         return Array.from(this._generators);
     }
+    createRuntime(auth) {
+        let runtime = Object.assign({},this._platform);
+        runtime.user = undefined;
+    }
     /*
     ** Following functions are register API of system.
     */

@@ -73,6 +73,7 @@ export class UserSystem {
     addPosition(position) {
         let gen = this._generators[this._generatorIndex];
         gen.onAddPosition({
+            state: this._generatorStates[this._generatorIndex],
             position,
             runtime: this._createRuntime(gen),
         })
@@ -80,6 +81,7 @@ export class UserSystem {
     addBlockType(blockType) {
         let gen = this._generators[this._generatorIndex];
         gen.onAddBlockType({
+            state: this._generatorStates[this._generatorIndex],
             blockType,
             runtime: this._createRuntime(gen),
         })
@@ -87,6 +89,7 @@ export class UserSystem {
     addDirection(direction) {
         let gen = this._generators[this._generatorIndex];
         gen.onAddDirection({
+            state: this._generatorStates[this._generatorIndex],
             direction,
             runtime: this._createRuntime(gen),
         })
@@ -94,6 +97,7 @@ export class UserSystem {
     removePosition(index) {
         let gen = this._generators[this._generatorIndex];
         gen.onRemovePosition({
+            state: this._generatorStates[this._generatorIndex],
             index,
             runtime: this._createRuntime(gen),
         })
@@ -101,6 +105,7 @@ export class UserSystem {
     removeBlockType(index) {
         let gen = this._generators[this._generatorIndex];
         gen.onRemoveBlockType({
+            state: this._generatorStates[this._generatorIndex],
             index,
             runtime: this._createRuntime(gen),
         })
@@ -108,6 +113,7 @@ export class UserSystem {
     removeDirection(index) {
         let gen = this._generators[this._generatorIndex];
         gen.onRemoveDirection({
+            state: this._generatorStates[this._generatorIndex],
             index,
             runtime: this._createRuntime(gen),
         })

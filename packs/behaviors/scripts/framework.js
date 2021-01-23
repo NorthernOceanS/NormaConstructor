@@ -127,6 +127,12 @@ export class UserSystem {
         }
         this._system.removeUser(this);
     }
+    _createGeneratorBasicE(index) {
+        return {
+            state: this._generatorStates[index],
+            runtime: this._generatorIndex(this._generators[index]),
+        }
+    }
     _createRuntime(plugin) {
         return this._system.createRuntime({
             user: this,

@@ -68,7 +68,7 @@ export class UserSystem {
         this._generatorIndex++;
     }
     perviousGenerator() {
-        this._generatorIndex++;
+        this._generatorIndex--;
     }
     addPosition(position) {
         let gen = this._generators[this._generatorIndex];

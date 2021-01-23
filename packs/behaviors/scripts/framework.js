@@ -66,9 +66,12 @@ export class UserSystem {
     }
     nextGenerator() {
         this._generatorIndex++;
+        this._generatorIndex %= this._generators.length;
     }
     perviousGenerator() {
         this._generatorIndex--;
+        this._generatorIndex += this._generators.length;
+        this._generatorIndex %= this._generators.length;
     }
     addPosition(position) {
         let gen = this._generators[this._generatorIndex];

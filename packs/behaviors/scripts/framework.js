@@ -45,8 +45,7 @@ export class System {
         return Array.from(this._generators);
     }
     createRuntime(auth) {
-        let runtime = Object.assign({},this._platform);
-        runtime.use = undefined;
+        let runtime = this._platform.createRuntime(this.getID(auth.user));
         return runtime;
     }
     /*

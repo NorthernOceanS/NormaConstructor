@@ -11,6 +11,7 @@ export class System {
     constructor() {
         this._platform = null;
         this._generators = [];
+        this._users = new Map();
     }
     /*
     ** Following functions are used by platform.
@@ -20,16 +21,19 @@ export class System {
     inject(platform) {
         this._platform = platform;
     }
+    getUser(id) {
+        this._users.get(id);
+    }
     /*
     ** Following functions are used by users,
     ** If you are a generator developer,
     ** please don't rely on these functions.
     */
     addUser(id, user) {
-        // no-op
+        this._users.set(id, user);
     }
     removeUser(id, user) {
-        // no-op
+        this._users.delete(id);
     }
     getGenerators() {
         return Array.from(this._generators);
@@ -50,7 +54,7 @@ export class System {
 export class UserSystem {
     constructor(system, id) {
         this._system = system;
-		this._id = id;
+        this._id = id;
         this._system.addUser(id, this);
         this._generators = system.getGenerators();
         this._generatorStates = Array(this._generators.length);

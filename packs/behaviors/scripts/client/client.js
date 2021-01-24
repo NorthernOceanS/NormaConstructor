@@ -2,17 +2,15 @@ import system from '../system.js';
 import '../plugin/index.js';
 import { emptyPlatform } from '../framework.js';
 
-var clientSystem = client.registerSystem(0, 0);
 
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
 import { utils } from '../utils'
 
 emptyPlatform.use(system);
-clientSystem.initialize = function () {
-    platform.use(system)
-}
+platform.use(system)
 const platform = {
     use: function (system) {
+        var clientSystem = client.registerSystem(0, 0);
         this.init(clientSystem, system)
     },
     init: function (clientSystem, system) {
@@ -45,6 +43,7 @@ const platform = {
 
 
 
+		clientSystem.initialize = function () {
         clientSystem.registerEventData("NormaConstructor:ExecutionResponse", { playerID: undefined, buildInstructions: undefined })
         clientSystem.registerEventData("NormaConstructor:setServerSideOption", { playerID: undefined, option: { key: undefined, value: undefined } })
         clientSystem.registerEventData("NormaConstructor:queryBlockType", {
@@ -298,6 +297,7 @@ const platform = {
                 }
             }
         })
+	    }
 
 
 

@@ -1,12 +1,11 @@
 import system from '../system.js';
 import '../plugin/index.js';
-import { emptyPlatform , UserSystem } from '../framework.js';
+import { UserSystem } from '../framework.js';
 
 
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
 import { utils } from '../utils'
 
-emptyPlatform.use(system);
 platform.use(system)
 const platform = {
     use: function (system) {

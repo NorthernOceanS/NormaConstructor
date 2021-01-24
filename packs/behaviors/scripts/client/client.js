@@ -1,6 +1,6 @@
 import system from '../system.js';
 import '../plugin/index.js';
-import { emptyPlatform } from '../framework.js';
+import { emptyPlatform , UserSystem } from '../framework.js';
 
 
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
@@ -14,6 +14,7 @@ const platform = {
         this.init(clientSystem, system)
     },
     init: function (clientSystem, system) {
+        let userSystem = new UserSystem(system);
         let coordinatePlayerLookingAt = undefined
 
         let localOption = {

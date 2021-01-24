@@ -13,7 +13,7 @@ clientSystem.initialize = function () {
 }
 const platform = {
     use: function (system) {
-        this.init(serverSystem, system)
+        this.init(clientSystem, system)
     },
     init: function (clientSystem, system) {
         let coordinatePlayerLookingAt = undefined

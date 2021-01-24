@@ -12,6 +12,7 @@ export class System {
         this._platform = null;
         this._generators = [];
         this._users = new Map();
+        this._ids = new Map();
     }
     /*
     ** Following functions are used by platform.
@@ -24,6 +25,9 @@ export class System {
     getUser(id) {
         this._users.get(id);
     }
+    getID(user) {
+        this._ids.get(user);
+    }
     /*
     ** Following functions are used by users,
     ** If you are a generator developer,
@@ -31,9 +35,11 @@ export class System {
     */
     addUser(id, user) {
         this._users.set(id, user);
+        this._ids.set(user, user);
     }
     removeUser(id, user) {
         this._users.delete(id);
+        this._ids.delete(user);
     }
     getGenerators() {
         return Array.from(this._generators);

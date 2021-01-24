@@ -409,4 +409,6 @@ const platform = {
             logger.logObject("verbose", setBlockEventData)
         }
     }
+    createRuntime(id) {
+    }
 }

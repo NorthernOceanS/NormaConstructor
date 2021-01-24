@@ -13,7 +13,7 @@ const platform = {
         this.init(clientSystem, system)
     },
     init: function (clientSystem, system) {
-        let userSystem = new UserSystem(system);
+        let userSystem = null;
         let coordinatePlayerLookingAt = undefined
 
         let localOption = {
@@ -71,6 +71,7 @@ const platform = {
                 logger.logObject("debug", eventData.data.player)
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
+				userSystem = new UserSystem(system, playerID);
 
                 //Logging:
                 const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");

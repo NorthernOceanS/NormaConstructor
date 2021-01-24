@@ -25,10 +25,10 @@ export class System {
     ** If you are a generator developer,
     ** please don't rely on these functions.
     */
-    addUser(user) {
+    addUser(id, user) {
         // no-op
     }
-    removeUser(user) {
+    removeUser(id, user) {
         // no-op
     }
     getGenerators() {
@@ -48,9 +48,10 @@ export class System {
 }
 
 export class UserSystem {
-    constructor(system) {
+    constructor(system, id) {
         this._system = system;
-        this._system.addUser(this);
+		this._id = id;
+        this._system.addUser(id, this);
         this._generators = system.getGenerators();
         this._generatorStates = Array(this._generators.length);
         for(let i = 0; i < this._generatorStates.length; ++i) {
@@ -128,7 +129,7 @@ export class UserSystem {
                 runtime: this._createRuntime(this._generators[i]),
             });
         }
-        this._system.removeUser(this);
+        this._system.removeUser(this._id, this);
     }
     _createGeneratorBasicE(index) {
         return {

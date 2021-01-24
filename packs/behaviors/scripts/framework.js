@@ -55,6 +55,7 @@ export class UserSystem {
     constructor(system, id) {
         this._system = system;
         this._id = id;
+        this.session = {};
         this._system.addUser(id, this);
         this._generators = system.getGenerators();
         this._generatorStates = Array(this._generators.length);

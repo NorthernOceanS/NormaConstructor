@@ -38,7 +38,6 @@ const platform = {
                 this.log(level, JSON.stringify(object, null, '    '))
             }
         }
-        utils.setter.setLogger(logger)
 
 
 
@@ -73,6 +72,7 @@ const platform = {
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 				userSystem = new UserSystem(system, playerID);
 
+                utils.setter.setLogger(logger)
                 //Logging:
                 const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
                 scriptLoggerConfig.data.log_errors = true;

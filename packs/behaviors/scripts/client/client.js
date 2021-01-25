@@ -16,7 +16,6 @@ const platform = {
         let userSystem = null;
         let coordinatePlayerLookingAt = undefined
 
-        let localOption = {};
         const logger = {
             displayChat, displayObject,
             log: function (level, message) {
@@ -28,7 +27,7 @@ const platform = {
                     ["error", { num: 4, color: "§c" }],
                     ["fatal", { num: 5, color: "§4" }]
                 ])
-                if (colorMap.get(level).num >= colorMap.get(localOption["__logLevel"]).num)
+                if (colorMap.get(level).num >= colorMap.get(userSystem.session["__logLevel"]).num)
                     this.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
             },
             logObject: function (level, object) {
@@ -69,8 +68,8 @@ const platform = {
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 				userSystem = new UserSystem(system, playerID);
 
-                localOption.__logLevel = "verbose";
-                localOption.__on = true;
+                userSystem.session.__logLevel = "verbose";
+                userSystem.session.__on = true;
                 utils.setter.setLogger(logger)
                 //Logging:
                 const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
@@ -112,7 +111,7 @@ const platform = {
                     displayChat(eventData.data.message)
             })
             clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
-                if (playerID == eventData.data.playerID && (localOption["__on"] || eventData.data.command == "show_menu")) {
+                if (playerID == eventData.data.playerID && (userSystem.session["__on"] || eventData.data.command == "show_menu")) {
                     switch (eventData.data.command) {
                         case "get_data": {
                             logger.logObject("debug", eventData.data.additionalData)
@@ -186,8 +185,8 @@ const platform = {
                             logger.logObject("info", generatorArray[generatorIndex].directionArray)
                             logger.log("info", "Current generator option:")
                             logger.logObject("info", generatorArray[generatorIndex].option)
-                            logger.log("info", "Current local option:")
-                            logger.logObject("info", localOption)
+                            logger.log("info", "Current session:")
+                            logger.logObject("info", userSystem.session)
                             break;
                         }
                         case "execute": {
@@ -220,7 +219,7 @@ const platform = {
             })
             clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
 
-                if (playerID == eventData.data.playerID && localOption["__on"]) {
+                if (playerID == eventData.data.playerID && userSystem.session["__on"]) {
                     logger.log("debug", "RECEIVE:")
                     logger.logObject("debug", eventData)
                     storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
@@ -287,7 +286,7 @@ const platform = {
                             break;
                         }
                         case "setLocalOption": {
-                            setLocalOption(uiData.data.key, uiData.data.value)
+                            setSession(uiData.data.key, uiData.data.value)
                             break;
                         }
                         case "displayChat": {
@@ -349,8 +348,8 @@ const platform = {
             setServerSideOptionEventData.data.option.value = value
             clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
         }
-        function setLocalOption(key, value) {
-            localOption[key] = value
+        function setSession(key, value) {
+            userSystem.session[key] = value
         }
 
         function displayObject(object) {

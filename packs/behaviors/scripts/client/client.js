@@ -16,10 +16,7 @@ const platform = {
         let userSystem = null;
         let coordinatePlayerLookingAt = undefined
 
-        let localOption = {
-            "__logLevel": "verbose",
-            "__on": true
-        }
+        let localOption = {};
         const logger = {
             displayChat, displayObject,
             log: function (level, message) {
@@ -72,6 +69,8 @@ const platform = {
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 				userSystem = new UserSystem(system, playerID);
 
+                localOption.__logLevel = "verbose";
+                localOption.__on = true;
                 utils.setter.setLogger(logger)
                 //Logging:
                 const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");

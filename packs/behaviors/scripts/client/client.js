@@ -16,24 +16,6 @@ const platform = {
         let userSystem = null;
         let coordinatePlayerLookingAt = undefined
 
-        const logger = {
-            displayChat, displayObject,
-            log: function (level, message) {
-                const colorMap = new Map([
-                    ["verbose", { num: 0, color: "§a" }],
-                    ["debug", { num: 1, color: "§6" }],
-                    ["info", { num: 2, color: "§b" }],
-                    ["warning", { num: 3, color: "§e" }],
-                    ["error", { num: 4, color: "§c" }],
-                    ["fatal", { num: 5, color: "§4" }]
-                ])
-                if (colorMap.get(level).num >= colorMap.get(userSystem.session["__logLevel"]).num)
-                    this.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
-            },
-            logObject: function (level, object) {
-                this.log(level, JSON.stringify(object, null, '    '))
-            }
-        }
         function loggerFactory(user) {
             return {
                 displayChat, displayObject,
@@ -83,6 +65,7 @@ const platform = {
 
             clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
             clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
+                let logger = loggerFactory(userSystem);
                 logger.logObject("debug", eventData.data.player)
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
@@ -131,6 +114,7 @@ const platform = {
                     displayChat(eventData.data.message)
             })
             clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
+                let logger = loggerFactory(userSystem);
                 if (playerID == eventData.data.playerID && (userSystem.session["__on"] || eventData.data.command == "show_menu")) {
                     switch (eventData.data.command) {
                         case "get_data": {
@@ -238,6 +222,7 @@ const platform = {
                 }
             })
             clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
+                let logger = loggerFactory(userSystem);
 
                 if (playerID == eventData.data.playerID && userSystem.session["__on"]) {
                     logger.log("debug", "RECEIVE:")
@@ -343,6 +328,7 @@ const platform = {
             if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
         }
         async function execute() {
+            let logger = loggerFactory(userSystem);
             logger.log("info", "Start validating parameters...");
             let validateResult = generatorArray[generatorIndex].validateParameter();
             if (validateResult == "success") {
@@ -420,6 +406,7 @@ const platform = {
             return blockType
         }
         function setBlock(x, y, z, blockIdentifier, tileData) {
+            let logger = loggerFactory(userSystem);
             logger.log("verbose", "NZ is JULAO")
             let setBlockEventData = clientSystem.createEventData("NZConstructor:setBlock")
             setBlockEventData.data = { x: x, y: y, z: z, blockIdentifier: blockIdentifier, tileData: tileData, playerID: playerID }

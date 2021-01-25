@@ -23,10 +23,10 @@ export class System {
         this._platform = platform;
     }
     getUser(id) {
-        this._users.get(id);
+        return this._users.get(id);
     }
     getID(user) {
-        this._ids.get(user);
+        return this._ids.get(user);
     }
     /*
     ** Following functions are used by users,

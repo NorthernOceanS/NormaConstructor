@@ -65,12 +65,12 @@ const platform = {
 
             clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
             clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
-                let logger = loggerFactory(userSystem);
-                logger.logObject("debug", eventData.data.player)
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 				userSystem = new UserSystem(system, playerID);
 
+                let logger = loggerFactory(userSystem);
+                logger.logObject("debug", eventData.data.player)
                 userSystem.session.__logLevel = "verbose";
                 userSystem.session.__on = true;
                 utils.setter.setLogger(logger)

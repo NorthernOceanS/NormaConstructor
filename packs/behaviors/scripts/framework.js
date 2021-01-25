@@ -37,7 +37,8 @@ export class System {
         this._users.set(id, user);
         this._ids.set(user, user);
     }
-    removeUser(id, user) {
+    removeUser(user) {
+        let id = this._ids.get(user);
         this._users.delete(id);
         this._ids.delete(user);
     }
@@ -59,7 +60,6 @@ export class System {
 export class UserSystem {
     constructor(system, id) {
         this._system = system;
-        this._id = id;
         this.session = {};
         this._system.addUser(id, this);
         this._generators = system.getGenerators();
@@ -139,7 +139,7 @@ export class UserSystem {
                 runtime: this._createRuntime(this._generators[i]),
             });
         }
-        this._system.removeUser(this._id, this);
+        this._system.removeUser(this);
     }
     _createGeneratorBasicE(index) {
         return {

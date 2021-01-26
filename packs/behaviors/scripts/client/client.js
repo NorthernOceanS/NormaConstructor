@@ -251,7 +251,7 @@ const platform = {
                             break;
                         }
                         case "callUIHandler": {
-                            //generatorArray[generatorIndex].UIHandler(uiData.data)
+                            user.UIHandler(uiData.data)
                             break;
                         }
                         case "command": {

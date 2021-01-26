@@ -154,6 +154,9 @@ export class UserSystem {
     getCurrentGeneratorName() {
         return this._generators[this._generatorIndex].name;
     }
+    getCurrentUI() {
+        return this._generators[this._generatorIndex].ui;
+    }
     getCurrentState() {
         return this._generatorStates[this._generatorIndex];
     }

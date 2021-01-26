@@ -114,8 +114,9 @@ const platform = {
                     displayChat(eventData.data.message)
             })
             clientSystem.listenForEvent("NormaConstructor:command", (eventData) => {
-                let logger = loggerFactory(userSystem);
-                if (playerID == eventData.data.playerID && (userSystem.session["__on"] || eventData.data.command == "show_menu")) {
+                let user = system.getUser(playerID);
+                let logger = loggerFactory(user);
+                if (playerID == eventData.data.playerID && (user.session["__on"] || eventData.data.command == "show_menu")) {
                     switch (eventData.data.command) {
                         case "get_data": {
                             logger.logObject("debug", eventData.data.additionalData)
@@ -190,7 +191,7 @@ const platform = {
                             logger.log("info", "Current generator option:")
                             logger.logObject("info", generatorArray[generatorIndex].option)
                             logger.log("info", "Current session:")
-                            logger.logObject("info", userSystem.session)
+                            logger.logObject("info", user.session)
                             break;
                         }
                         case "execute": {
@@ -222,9 +223,10 @@ const platform = {
                 }
             })
             clientSystem.listenForEvent("NormaConstructor:serveData", (eventData) => {
-                let logger = loggerFactory(userSystem);
+                let user = system.getUser(playerID);
+                let logger = loggerFactory(user);
 
-                if (playerID == eventData.data.playerID && userSystem.session["__on"]) {
+                if (playerID == eventData.data.playerID && user.session["__on"]) {
                     logger.log("debug", "RECEIVE:")
                     logger.logObject("debug", eventData)
                     storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
@@ -233,6 +235,7 @@ const platform = {
             })
 
             clientSystem.listenForEvent("minecraft:ui_event", (eventData) => {
+                let user = system.getUser(playerID);
                 if (eventData.data.slice(0, eventData.data.indexOf(":")) == "NormaConstructor") {
                     let uiData = JSON.parse(eventData.data.slice(eventData.data.indexOf(":") + 1))
 

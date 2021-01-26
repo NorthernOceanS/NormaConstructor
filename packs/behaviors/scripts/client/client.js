@@ -68,7 +68,7 @@ const platform = {
             clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-				let user = new UserSystem(system, playerID);
+                let user = new UserSystem(system, playerID);
 
                 let logger = loggerFactory(user);
                 logger.logObject("debug", eventData.data.player)

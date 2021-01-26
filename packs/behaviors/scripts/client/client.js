@@ -13,6 +13,9 @@ const platform = {
     },
     init: function (clientSystem, system) {
         let coordinatePlayerLookingAt = undefined
+        let playerID = undefined
+        let tick = 0
+        let buildInstructionsQuery = []
 
         function loggerFactory(user) {
             return {

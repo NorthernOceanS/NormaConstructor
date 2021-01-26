@@ -260,7 +260,15 @@ const platform = {
                                     let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
                                     sendUIEventData.data.eventIdentifier = "NormaConstructor:reload"
                                     sendUIEventData.data.data = JSON.stringify({
-                                        //description: generatorArray[generatorIndex].description,
+                                        description: {
+                                            name: user.getCurrentGeneratorName(),
+                                            usage: {
+                                                positionUsage: [],
+                                                blockTypeUsage: [],
+                                                directionUsage: [],
+                                                optionUsage: user.getCurrentUI();
+                                            },
+                                        },
                                         option: user.getCurrentState()
                                     }, null, '    ')
                                     clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)

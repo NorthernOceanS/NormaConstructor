@@ -323,20 +323,20 @@ const platform = {
         };
 
         function storeData(userSystem, blockType, position, direction) {
-            if (blockType != undefined) generatorArray[generatorIndex].addBlockType(blockType)
-            if (position != undefined) generatorArray[generatorIndex].addPosition(position)
-            if (direction != undefined) generatorArray[generatorIndex].addDirection(direction)
-            if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute(userSystem)
+            if (blockType != undefined) user.addBlockType(blockType)
+            if (position != undefined) user.addPosition(position)
+            if (direction != undefined) user.addDirection(direction)
+            if (user.getCurrentState()["__executeOnAllSatisfied"]) execute(userSystem)
         }
         async function execute(userSystem) {
             let logger = loggerFactory(userSystem);
             logger.log("info", "Start validating parameters...");
-            let validateResult = generatorArray[generatorIndex].validateParameter();
+            let validateResult = "success";
             if (validateResult == "success") {
                 logger.log("info", "Now Execution started.");
 
                 //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
-                let buildInstructions = await generatorArray[generatorIndex].generate();
+                let buildInstructions = await user.generate();
 
                 logger.logObject("verbose", buildInstructions)
 
@@ -345,7 +345,7 @@ const platform = {
                 //I...am not even sure if it is fixed.
                 //Array.prototype.push.apply(buildInstructionsQuery, buildInstructions);
 
-                generatorArray[generatorIndex].postGenerate();
+                //generatorArray[generatorIndex].postGenerate();
             }
         }
         function setServerSideOption(key, value) {

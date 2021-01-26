@@ -151,8 +151,11 @@ const platform = {
 
 
             serverSystem.listenForEvent("NormaConstructor:setServerSideOption", (eventData) => {
-                if (playerOption[eventData.data.playerID] == undefined) playerOption[eventData.data.playerID] = new Object()
-                playerOption[eventData.data.playerID][eventData.data.option.key] = eventData.data.option.value
+                if (!system.hasUser(eventData.data.playerID)) {
+                    system.createUser(eventData.data.playerID);
+                }
+                let user = system.getUser(eventData.data.playerID)
+                user.session[eventData.data.option.key] = eventData.data.option.value
             })
             serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
                 //TODO: Break down the parameter.
@@ -186,8 +189,9 @@ const platform = {
                 let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
                 serveDataEventData.data.blockType = getBlockType(eventData)
                 let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-                if (playerOption[playerID]["__requestAdditionalPosition"]) serveDataEventData.data.position = getPosition(eventData)
-                if (playerOption[playerID]["__requestAdditionalDirection"]) serveDataEventData.data.direction = getDirection(eventData)
+                let user = system.getUser(playerID)
+                if (user.session["__requestAdditionalPosition"]) serveDataEventData.data.position = getPosition(eventData)
+                if (user.session["__requestAdditionalDirection"]) serveDataEventData.data.direction = getDirection(eventData)
                 serveDataEventData.data.playerID = playerID
                 serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
             })
@@ -229,6 +233,7 @@ const platform = {
             serverSystem.listenForEvent("minecraft:entity_use_item", (eventData) => {
                 if (eventData.data.item_stack.__identifier__.startsWith("normaconstructor:")) {
                     let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
+                    let user = system.getUser(playerID)
                     let command = eventData.data.item_stack.__identifier__.slice(eventData.data.item_stack.__identifier__.indexOf(":") + 1)
                     //TODO: Explain how 'get_air' works.
                     if (command == "get_position" || command == "get_direction" || command == "get_air") {
@@ -236,9 +241,9 @@ const platform = {
                             direction: serverSystem.getComponent(eventData.data.entity, "minecraft:rotation").data,
                             tickingArea: serverSystem.getComponent(eventData.data.entity, "minecraft:tick_world").data.ticking_area,
                             playerRequest: {
-                                "position": ((command == "get_position") || playerOption[playerID]["__requestAdditionalPosition"]),
-                                "direction": ((command == "get_direction") || playerOption[playerID]["__requestAdditionalDirection"]),
-                                "blockType": ((command == "get_air") ? false : playerOption[playerID]["__requestAdditionalBlockType"])
+                                "position": ((command == "get_position") || user.session["__requestAdditionalPosition"]),
+                                "direction": ((command == "get_direction") || user.session["__requestAdditionalDirection"]),
+                                "blockType": ((command == "get_air") ? false : user.session["__requestAdditionalBlockType"])
                             },
                             isGetAir: (command == "get_air")
                         }

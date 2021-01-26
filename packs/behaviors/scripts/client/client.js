@@ -266,7 +266,7 @@ const platform = {
                                                 positionUsage: [],
                                                 blockTypeUsage: [],
                                                 directionUsage: [],
-                                                optionUsage: user.getCurrentUI();
+                                                optionUsage: user.getCurrentUI(),
                                             },
                                         },
                                         option: user.getCurrentState()

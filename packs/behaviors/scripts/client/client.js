@@ -319,6 +319,8 @@ const platform = {
         };
 
         clientSystem.shutdown = function () {
+            let user = system.getUser(playerID);
+            user.exit();
             //TODO:Ask the server to delete the profile.(Maybe...not necessary.)
         };
 

@@ -141,6 +141,9 @@ export class UserSystem {
         }
         this._system.removeUser(this);
     }
+    getCurrentState() {
+        return this._generatorStates[this._generatorIndex];
+    }
     _createGeneratorBasicE(index) {
         return {
             state: this._generatorStates[index],

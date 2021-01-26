@@ -25,7 +25,7 @@ export class System {
     getUser(id) {
         return this._users.get(id);
     }
-    getID(user) {
+    _getID(user) {
         return this._ids.get(user);
     }
     /*
@@ -46,7 +46,7 @@ export class System {
         return Array.from(this._generators);
     }
     createRuntime(auth) {
-        let runtime = this._platform.createRuntime(this.getID(auth.user));
+        let runtime = this._platform.createRuntime(this._getID(auth.user));
         return runtime;
     }
     /*

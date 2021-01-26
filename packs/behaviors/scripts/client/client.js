@@ -3,8 +3,8 @@ import '../plugin/index.js';
 import { UserSystem } from '../framework.js';
 
 
-import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
-import { utils } from '../utils'
+import { Coordinate, Position, BlockType, Direction, Block } from '../constructor.js';
+import { utils } from '../utils.js'
 
 platform.use(system)
 const platform = {

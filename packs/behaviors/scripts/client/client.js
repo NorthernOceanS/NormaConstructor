@@ -193,7 +193,7 @@ const platform = {
                             break;
                         }
                         case "execute": {
-                            execute();
+                            execute(user);
                             break;
                         }
                         case "show_menu": {
@@ -268,7 +268,7 @@ const platform = {
                                     break;
                                 }
                                 case "execute": {
-                                    execute();
+                                    execute(user);
                                     break;
                                 }
                                 case "closeMenu": {

@@ -413,7 +413,7 @@ const platform = {
             clientSystem.broadcastEvent("NZConstructor:setBlock", setBlockEventData)
             logger.logObject("verbose", setBlockEventData)
         }
-    }
+    },
     createRuntime(id) {
     }
 }

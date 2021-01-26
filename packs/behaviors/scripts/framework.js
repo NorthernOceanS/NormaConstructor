@@ -127,6 +127,13 @@ export class UserSystem {
             runtime: this._createRuntime(gen),
         })
     }
+    generate() {
+        let gen = this._generators[this._generatorIndex];
+        gen.generate({
+            state: this._generatorStates[this._generatorIndex],
+            runtime: this._createRuntime(gen),
+        })
+    }
     removeDirection(index) {
         let gen = this._generators[this._generatorIndex];
         gen.onRemoveDirection({

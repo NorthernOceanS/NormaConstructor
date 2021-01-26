@@ -151,6 +151,9 @@ export class UserSystem {
         }
         this._system.removeUser(this);
     }
+    getCurrentGeneratorName() {
+        return this._generators[this._generatorIndex].name;
+    }
     getCurrentState() {
         return this._generatorStates[this._generatorIndex];
     }

@@ -21,7 +21,6 @@ const platform = {
             serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
             let blockStateToTileDataTable = new Map()
-            let playerOption = {};
 
             let compiler = {
                 raw: function (blockArray) {

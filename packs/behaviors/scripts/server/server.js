@@ -267,11 +267,6 @@ const platform = {
                     }
                 }
             })
-        }
-    }
-
-
-}
 function displayObject(object, playerID) {
     displayChat(JSON.stringify(object, null, '    '), playerID)
 }
@@ -328,6 +323,11 @@ function setBlock(block) {
     });
 }
 
+        }
+    }
+
+
+}
 
 
 

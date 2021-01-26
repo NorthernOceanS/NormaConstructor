@@ -72,7 +72,6 @@ const platform = {
                 logger.logObject("debug", eventData.data.player)
                 userSystem.session.__logLevel = "verbose";
                 userSystem.session.__on = true;
-                utils.setter.setLogger(logger)
                 //Logging:
                 const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
                 scriptLoggerConfig.data.log_errors = true;

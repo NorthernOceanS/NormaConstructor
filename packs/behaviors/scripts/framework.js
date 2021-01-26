@@ -142,6 +142,14 @@ export class UserSystem {
             runtime: this._createRuntime(gen),
         })
     }
+    UIHandler(data) {
+        let gen = this._generators[this._generatorIndex];
+        gen.UIHandler({
+            data,
+            state: this._generatorStates[this._generatorIndex],
+            runtime: this._createRuntime(gen),
+        })
+    }
     exit() {
         for(let i = 0; i < this._generatorStates.length; ++i) {
             this._generators[i].onExit({

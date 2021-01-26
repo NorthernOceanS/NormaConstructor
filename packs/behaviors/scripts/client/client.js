@@ -159,35 +159,35 @@ const platform = {
                         }
                         case "remove_last_position": {
                             logger.log("info", "Removing the last position...")
-                            generatorArray[generatorIndex].removePosition()
+                            user.removePosition()
                             break;
                         }
                         case "remove_last_blocktype": {
                             logger.log("info", "Removing the last blockType...")
-                            generatorArray[generatorIndex].removeBlockType()
+                            user.removeBlockType()
                             break;
                         }
                         case "remove_last_direction": {
                             logger.log("info", "Removing the last direction...")
-                            generatorArray[generatorIndex].removeDirection()
+                            user.removeDirection()
                             break;
                         }
                         case "choose_next_generator": {
                             logger.log("info", "Choosing next generator...")
-                            generatorIndex = (generatorIndex + 1) % generatorArray.length
+                            user.nextGenerator()
                             logger.log("debug", "Current generator:")
-                            logger.logObject("debug", generatorArray[generatorIndex])
+                            logger.logObject("debug", null)
                             break;
                         }
                         case "show_saved_data": {
-                            logger.log("info", "Current positionArray:")
-                            logger.logObject("info", generatorArray[generatorIndex].positionArray)
-                            logger.log("info", "Current blockTypeArray:")
-                            logger.logObject("info", generatorArray[generatorIndex].blockTypeArray)
-                            logger.log("info", "Current directionArray:")
-                            logger.logObject("info", generatorArray[generatorIndex].directionArray)
-                            logger.log("info", "Current generator option:")
-                            logger.logObject("info", generatorArray[generatorIndex].option)
+                            //logger.log("info", "Current positionArray:")
+                            //logger.logObject("info", generatorArray[generatorIndex].positionArray)
+                            //logger.log("info", "Current blockTypeArray:")
+                            //logger.logObject("info", generatorArray[generatorIndex].blockTypeArray)
+                            //logger.log("info", "Current directionArray:")
+                            //logger.logObject("info", generatorArray[generatorIndex].directionArray)
+                            logger.log("info", "Current generator state:")
+                            logger.logObject("info", user.getCurrentState())
                             logger.log("info", "Current session:")
                             logger.logObject("info", user.session)
                             break;
@@ -209,7 +209,7 @@ const platform = {
                                     storeData(user, new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
                                 }
                                 else if (command[0] == "set" && command[1] == "o") {
-                                    generatorArray[generatorIndex].option[command[2]] = command[3]
+                                    user.getCurrentState()[command[2]] = command[3]
                                 }
                             }
                             eventData.data.additionalData.forEach((tag) => {

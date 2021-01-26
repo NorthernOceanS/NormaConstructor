@@ -7,15 +7,13 @@ import { blockStateTranslator } from './translator'
 import { utils } from '../utils'
 
 emptyPlatform.use(system);
-var serverSystem = server.registerSystem(0, 0);
-serverSystem.initialize = function () {
-    platform.use(system)
-}
 const platform = {
     use: function (system) {
+        var serverSystem = server.registerSystem(0, 0);
         this.init(serverSystem, system)
     },
     init: function (serverSystem, system) {
+        serverSystem.initialize = function () {
         const scriptLoggerConfig = serverSystem.createEventData("minecraft:script_logger_config");
         scriptLoggerConfig.data.log_errors = true;
         scriptLoggerConfig.data.log_information = true;
@@ -269,6 +267,7 @@ const platform = {
                 }
             }
         })
+        }
     }
 
 
@@ -331,3 +330,5 @@ function setBlock(block) {
 
 
 
+
+platform.use(system)

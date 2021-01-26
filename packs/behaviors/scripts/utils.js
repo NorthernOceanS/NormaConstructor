@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { Coordinate, BlockType, Direction, Generator } from "./constructor";
+import { Coordinate, BlockType, Direction, Generator } from "./constructor.js";
 
 let utils = {
 	setter: {

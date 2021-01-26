@@ -185,9 +185,10 @@ const platform = {
                 }
                 let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
                 serveDataEventData.data.blockType = getBlockType(eventData)
-                if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalPosition"]) serveDataEventData.data.position = getPosition(eventData)
-                if (playerOption[utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)]["__requestAdditionalDirection"]) serveDataEventData.data.direction = getDirection(eventData)
-                serveDataEventData.data.playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
+                let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
+                if (playerOption[playerID]["__requestAdditionalPosition"]) serveDataEventData.data.position = getPosition(eventData)
+                if (playerOption[playerID]["__requestAdditionalDirection"]) serveDataEventData.data.direction = getDirection(eventData)
+                serveDataEventData.data.playerID = playerID
                 serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
             })
             serverSystem.listenForEvent("NormaConstructor:queryBlockType", (eventData) => {

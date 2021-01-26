@@ -25,6 +25,9 @@ export class System {
     createUser(id) {
         return new UserSystem(this, id);
     }
+    hasUser(id) {
+        return this._users.has(id);
+    }
     getUser(id) {
         return this._users.get(id);
     }

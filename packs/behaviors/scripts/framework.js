@@ -22,6 +22,9 @@ export class System {
     inject(platform) {
         this._platform = platform;
     }
+    createUser(id) {
+        return new UserSystem(this, id);
+    }
     getUser(id) {
         return this._users.get(id);
     }

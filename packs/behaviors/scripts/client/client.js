@@ -243,16 +243,16 @@ const platform = {
                         case "get": {
                             let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
                             sendUIEventData.data.eventIdentifier = "NormaConstructor:get"
-                            sendUIEventData.data.data = JSON.stringify(generatorArray[generatorIndex].option[uiData.data], null, '    ')
+                            sendUIEventData.data.data = JSON.stringify(user.getCurrentState()[uiData.data], null, '    ')
                             clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
                             break;
                         }
                         case "set": {
-                            generatorArray[generatorIndex].option[uiData.data.key] = uiData.data.value
+                            user.getCurrentState()[uiData.data.key] = uiData.data.value
                             break;
                         }
                         case "callUIHandler": {
-                            generatorArray[generatorIndex].UIHandler(uiData.data)
+                            //generatorArray[generatorIndex].UIHandler(uiData.data)
                             break;
                         }
                         case "command": {
@@ -261,8 +261,8 @@ const platform = {
                                     let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
                                     sendUIEventData.data.eventIdentifier = "NormaConstructor:reload"
                                     sendUIEventData.data.data = JSON.stringify({
-                                        description: generatorArray[generatorIndex].description,
-                                        option: generatorArray[generatorIndex].option
+                                        //description: generatorArray[generatorIndex].description,
+                                        option: user.getCurrentState()
                                     }, null, '    ')
                                     clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
                                     break;
@@ -278,11 +278,11 @@ const platform = {
                                     break;
                                 }
                                 case "chooseNextGenerator": {
-                                    generatorIndex = (generatorIndex + 1) % generatorArray.length
+                                    user.nextGenerator();
                                     break;
                                 }
                                 case "chooseLastGenerator": {
-                                    generatorIndex = (generatorIndex - 1 + generatorArray.length) % generatorArray.length
+                                    user.perviousGenerator()
                                 }
                             }
                             break;

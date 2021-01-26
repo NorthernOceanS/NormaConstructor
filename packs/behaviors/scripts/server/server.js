@@ -267,61 +267,61 @@ const platform = {
                     }
                 }
             })
-function displayObject(object, playerID) {
-    displayChat(JSON.stringify(object, null, '    '), playerID)
-}
-function displayChat(message, playerID) {
-    if (playerID === undefined) {
-        let eventData = serverSystem.createEventData("minecraft:display_chat_event");
-        eventData.data.message = message;
-        serverSystem.broadcastEvent("minecraft:display_chat_event", eventData);
-    }
-    else {
-        let eventData = serverSystem.createEventData("NormaConstructor:displayChatToClient");
-        eventData.data.message = message;
-        eventData.data.playerID = playerID;
-        serverSystem.broadcastEvent("NormaConstructor:displayChatToClient", eventData);
-    }
-}
+            function displayObject(object, playerID) {
+                displayChat(JSON.stringify(object, null, '    '), playerID)
+            }
+            function displayChat(message, playerID) {
+                if (playerID === undefined) {
+                    let eventData = serverSystem.createEventData("minecraft:display_chat_event");
+                    eventData.data.message = message;
+                    serverSystem.broadcastEvent("minecraft:display_chat_event", eventData);
+                }
+                else {
+                    let eventData = serverSystem.createEventData("NormaConstructor:displayChatToClient");
+                    eventData.data.message = message;
+                    eventData.data.playerID = playerID;
+                    serverSystem.broadcastEvent("NormaConstructor:displayChatToClient", eventData);
+                }
+            }
 
 
-function sendCommand(command, playerID, additionalData) {
-    let commandEventData = serverSystem.createEventData("NormaConstructor:command")
-    commandEventData.data.command = command
-    commandEventData.data.playerID = playerID
-    commandEventData.data.additionalData = additionalData
-    serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
-}
-function setBlock(block) {
+            function sendCommand(command, playerID, additionalData) {
+                let commandEventData = serverSystem.createEventData("NormaConstructor:command")
+                commandEventData.data.command = command
+                commandEventData.data.playerID = playerID
+                commandEventData.data.additionalData = additionalData
+                serverSystem.broadcastEvent("NormaConstructor:command", commandEventData)
+            }
+            function setBlock(block) {
 
-    //displayChat("§b We all agree, NZ is JULAO!")
-    let blockType = block.blockType
-    let position = block.position
-    let coordinate = position.coordinate
-    //Thank you, WavePlayz!
+                //displayChat("§b We all agree, NZ is JULAO!")
+                let blockType = block.blockType
+                let position = block.position
+                let coordinate = position.coordinate
+                //Thank you, WavePlayz!
 
-    let tileData = undefined
+                let tileData = undefined
 
-    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-        tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-    }
-    else {
-        tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
-    }
+                if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
+                    tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
+                }
+                else {
+                    tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
+                    blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
+                }
 
-    //TODO:
-    //It currently use destroy mode to force replace the old block, but will leave tons of items.
-    //Might change to set air block first.
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
+                //TODO:
+                //It currently use destroy mode to force replace the old block, but will leave tons of items.
+                //Might change to set air block first.
+                serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
 
-        // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
+                    // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 
-        // var targetBlockStateComponent = serverSystem.getComponent(targerBlock, "minecraft:blockstate")
-        // targetBlockStateComponent.data = blockType.blockState
-        // serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
-    });
-}
+                    // var targetBlockStateComponent = serverSystem.getComponent(targerBlock, "minecraft:blockstate")
+                    // targetBlockStateComponent.data = blockType.blockState
+                    // serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
+                });
+            }
 
         }
     }

@@ -156,7 +156,7 @@ const platform = {
                                     }
                                 }
                             }
-                            storeData(serveData.blockType, serveData.position, serveData.direction)
+                            storeData(user, serveData.blockType, serveData.position, serveData.direction)
                             break;
                         }
                         case "remove_last_position": {
@@ -208,7 +208,7 @@ const platform = {
                             function parseTag(tag) {
                                 let command = tag.split(' ')
                                 if (command[0] == "add" && command[1] == "b") {
-                                    storeData(new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
+                                    storeData(user, new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
                                 }
                                 else if (command[0] == "set" && command[1] == "o") {
                                     generatorArray[generatorIndex].option[command[2]] = command[3]
@@ -229,7 +229,7 @@ const platform = {
                 if (playerID == eventData.data.playerID && user.session["__on"]) {
                     logger.log("debug", "RECEIVE:")
                     logger.logObject("debug", eventData)
-                    storeData(eventData.data.blockType, eventData.data.position, eventData.data.direction)
+                    storeData(user, eventData.data.blockType, eventData.data.position, eventData.data.direction)
 
                 }
             })
@@ -294,7 +294,7 @@ const platform = {
                             break;
                         }
                         case "setLocalOption": {
-                            setSession(uiData.data.key, uiData.data.value)
+                            setSession(user, uiData.data.key, uiData.data.value)
                             break;
                         }
                         case "displayChat": {
@@ -324,13 +324,13 @@ const platform = {
             //TODO:Ask the server to delete the profile.(Maybe...not necessary.)
         };
 
-        function storeData(blockType, position, direction) {
+        function storeData(userSystem, blockType, position, direction) {
             if (blockType != undefined) generatorArray[generatorIndex].addBlockType(blockType)
             if (position != undefined) generatorArray[generatorIndex].addPosition(position)
             if (direction != undefined) generatorArray[generatorIndex].addDirection(direction)
-            if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute()
+            if (generatorArray[generatorIndex].option["__executeOnAllSatisfied"] && generatorArray[generatorIndex].validateParameter() == "success") execute(userSystem)
         }
-        async function execute() {
+        async function execute(userSystem) {
             let logger = loggerFactory(userSystem);
             logger.log("info", "Start validating parameters...");
             let validateResult = generatorArray[generatorIndex].validateParameter();
@@ -357,7 +357,7 @@ const platform = {
             setServerSideOptionEventData.data.option.value = value
             clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
         }
-        function setSession(key, value) {
+        function setSession(userSystem, key, value) {
             userSystem.session[key] = value
         }
 
@@ -408,7 +408,7 @@ const platform = {
             let blockType = await blockFetch.get(tickingArea, x, y, z)
             return blockType
         }
-        function setBlock(x, y, z, blockIdentifier, tileData) {
+        function setBlock(userSystem, x, y, z, blockIdentifier, tileData) {
             let logger = loggerFactory(userSystem);
             logger.log("verbose", "NZ is JULAO")
             let setBlockEventData = clientSystem.createEventData("NZConstructor:setBlock")

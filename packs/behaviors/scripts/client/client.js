@@ -338,7 +338,7 @@ const platform = {
                 logger.log("info", "Now Execution started.");
 
                 //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
-                let buildInstructions = await user.generate();
+                let buildInstructions = await userSystem.generate();
 
                 logger.logObject("verbose", buildInstructions)
 

@@ -3,7 +3,7 @@ import '../plugin/index.js';
 import { emptyPlatform } from '../framework.js';
 
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor.js';
-import { blockStateTranslator } from './translator.js'
+import { blockStateTranslator } from '../translator.js'
 import { utils } from '../utils.js'
 
 emptyPlatform.use(system);

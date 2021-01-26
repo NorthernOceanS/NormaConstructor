@@ -66,12 +66,12 @@ const platform = {
             clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-				let userSystem = new UserSystem(system, playerID);
+				let user = new UserSystem(system, playerID);
 
-                let logger = loggerFactory(userSystem);
+                let logger = loggerFactory(user);
                 logger.logObject("debug", eventData.data.player)
-                userSystem.session.__logLevel = "verbose";
-                userSystem.session.__on = true;
+                user.session.__logLevel = "verbose";
+                user.session.__on = true;
                 //Logging:
                 const scriptLoggerConfig = clientSystem.createEventData("minecraft:script_logger_config");
                 scriptLoggerConfig.data.log_errors = true;
@@ -324,21 +324,21 @@ const platform = {
             //TODO:Ask the server to delete the profile.(Maybe...not necessary.)
         };
 
-        function storeData(userSystem, blockType, position, direction) {
+        function storeData(user, blockType, position, direction) {
             if (blockType != undefined) user.addBlockType(blockType)
             if (position != undefined) user.addPosition(position)
             if (direction != undefined) user.addDirection(direction)
-            if (user.getCurrentState()["__executeOnAllSatisfied"]) execute(userSystem)
+            if (user.getCurrentState()["__executeOnAllSatisfied"]) execute(user)
         }
-        async function execute(userSystem) {
-            let logger = loggerFactory(userSystem);
+        async function execute(user) {
+            let logger = loggerFactory(user);
             logger.log("info", "Start validating parameters...");
             let validateResult = "success";
             if (validateResult == "success") {
                 logger.log("info", "Now Execution started.");
 
                 //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
-                let buildInstructions = await userSystem.generate();
+                let buildInstructions = await user.generate();
 
                 logger.logObject("verbose", buildInstructions)
 
@@ -357,8 +357,8 @@ const platform = {
             setServerSideOptionEventData.data.option.value = value
             clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
         }
-        function setSession(userSystem, key, value) {
-            userSystem.session[key] = value
+        function setSession(user, key, value) {
+            user.session[key] = value
         }
 
         function displayObject(object) {
@@ -408,8 +408,8 @@ const platform = {
             let blockType = await blockFetch.get(tickingArea, x, y, z)
             return blockType
         }
-        function setBlock(userSystem, x, y, z, blockIdentifier, tileData) {
-            let logger = loggerFactory(userSystem);
+        function setBlock(user, x, y, z, blockIdentifier, tileData) {
+            let logger = loggerFactory(user);
             logger.log("verbose", "NZ is JULAO")
             let setBlockEventData = clientSystem.createEventData("NZConstructor:setBlock")
             setBlockEventData.data = { x: x, y: y, z: z, blockIdentifier: blockIdentifier, tileData: tileData, playerID: playerID }

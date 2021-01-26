@@ -13,7 +13,6 @@ const platform = {
         this.init(clientSystem, system)
     },
     init: function (clientSystem, system) {
-        let userSystem = null;
         let coordinatePlayerLookingAt = undefined
 
         function loggerFactory(user) {
@@ -67,7 +66,7 @@ const platform = {
             clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-				userSystem = new UserSystem(system, playerID);
+				let userSystem = new UserSystem(system, playerID);
 
                 let logger = loggerFactory(userSystem);
                 logger.logObject("debug", eventData.data.player)

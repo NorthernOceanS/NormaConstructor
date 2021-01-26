@@ -6,7 +6,6 @@ import { UserSystem } from '../framework.js';
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor.js';
 import { utils } from '../utils.js'
 
-platform.use(system)
 const platform = {
     use: function (system) {
         var clientSystem = client.registerSystem(0, 0);
@@ -420,3 +419,5 @@ const platform = {
     createRuntime(id) {
     }
 }
+
+platform.use(system)

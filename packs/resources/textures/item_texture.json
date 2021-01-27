@@ -2,9 +2,6 @@
     "resource_pack_name": "normaconstructor",
     "texture_name": "atlas.items",
     "texture_data": {
-      "slime": {
-        "textures": "textures/items/slime"
-      },
       "execute": {
         "textures": "textures/items/execute"
       },
@@ -36,7 +33,7 @@
         "textures": "textures/items/getAir"
       },
       "readTag":{
-        "textures": "textures/items/slime.png"
+        "textures": "textures/items/slime"
       }
     }
   }

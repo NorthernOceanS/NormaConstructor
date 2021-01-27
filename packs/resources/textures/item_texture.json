@@ -33,7 +33,7 @@
         "textures": "textures/items/getAir"
       },
       "readTag":{
-        "textures": "textures/items/slime.png"
+        "textures": "textures/items/slime"
       }
     }
   }

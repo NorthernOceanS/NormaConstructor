@@ -15,5 +15,5 @@ this.bundleSources = ["scripts/**/*.*" ];
 # Credit
 Credits to reimarPB for CSS  
 Credits to WavePlayz for block.js  
-Credits to drzaofu for icons  
+Credits to drzaofu for icons and CSS font solution. [COPYRIGHT](./COPYRIGHT.md)  
 & Thanks @过期牛奶rlgou for the video!

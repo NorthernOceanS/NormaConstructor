@@ -200,18 +200,17 @@ export function canonicalGeneratorFactory({
         generate, UIHandler
     }
 }) {
-    function onAddFunction(type, arrayname) {
+    function onAdd(type, arrayname) {
         return function (e) {
             let { state } = e
             let data = e[type]
             let array = state[arrayname]
             let indexOfVacancy = array.indexOf(undefined)
-            if (indexOfVacancy == -1)
-            else {
+            if (indexOfVacancy !== -1) {
                 array[indexOfVacancy] = data
             }
-        },
-    },
+        };
+    }
     function onRemove(type, arrayname) {
         return function (e) {
             let { state, index } = e
@@ -219,10 +218,10 @@ export function canonicalGeneratorFactory({
             if (index === undefined) {
 			    for (index = array.length - 1;
                      index >= 0 && array[index] == undefined;
-                     index--)
+                     index--);
             }
-            if (index >= 0) array[index] = undefined
-        },
+            if (index >= 0) array[index] = undefined;
+        };
     }
     return {
         name: description.name,

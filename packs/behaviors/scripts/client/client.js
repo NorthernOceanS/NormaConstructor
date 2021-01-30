@@ -12,6 +12,7 @@ const platform = {
         this.init(clientSystem, system)
     },
     init: function (clientSystem, system) {
+        system.inject(platform);
         let coordinatePlayerLookingAt = undefined
         let playerID = undefined
         let tick = 0

@@ -13,6 +13,7 @@ const platform = {
         this.init(serverSystem, system)
     },
     init: function (serverSystem, system) {
+        system.inject(platform);
         serverSystem.initialize = function () {
             const scriptLoggerConfig = serverSystem.createEventData("minecraft:script_logger_config");
             scriptLoggerConfig.data.log_errors = true;

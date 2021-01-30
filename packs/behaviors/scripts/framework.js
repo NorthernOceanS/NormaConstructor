@@ -188,4 +188,63 @@ export class UserSystem {
     }
 }
 
-export function canonicalGeneratorFactory(){/* no-op */};
+export function canonicalGeneratorFactory({
+    description,
+    criteria: {
+        positionArrayLength,
+        blockTypeArrayLength,
+        directionArrayLength
+    },
+    option,
+    method: {
+        generate, UIHandler
+    }
+}) {
+    function onAddFunction(type, arrayname) {
+        return function (e) {
+            let { state } = e
+            let data = e[type]
+            let array = state[arrayname]
+            let indexOfVacancy = array.indexOf(undefined)
+            if (indexOfVacancy == -1)
+            else {
+                array[indexOfVacancy] = data
+            }
+        },
+    },
+    function onRemove(type, arrayname) {
+        return function (e) {
+            let { state, index } = e
+            let array = state[arrayname];
+            if (index === undefined) {
+			    for (index = array.length - 1;
+                     index >= 0 && array[index] == undefined;
+                     index--)
+            }
+            if (index >= 0) array[index] = undefined
+        },
+    }
+    return {
+        name: description.name,
+        ui: description.usage.optionUsage,
+        onInit(e) {
+            let {state} = e
+            for(let p in option) {
+                state[p] = option[p]
+            }
+            state.positions = (new Array(positionArrayLength)).fill(undefined)
+            state.blockTypes = (new Array(blockTypeArrayLength)).fill(undefined)
+            state.directions = (new Array(directionArrayLength)).fill(undefined)
+        },
+        onAddPosition: onAdd("position", "positions"),
+        onAddBlockType: onAdd("blockType", "blockTypes"),
+        onAddDirection: onAdd("direction", "directions"),
+        onRemovePoistion: onRemove("position", "positions"),
+        onRemoveBlockType: onRemove("blockType", "blockTypes"),
+        onRemoveDirection: onRemove("direction", "directions"),
+        isValidParameter(e) { return true },
+        generate,
+        UIHandler,
+        onExit(e) { /* no-op */ },
+    }
+}

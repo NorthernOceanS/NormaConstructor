@@ -331,6 +331,10 @@ const platform = {
             }
 
         }
+    },
+    createRuntime(id) {
+        let user = system.getUser(id);
+        return {};
     }
 
 

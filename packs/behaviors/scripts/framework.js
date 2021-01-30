@@ -61,6 +61,9 @@ export class System {
     registerGenerator(generator) {
         this._generators.push(generator);
     }
+    registerCanonicalGenerator(o) {
+        this.registerGenerator(canonicalGeneratorFactory(o));
+    }
 }
 
 export class UserSystem {
@@ -184,3 +187,5 @@ export class UserSystem {
         })
     }
 }
+
+export function canonicalGeneratorFactory(){/* no-op */};

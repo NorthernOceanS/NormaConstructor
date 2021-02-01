@@ -123,6 +123,7 @@ clientSystem.initialize = function () {
 
                     if (eventData.data.additionalData.playerRequest["position"] || eventData.data.additionalData.playerRequest["blockType"]) {
                         let rawCoordinate = coordinatePlayerLookingAt
+                        logger.logObject("verbose",rawCoordinate)
                         if (rawCoordinate == null) {
                             logger.log("error", "Unable to get the block position. Please retry.")
                         }

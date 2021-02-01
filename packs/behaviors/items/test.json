@@ -1,0 +1,32 @@
+{
+    "format_version": "1.16.100",
+    "minecraft:item": {
+        "description": {
+            "identifier": "normaconstructor:custom_bow"
+        },
+        "components": {
+            "minecraft:use_duration": 0.1,
+            "minecraft:icon": {
+                "texture": "custom_bow"
+            },
+            "minecraft:food": {
+                "nutrition": 0,
+                "saturation_modifier": "low",
+                "can_always_eat": true,
+                "on_consume": {
+                    "event": "on_consume",
+                    "target": "self"
+                }
+            },
+            "minecraft:use_animation": "eat"
+        },
+        "events": {
+            "on_consume": {
+                "shoot": {
+                    "projectile": "normaconstructor:arrow",
+                    "launch_power": 5
+                }
+            }
+        }
+    }
+}

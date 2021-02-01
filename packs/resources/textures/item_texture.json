@@ -2,38 +2,41 @@
     "resource_pack_name": "normaconstructor",
     "texture_name": "atlas.items",
     "texture_data": {
-      "execute": {
-        "textures": "textures/items/execute"
-      },
-      "showSavedData": {
-        "textures": "textures/items/showSavedData"
-      },
-      "getPosition": {
-        "textures": "textures/items/getPosition"
-      },
-      "removeLastBlockType": {
-        "textures": "textures/items/removeLastBlockType"
-      },
-      "removeLastDirection": {
-        "textures": "textures/items/removeLastDirection"
-      },
-      "removeLastPosition": {
-        "textures": "textures/items/removeLastPosition"
-      },
-      "getDirection": {
-        "textures": "textures/items/getDirection"
-      },
-      "showMenu": {
-        "textures": "textures/items/showMenu"
-      },
-      "chooseNextGenerator": {
-        "textures": "textures/items/chooseNextGenerator"
-      },
-      "getAir": {
-        "textures": "textures/items/getAir"
-      },
-      "readTag":{
-        "textures": "textures/items/slime"
-      }
+        "execute": {
+            "textures": "textures/items/execute"
+        },
+        "showSavedData": {
+            "textures": "textures/items/showSavedData"
+        },
+        "getPosition": {
+            "textures": "textures/items/getPosition"
+        },
+        "removeLastBlockType": {
+            "textures": "textures/items/removeLastBlockType"
+        },
+        "removeLastDirection": {
+            "textures": "textures/items/removeLastDirection"
+        },
+        "removeLastPosition": {
+            "textures": "textures/items/removeLastPosition"
+        },
+        "getDirection": {
+            "textures": "textures/items/getDirection"
+        },
+        "showMenu": {
+            "textures": "textures/items/showMenu"
+        },
+        "chooseNextGenerator": {
+            "textures": "textures/items/chooseNextGenerator"
+        },
+        "getAir": {
+            "textures": "textures/items/getAir"
+        },
+        "readTag": {
+            "textures": "textures/items/slime"
+        },
+        "custom_bow": {
+            "textures": "textures/items/slime"
+        }
     }
-  }
+}

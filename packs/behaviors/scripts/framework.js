@@ -29,6 +29,9 @@ export class System {
         return this._users.has(id);
     }
     getUser(id) {
+        if(!this.hasUser(id)) {
+            return this.createUser(id);
+        }
         return this._users.get(id);
     }
     _getID(user) {

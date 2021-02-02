@@ -136,6 +136,14 @@ export class UserSystem {
             runtime: this._createRuntime(gen),
         })
     }
+    useItem(data) {
+        let gen = this._generators[this._generatorIndex];
+        gen.onItemUsed && gen.onItemUsed({
+            state: this._generatorStates[this._generatorIndex],
+            data,
+            runtime: this._createRuntime(gen),
+        })
+    }
     generate() {
         let gen = this._generators[this._generatorIndex];
         gen.generate({

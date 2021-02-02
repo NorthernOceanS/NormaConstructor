@@ -30,7 +30,7 @@ export class System {
     }
     getUser(id) {
         if(!this.hasUser(id)) {
-            return this.createUser(id);
+            throw new Error("unknown playid: ${id}");
         }
         return this._users.get(id);
     }

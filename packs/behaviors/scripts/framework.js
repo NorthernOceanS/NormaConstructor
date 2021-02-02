@@ -44,7 +44,7 @@ export class System {
     */
     addUser(id, user) {
         this._users.set(id, user);
-        this._ids.set(user, user);
+        this._ids.set(user, id);
     }
     removeUser(user) {
         let id = this._ids.get(user);

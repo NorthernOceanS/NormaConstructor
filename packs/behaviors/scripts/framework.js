@@ -31,7 +31,7 @@ export class System {
     getUser(id) {
         if(!this.hasUser(id)) {
             throw new Error(`unknown playid: ${id}
-users: system: ${this._users.entries()}`);
+users: system: ${[...this._users.entries()]}`);
         }
         return this._users.get(id);
     }

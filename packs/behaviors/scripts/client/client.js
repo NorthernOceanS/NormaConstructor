@@ -357,6 +357,7 @@ const platform = {
 
                 //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.
                 let buildInstructions = await user.generate();
+                if(buildInstructions === undefined) return;
 
                 logger.logObject("verbose", buildInstructions)
 

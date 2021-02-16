@@ -18,6 +18,13 @@ const platform = {
         let tick = 0
         let buildInstructionsQuery = []
 
+        function setServerSideOption(key, value) {
+            let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
+            setServerSideOptionEventData.data.playerID = playerID
+            setServerSideOptionEventData.data.option.key = key
+            setServerSideOptionEventData.data.option.value = value
+            clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
+        }
         function loggerFactory(user) {
             return {
                 displayChat, displayObject,
@@ -360,13 +367,6 @@ const platform = {
 
                 //generatorArray[generatorIndex].postGenerate();
             }
-        }
-        function setServerSideOption(key, value) {
-            let setServerSideOptionEventData = clientSystem.createEventData("NormaConstructor:setServerSideOption")
-            setServerSideOptionEventData.data.playerID = playerID
-            setServerSideOptionEventData.data.option.key = key
-            setServerSideOptionEventData.data.option.value = value
-            clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
         }
         function setSession(user, key, value) {
             user.session[key] = value

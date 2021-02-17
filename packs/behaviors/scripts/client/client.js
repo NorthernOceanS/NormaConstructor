@@ -54,13 +54,13 @@ clientSystem.initialize = function () {
         requestID: undefined
     })
 
-    clientSystem.registerEventData("NZConstructor:setBlock",{
-        x:undefined,
-        y:undefined,
-        z:undefined,
-        blockIdentifier:undefined,
-        tileData:undefined,
-        playerID:undefined
+    clientSystem.registerEventData("NZConstructor:setBlock", {
+        x: undefined,
+        y: undefined,
+        z: undefined,
+        blockIdentifier: undefined,
+        tileData: undefined,
+        playerID: undefined
     })
 
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
@@ -380,7 +380,7 @@ class BlockFetch {
         blockFetchRequestEventData.data.playerID = playerID
         let requestID
         do {
-            requestID = Math.random()
+            requestID = Math.floor(Math.random() * 10000)
         }
         while (this.idToResolve.has(requestID))
         blockFetchRequestEventData.data.requestID = requestID
@@ -397,11 +397,11 @@ async function getBlock(tickingArea, x, y, z) {
     return blockType
 }
 function setBlock(x, y, z, blockIdentifier, tileData) {
-    logger.log("verbose","NZ is JULAO")
+    logger.log("verbose", "NZ is JULAO")
     let setBlockEventData = clientSystem.createEventData("NZConstructor:setBlock")
     setBlockEventData.data = { x: x, y: y, z: z, blockIdentifier: blockIdentifier, tileData: tileData, playerID: playerID }
-    clientSystem.broadcastEvent("NZConstructor:setBlock",setBlockEventData)
-    logger.logObject("verbose",setBlockEventData)
+    clientSystem.broadcastEvent("NZConstructor:setBlock", setBlockEventData)
+    logger.logObject("verbose", setBlockEventData)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Generators://////////////////////////////////////////////////////////////////////////////////////////

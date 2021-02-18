@@ -145,6 +145,14 @@ export class UserSystem {
             runtime: this._createRuntime(gen),
         })
     }
+    isValidParameter() {
+        let gen = this._generators[this._generatorIndex];
+        if(!gen.isValidParameter) return true;
+        return gen.isValidParameter({
+            state: this._generatorStates[this._generatorIndex],
+            runtime: this._createRuntime(gen),
+        })
+    }
     generate() {
         let gen = this._generators[this._generatorIndex];
         gen.generate({

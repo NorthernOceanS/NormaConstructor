@@ -155,7 +155,7 @@ export class UserSystem {
     }
     generate() {
         let gen = this._generators[this._generatorIndex];
-        gen.generate({
+        return gen.generate({
             state: this._generatorStates[this._generatorIndex],
             runtime: this._createRuntime(gen),
         })

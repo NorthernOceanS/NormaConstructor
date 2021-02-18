@@ -351,8 +351,8 @@ const platform = {
         async function execute(user) {
             let logger = loggerFactory(user);
             logger.log("info", "Start validating parameters...");
-            let validateResult = "success";
-            if (validateResult == "success") {
+            let isVaild = await user.isValidParameter();
+            if (isVaild) {
                 logger.log("info", "Now Execution started.");
 
                 //The "buildInstructions" was named "blockArray" as it only consisted of blocks that are to be placed.

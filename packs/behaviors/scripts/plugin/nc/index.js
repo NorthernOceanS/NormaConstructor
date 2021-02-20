@@ -334,3 +334,268 @@ createLineGenerator.addPosition = function () {
 }
 
 system.registerGenerator(createLineGenerator);
+
+
+system.registerCanonicalGenerator({
+    description:
+        new Description("造马路",
+            new Usage(
+                [],
+                [],
+                [],
+                [
+                    {
+                        viewtype: "edittext",
+                        text: "长度:",
+                        key: "length",
+                    },
+                    {
+                        viewtype: "button",
+                        text: "马路风格",
+                        key: "roadStyle",
+                        data: [
+                            { value: "NS", text: "北冥/南冥", dataForUIHandler: "preset" },
+                            { value: "DB", text: "东沙/冰岛", dataForUIHandler: "preset" },
+                            { value: "custom", text: "自定", dataForUIHandler: "custom" }
+                        ]
+                    },
+                    {
+                        viewtype: "checkbox",
+                        text: "加护栏",
+                        key: "isBarred",
+                        data: [
+                            { value: true, text: "是" },
+                            { value: false, text: "否" },
+                        ]
+                    },
+                    {
+                        viewtype: "edittext",
+                        text: "每一边车道数:",
+                        key: "numberOfLanesPerSide",
+                    },
+                    {
+                        viewtype: "edittext",
+                        text: "车道宽:",
+                        key: "widthOfLanes",
+                    },
+                    {
+                        viewtype: "edittext",
+                        text: "白线间隔:",
+                        key: "dashLineInterval",
+                    },
+                    {
+                        viewtype: "edittext",
+                        text: "白线长度:",
+                        key: "dashLineLength",
+                    },
+                ])
+        ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 1
+    },
+    option: {
+		"length": 10,
+		"roadStyle": "NS",
+		"isBarred": false,
+		"numberOfLanesPerSide": 2,
+		"widthOfLanes": 5,
+		"dashLineInterval": 3,
+		"dashLineLength": 4
+	},
+    method: {
+        generate: function (e) {
+			let {state} = e;
+            let blockArray = []
+
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions
+            let blockTypeArray = state.blockTypes
+            let directionArray = state.directions
+
+            //logger.log("verbose", "Yes, NZ is JULAO!")
+
+            //{"blockIdentifier":"minecraft:stained_hardened_clay","blockState":{"color":"cyan"}}
+
+            let materials
+            if (state["roadStyle"] == "NS") materials = {
+                "surface": new BlockType("minecraft:stained_hardened_clay", { "color": "cyan" }),
+                "white_line": new BlockType("minecraft:concrete", { "color": "white" }),
+                "yellow_line": new BlockType("minecraft:stained_hardened_clay", { "color": "yellow" }),
+                "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
+            }
+            else if (state["roadStyle"] == "DB") {
+                materials = {
+                    "surface": new BlockType("minecraft:wool", { "color": "black" }),
+                    "white_line": new BlockType("minecraft:wool", { "color": "white" }),
+                    "yellow_line": new BlockType("minecraft:wool", { "color": "yellow" }),
+                    "bar": new BlockType("minecraft:cobblestone_wall", { "wall_block_type": "cobblestone" })
+                }
+            }
+            else if (state["roadStyle"] == "custom") {
+                materials = {
+                    "surface": blockTypeArray[0],
+                    "white_line": blockTypeArray[1],
+                    "yellow_line": blockTypeArray[2],
+                    "bar": blockTypeArray[3]
+                }
+            }
+
+            let playerFacingAxis = (function () {
+                if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                else return "-z"
+            }());
+
+            //This assumes the original facing axis is +x.
+            let transform = (function (facingAxis) {
+                switch (facingAxis) {
+                    case "+x": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => x,
+                            (x, y, z) => y,
+                            (x, y, z) => z
+                        )
+                    }
+                    case "-x": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => 2 * positionArray[0].coordinate.x - x,
+                            (x, y, z) => y,
+                            (x, y, z) => 2 * positionArray[0].coordinate.z - z
+                        )
+                    }
+                    case "+z": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
+                            (x, y, z) => y,
+                            (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
+                        )
+                    }
+                    case "-z": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
+                            (x, y, z) => y,
+                            (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
+                        )
+                    }
+                }
+            }(playerFacingAxis))
+
+
+
+            let palette = [];
+
+            for (let i = 0; i < state["numberOfLanesPerSide"]; i++) {
+                for (let j = 0; j < state["widthOfLanes"]; j++) palette.push("lane")
+                if (i < state["numberOfLanesPerSide"] - 1) palette.push("dash_line")
+            }
+            palette.push("division_line")
+            for (let i = 0; i < state["numberOfLanesPerSide"]; i++) {
+                for (let j = 0; j < state["widthOfLanes"]; j++) palette.push("lane")
+                if (i < state["numberOfLanesPerSide"] - 1) palette.push("dash_line")
+            }
+            if (state["isBarred"]) palette[0] = palette[palette.length - 1] = "edge"
+
+            const offset = (palette.length - 1) / 2;
+            for (let i = 0; i < palette.length; i++) {
+                switch (palette[i]) {
+                    case "edge": {
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["surface"]
+                                )
+                            )
+                        }
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["bar"]
+                                )
+                            )
+                        }
+                        break;
+                    }
+                    case "lane": {
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["surface"]
+                                )
+                            )
+                        }
+                        break;
+                    }
+                    case "dash_line": {
+                        for (let j = 0; j <= state["length"] - 1; j++) {
+                            let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
+                            if ((j % (state["dashLineInterval"] + state["dashLineLength"])) < state["dashLineInterval"]) //Black first.
+                                blockArray.push(new Block(position, materials["surface"]))
+                            else
+                                blockArray.push(new Block(position, materials["white_line"]))
+                        }
+                        break;
+                    }
+                    case "division_line": {
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["yellow_line"]
+                                )
+                            )
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return blockArray
+        },
+        UIHandler: function (e) {
+            let {state, data} = e;
+            if (data == "custom") {
+                //logger.log("info", "Using custom materials.")
+                //logger.log("info", "First block type for surface.")
+                //logger.log("info", "Second for white line.")
+                //logger.log("info", "Third for yellow line.")
+                //logger.log("info", "Fourth for bar.")
+                state.blockTypes = [undefined, undefined, undefined, undefined]
+            }
+            else {
+                //logger.log("info", "Using preset materials. Custom materials are erased!")
+                state.blockTypes = []
+            }
+        }
+    }
+});

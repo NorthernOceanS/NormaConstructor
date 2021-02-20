@@ -261,7 +261,13 @@ export function canonicalGeneratorFactory({
         onRemovePoistion: onRemove("position", "positions"),
         onRemoveBlockType: onRemove("blockType", "blockTypes"),
         onRemoveDirection: onRemove("direction", "directions"),
-        isValidParameter(e) { return true },
+        isValidParameter(e) {
+            let {state} = e;
+            if (state.blockTypes.indexOf(undefined) != -1) return false;
+            if (state.positions.indexOf(undefined) != -1) return false;
+            if (state.directions.indexOf(undefined) != -1) return false;
+            return true;
+        },
         generate,
         UIHandler,
         onExit(e) { /* no-op */ },

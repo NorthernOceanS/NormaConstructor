@@ -151,3 +151,39 @@ system.registerCanonicalGenerator({
         }
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Clone, ignoring direction.",
+        new Usage(
+            [],
+            [],
+            [],
+            [])
+    ),
+    criteria: {
+        positionArrayLength: 3,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 0
+    },
+    option: {
+        "positionArrayLengthRequired": 3,
+        "blockTypeArrayLengthRequired": 0,
+        "generateByServer": true
+    },
+    method: {
+        generate: function (e) {
+            let {state} = e;
+            if (state.generateByServer)
+                return [{
+                    "type": "clone",
+                    "data": {
+                        startCoordinate: state.positions[0].coordinate,
+                        endCoordinate: state.positions[1].coordinate,
+                        targetCoordinate: state.positions[2].coordinate
+                    }
+                }]
+            else return []
+        },
+        UIHandler: function (e) { }
+    }
+});

@@ -1,5 +1,5 @@
 import system from '../../system.js';
-import {Description, Usage, Block, Coordinate} from '../../constructor.js';
+import {Description, Usage, Block, Coordinate, Position} from '../../constructor.js';
 
 system.registerCanonicalGenerator({
     description:
@@ -187,3 +187,133 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { }
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Create a line with given interval.",
+        new Usage(
+            ["Start point"],
+            ["BlockType"],
+            ["Direction"],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Length:",
+                    key: "length",
+                },
+                {
+                    viewtype: "edittext",
+                    text: "Interval:",
+                    key: "interval",
+                },
+                {
+                    viewtype: "button",
+                    text: "Overwrite default behaviour:discard old position.",
+                    key: "doAcceptNewPosition",
+                    data: [
+                        { value: false, text: "No" },
+                        { value: true, text: "Yes" }
+                    ]
+                },
+                {
+                    viewtype: "edittext",
+                    text: "Vertical gradient:",
+                    key: "gradient",
+                }
+            ])
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 1,
+        directionArrayLength: 1
+    },
+    option: {
+        "positionArrayLengthRequired": 1,
+        "blockTypeArrayLengthRequired": 1,
+        "directionArrayLengthRequired": 1,
+        "length": 0,
+        "interval": 0,
+        "gradient": 0,
+        "doAcceptNewPosition": false
+    },
+    method: {
+        generate: function (e) {
+            let {state} = e;
+            let blockArray = [];
+
+			//let logger = runtime.logger;
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions
+            let blockTypeArray = state.blockTypes
+            let directionArray = state.directions
+
+            //logger.log("verbose", "Yes, NZ is JULAO!")
+
+
+            let direction = (function () {
+                if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                else return "-z"
+            }());
+
+            switch (direction) {
+                case "+z": {
+                    let x = positionArray[0].coordinate.x
+                    let y = positionArray[0].coordinate.y
+                    for (let z = positionArray[0].coordinate.z; z < state.length + positionArray[0].coordinate.z; z += (state.interval + 1))
+                        blockArray.push(new Block(
+                            new Position(
+                                new Coordinate(x, state.gradient * (z - positionArray[0].coordinate.z) + y, z),
+                                positionArray[0].tickingArea
+                            ),
+                            blockTypeArray[0])
+                        )
+                    break;
+                }
+                case "-z": {
+                    let x = positionArray[0].coordinate.x
+                    let y = positionArray[0].coordinate.y
+                    for (let z = positionArray[0].coordinate.z; z > -state.length + positionArray[0].coordinate.z; z -= (state.interval + 1))
+                        blockArray.push(new Block(
+                            new Position(
+                                new Coordinate(x, -state.gradient * (z - positionArray[0].coordinate.z) + y, z),
+                                positionArray[0].tickingArea
+                            ),
+                            blockTypeArray[0])
+                        )
+                    break;
+                }
+                case "+x": {
+                    let z = positionArray[0].coordinate.z
+                    let y = positionArray[0].coordinate.y
+                    for (let x = positionArray[0].coordinate.x; x < state.length + positionArray[0].coordinate.x; x += (state.interval + 1))
+                        blockArray.push(new Block(
+                            new Position(
+                                new Coordinate(x, state.gradient * (x - positionArray[0].coordinate.x) + y, z),
+                                positionArray[0].tickingArea
+                            ),
+                            blockTypeArray[0])
+                        )
+                    break;
+                }
+                case "-x": {
+                    let z = positionArray[0].coordinate.z
+                    let y = positionArray[0].coordinate.y
+                    for (let x = positionArray[0].coordinate.x; x > -state.length + positionArray[0].coordinate.x; x -= (state.interval + 1))
+                        blockArray.push(new Block(
+                            new Position(
+                                new Coordinate(x, -state.gradient * (x - positionArray[0].coordinate.x) + y, z),
+                                positionArray[0].tickingArea
+                            ),
+                            blockTypeArray[0])
+                        )
+                    break;
+                }
+            }
+
+            return blockArray;
+        },
+        UIHandler: function (e) { }
+    }
+})

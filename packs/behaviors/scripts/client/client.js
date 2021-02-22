@@ -483,6 +483,119 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
 }());*/
 
 (function () {
+    generatorArray.push(utils.generators.canonical.generatorConstrctor(
+        {
+            description: new Description("NZ IS JULAO", new Usage([], [], [], [])),
+            criteria: { positionArrayLength: 2, blockTypeArrayLength: 0, directionArrayLength: 0 },
+            option: {},
+            method: {
+                UIHandler: function () { }, generate: function () {
+                    const positionArray = this.positionArray
+                    let blockArray = []
+
+                    const tickOfSection = 4
+                    const song = {
+                        score: [
+                            [{ pitch: 6, tickOffset: 0, instrument: null },{ pitch: 7, tickOffset: 1, instrument: null },{ pitch: 18, tickOffset: 3, instrument: null }],
+                            [{ pitch: 8, tickOffset: 0, instrument: null },{ pitch: 9, tickOffset: 1, instrument: null },{ pitch: 16, tickOffset: 3, instrument: null }],
+                            [{ pitch: 10, tickOffset: 0, instrument: null },{ pitch: 10, tickOffset: 1, instrument: null },{ pitch: 14, tickOffset: 3, instrument: null }],
+                            [{ pitch: 11, tickOffset: 0, instrument: null },{ pitch: 12, tickOffset: 1, instrument: null },{ pitch: 12, tickOffset: 3, instrument: null }],
+                            [{ pitch: 13, tickOffset: 0, instrument: null },{ pitch: 14, tickOffset: 1, instrument: null },{ pitch: 10, tickOffset: 3, instrument: null }],
+                            [{ pitch: 15, tickOffset: 0, instrument: null },{ pitch: 16, tickOffset: 1, instrument: null },{ pitch: 9, tickOffset: 3, instrument: null }],
+                            [{ pitch: 17, tickOffset: 0, instrument: null },{ pitch: 18, tickOffset: 1, instrument: null },{ pitch: 7, tickOffset: 3, instrument: null }]
+                        ]
+                    }
+                    logger.log("verbose", "NZ IS JULAO!")
+
+                    function generateBlocksPerSection(coordinate, section) {
+
+                        function setNoteBlock(coordinate, pitch) {
+                            logger.log("verbose", "Oh...NZ IS JULAO!")
+                            let noteBlockSourceCoordinate = positionArray[0].coordinate
+                            let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5
+                            logger.log("verbose", "Err...NZ IS JULAO!")
+
+                            blockArray.push(new BuildInstruction("clone",
+                                {
+                                    startCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y, noteBlockSourceCoordinate.z + offset_z),
+                                    endCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y, noteBlockSourceCoordinate.z + offset_z),
+                                    targetCoordinate: coordinate
+                                })
+                            )
+                        }
+                        function setRepeater(coordinate, delay, direction) {
+                            logger.log("verbose", "Well...NZ IS JULAO!")
+
+                            blockArray.push(new Block(
+                                new Position(coordinate, positionArray[0].tickingArea),
+                                utils.blockGeometry.setBlockDirection(new BlockType("minecraft:unpowered_repeater", { repeater_delay: delay, direction: 0 }), direction)
+                            ))
+
+                        }
+                        function setRedstoneDust(coordinate) {
+                            blockArray.push(new Block(new Position(coordinate, positionArray[0].tickingArea), new BlockType("minecraft:redstone_wire", { redstone_signal: 0 })))
+                        }
+                        function setRedstoneMechanism(coordinate, delay, direction) {
+                            if (delay > 0) setRepeater(coordinate, delay - 1, direction)
+                            else setRedstoneDust(coordinate)
+                        }
+
+
+                        let offset_x = 0
+                        logger.log("verbose", "Yes, NZ IS JULAO!")
+
+                        for (let tick = 0; tick < tickOfSection;) {
+                            if (tickOfSection - tick >= 4) {
+                                setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), 4, "-x")
+                                tick += 4
+                            }
+                            else {
+                                setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), tickOfSection - tick, "-x")
+                                tick = tickOfSection
+                            }
+                            offset_x++;
+                        }
+                        setRedstoneDust(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z))
+
+                        function generateNoteBlocks(coordinate, section) {
+
+                            let lastTick = 0
+                            section.sort((a, b) => { return a.tickOffset < b.tickOffset })
+
+                            let offset_z = 0;
+                            for (let note of section) {
+                                logger.logObject("verbose", note)
+
+                                setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick, "-z")
+                                lastTick = note.tickOffset
+                                offset_z++;
+                                logger.log("verbose", "So...NZ IS JULAO!")
+                                setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.pitch)
+                                offset_z++;
+                            }
+                        }
+
+                        generateNoteBlocks(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z + 1), section)
+                        offset_x++
+                        return offset_x;
+                    }
+                    let offset_x = 0
+                    const startCoordinate = positionArray[1].coordinate
+
+                    for (let score of song.score) {
+
+                        logger.log("info", offset_x)
+                        offset_x += generateBlocksPerSection(new Coordinate(startCoordinate.x + offset_x, startCoordinate.y, startCoordinate.z), score)
+                    }
+
+                    return blockArray
+                }
+            }
+        }
+    ))
+})();
+
+(function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor({
         description:
             new Description("Create a solid cube with two points.",
@@ -2283,3 +2396,4 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
         }
     ))
 })();
+

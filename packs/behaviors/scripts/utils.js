@@ -773,7 +773,7 @@ let utils = {
 				else
 					return blockDirectionTable[directionRelatedBlockStateKey][blockType.blockIdentifier];
 			}());
-			blockType.blockState.directionRelatedBlockStateKey = directionMap[directionMark];
+			blockType.blockState[directionRelatedBlockStateKey] = directionMap[directionMark];
 			return blockType;
 		},
 

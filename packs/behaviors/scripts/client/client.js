@@ -515,14 +515,15 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             logger.log("verbose", "Oh...NZ IS JULAO!")
                             let { pitch, instrument } = note
                             let noteBlockSourceCoordinate = positionArray[0].coordinate
-                            let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5,offset_y=0
+                            let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5, offset_y = 0
                             logger.log("verbose", "Err...NZ IS JULAO!")
                             // if (instrument != null) blockArray.push(new Block(new Position(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z), positionArray[0].tickingArea), new BlockType(instrument, {})))
-                            if (instrument == "high")offset_y=1
+                            if (instrument == "high") offset_y = 1
+                            else if (instrument == "low") offset_y = -1
                             blockArray.push(new BuildInstruction("clone",
                                 {
-                                    startCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y+offset_y, noteBlockSourceCoordinate.z + offset_z),
-                                    endCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y+offset_y, noteBlockSourceCoordinate.z + offset_z),
+                                    startCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y + offset_y, noteBlockSourceCoordinate.z + offset_z),
+                                    endCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y + offset_y, noteBlockSourceCoordinate.z + offset_z),
                                     targetCoordinate: coordinate
                                 })
                             )
@@ -577,8 +578,8 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                                 if (note.tickOffset == lastTick) {
                                     setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z++))
                                     setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z))
-                                    setRedstoneDust(new Coordinate(coordinate.x-1, coordinate.y, coordinate.z + offset_z))
-                                    setNoteBlock(new Coordinate(coordinate.x-2, coordinate.y, coordinate.z + offset_z), note)
+                                    setRedstoneDust(new Coordinate(coordinate.x - 1, coordinate.y, coordinate.z + offset_z))
+                                    setNoteBlock(new Coordinate(coordinate.x - 2, coordinate.y, coordinate.z + offset_z), note)
                                 }
                                 else {
                                     for (let tick = 0; tick < note.tickOffset - lastTick;) {

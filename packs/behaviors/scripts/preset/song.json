@@ -1,0 +1,120 @@
+{
+    "tickOfSection": 10,
+    "score": [
+        [
+            {
+                "pitch": 6,
+                "instrument": "high",
+                "tickOffset": 0
+            },
+            {
+                "pitch": 8,
+                "instrument": "high",
+                "tickOffset": 2
+            },
+            {
+                "pitch": 10,
+                "instrument": "high",
+                "tickOffset": 4
+            },
+            {
+                "pitch": 11,
+                "instrument": "high",
+                "tickOffset": 6
+            },
+            {
+                "pitch": 13,
+                "instrument": "high",
+                "tickOffset": 8
+            }
+        ],
+        [
+            {
+                "pitch": 15,
+                "instrument": "high",
+                "tickOffset": 0
+            },
+            {
+                "pitch": 17,
+                "instrument": "high",
+                "tickOffset": 2
+            },
+            {
+                "pitch": 17,
+                "instrument": "high",
+                "tickOffset": 4
+            },
+            {
+                "pitch": 15,
+                "instrument": "high",
+                "tickOffset": 6
+            },
+            {
+                "pitch": 13,
+                "instrument": "high",
+                "tickOffset": 8
+            }
+        ],
+        [
+            {
+                "pitch": 11,
+                "instrument": "high",
+                "tickOffset": 0
+            },
+            {
+                "pitch": 10,
+                "instrument": "high",
+                "tickOffset": 2
+            },
+            {
+                "pitch": 8,
+                "instrument": "high",
+                "tickOffset": 4
+            },
+            {
+                "pitch": 6,
+                "instrument": "high",
+                "tickOffset": 6
+            },
+            {
+                "pitch": 5,
+                "instrument": "high",
+                "tickOffset": 8
+            }
+        ],
+        [
+            {
+                "pitch": 3,
+                "instrument": "high",
+                "tickOffset": 0
+            },
+            {
+                "pitch": 1,
+                "instrument": "high",
+                "tickOffset": 2
+            },
+            {
+                "pitch": 23,
+                "instrument": null,
+                "tickOffset": 4
+            },
+            {
+                "pitch": 22,
+                "instrument": null,
+                "tickOffset": 6
+            },
+            {
+                "pitch": 20,
+                "instrument": null,
+                "tickOffset": 8
+            }
+        ],
+        [
+            {
+                "pitch": 18,
+                "instrument": null,
+                "tickOffset": 0
+            }
+        ]
+    ]
+}

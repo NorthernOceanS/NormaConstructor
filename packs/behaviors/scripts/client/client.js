@@ -493,53 +493,61 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                     const positionArray = this.positionArray
                     let blockArray = []
 
-                    const tickOfSection = 4
-                    const song = {
-                        score: [
-                            [{ pitch: 6, tickOffset: 0, instrument: null },{ pitch: 7, tickOffset: 1, instrument: null },{ pitch: 18, tickOffset: 3, instrument: null }],
-                            [{ pitch: 8, tickOffset: 0, instrument: null },{ pitch: 9, tickOffset: 1, instrument: null },{ pitch: 16, tickOffset: 3, instrument: null }],
-                            [{ pitch: 10, tickOffset: 0, instrument: null },{ pitch: 10, tickOffset: 1, instrument: null },{ pitch: 14, tickOffset: 3, instrument: null }],
-                            [{ pitch: 11, tickOffset: 0, instrument: null },{ pitch: 12, tickOffset: 1, instrument: null },{ pitch: 12, tickOffset: 3, instrument: null }],
-                            [{ pitch: 13, tickOffset: 0, instrument: null },{ pitch: 14, tickOffset: 1, instrument: null },{ pitch: 10, tickOffset: 3, instrument: null }],
-                            [{ pitch: 15, tickOffset: 0, instrument: null },{ pitch: 16, tickOffset: 1, instrument: null },{ pitch: 9, tickOffset: 3, instrument: null }],
-                            [{ pitch: 17, tickOffset: 0, instrument: null },{ pitch: 18, tickOffset: 1, instrument: null },{ pitch: 7, tickOffset: 3, instrument: null }]
-                        ]
-                    }
+                    // const song = {
+                    //     tickOfSection: 4,
+                    //     score: [
+                    //         [{ pitch: 6, tickOffset: 0, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 8, tickOffset: 0, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 10, tickOffset: 0, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 11, tickOffset: 0, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 13, tickOffset: 0, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 15, tickOffset: 0, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 17, tickOffset: 0, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }]
+                    //     ]
+                    // }
+                    const song = presetBuildings.song
+                    const tickOfSection = song.tickOfSection
                     logger.log("verbose", "NZ IS JULAO!")
 
                     function generateBlocksPerSection(coordinate, section) {
 
-                        function setNoteBlock(coordinate, pitch) {
+                        function setNoteBlock(coordinate, note) {
                             logger.log("verbose", "Oh...NZ IS JULAO!")
+                            let { pitch, instrument } = note
                             let noteBlockSourceCoordinate = positionArray[0].coordinate
-                            let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5
+                            let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5,offset_y=0
                             logger.log("verbose", "Err...NZ IS JULAO!")
-
+                            // if (instrument != null) blockArray.push(new Block(new Position(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z), positionArray[0].tickingArea), new BlockType(instrument, {})))
+                            if (instrument == "high")offset_y=1
                             blockArray.push(new BuildInstruction("clone",
                                 {
-                                    startCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y, noteBlockSourceCoordinate.z + offset_z),
-                                    endCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y, noteBlockSourceCoordinate.z + offset_z),
+                                    startCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y+offset_y, noteBlockSourceCoordinate.z + offset_z),
+                                    endCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y+offset_y, noteBlockSourceCoordinate.z + offset_z),
                                     targetCoordinate: coordinate
                                 })
                             )
                         }
+                        function setBedBlock(coordinate) {
+                            blockArray.push(new Block(new Position(coordinate, positionArray[0].tickingArea), new BlockType("minecraft:grass", {})))
+                        }
                         function setRepeater(coordinate, delay, direction) {
-                            logger.log("verbose", "Well...NZ IS JULAO!")
-
+                            setBedBlock(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z))
                             blockArray.push(new Block(
                                 new Position(coordinate, positionArray[0].tickingArea),
                                 utils.blockGeometry.setBlockDirection(new BlockType("minecraft:unpowered_repeater", { repeater_delay: delay, direction: 0 }), direction)
                             ))
-
                         }
                         function setRedstoneDust(coordinate) {
-                            blockArray.push(new Block(new Position(coordinate, positionArray[0].tickingArea), new BlockType("minecraft:redstone_wire", { redstone_signal: 0 })))
+                            setBedBlock(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z))
+                            blockArray.push(new Block(
+                                new Position(coordinate, positionArray[0].tickingArea),
+                                new BlockType("minecraft:redstone_wire", { redstone_signal: 0 })
+                            ))
                         }
                         function setRedstoneMechanism(coordinate, delay, direction) {
                             if (delay > 0) setRepeater(coordinate, delay - 1, direction)
                             else setRedstoneDust(coordinate)
                         }
-
 
                         let offset_x = 0
                         logger.log("verbose", "Yes, NZ IS JULAO!")
@@ -566,12 +574,30 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             for (let note of section) {
                                 logger.logObject("verbose", note)
 
-                                setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick, "-z")
+                                if (note.tickOffset == lastTick) {
+                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z++))
+                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z))
+                                    setRedstoneDust(new Coordinate(coordinate.x-1, coordinate.y, coordinate.z + offset_z))
+                                    setNoteBlock(new Coordinate(coordinate.x-2, coordinate.y, coordinate.z + offset_z), note)
+                                }
+                                else {
+                                    for (let tick = 0; tick < note.tickOffset - lastTick;) {
+                                        if (note.tickOffset - lastTick - tick >= 4) {
+                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), 4, "-z")
+                                            tick += 4
+                                        }
+                                        else {
+                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick - tick, "-z")
+                                            tick = note.tickOffset - lastTick
+                                        }
+                                        offset_z++;
+                                    }
+                                    setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note)
+                                }
+                                // setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick, "-z")
                                 lastTick = note.tickOffset
-                                offset_z++;
                                 logger.log("verbose", "So...NZ IS JULAO!")
-                                setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.pitch)
-                                offset_z++;
+                                offset_z++
                             }
                         }
 

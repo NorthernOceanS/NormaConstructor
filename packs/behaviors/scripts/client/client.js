@@ -485,12 +485,22 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
 (function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor(
         {
-            description: new Description("NZ IS JULAO", new Usage([], [], [], [])),
+            description: new Description("NZ IS JULAO", new Usage([], [], [], [{
+                viewtype: "button",
+                text: "Set branch direction.",
+                key: "branch_direction",
+                data: [
+                    { value: "-z", text: "-z" },
+                    { value: "+z", text: "+z" }
+                ]
+            }])),
             criteria: { positionArrayLength: 2, blockTypeArrayLength: 0, directionArrayLength: 0 },
-            option: {},
+            option: { "branch_direction": "-z" },
             method: {
                 UIHandler: function () { }, generate: function () {
                     const positionArray = this.positionArray
+                    const { branch_direction } = this.option
+                    logger.log("verbose", branch_direction)
                     let blockArray = []
 
                     // const song = {
@@ -570,30 +580,32 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
 
                             let lastTick = 0
                             section.sort((a, b) => { return a.tickOffset < b.tickOffset })
+                            function sign(branch_direction) { return branch_direction == "-z" ? -1 : 1 }
+                            
+                            let oppositeDirection = (branch_direction == "+z" ? "-z" : "+z")
 
-                            let offset_z = 0;
+                            let offset_z = 1;
                             for (let note of section) {
-                                logger.logObject("verbose", note)
-
                                 if (note.tickOffset == lastTick) {
-                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z++))
-                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z))
-                                    setRedstoneDust(new Coordinate(coordinate.x - 1, coordinate.y, coordinate.z + offset_z))
-                                    setNoteBlock(new Coordinate(coordinate.x - 2, coordinate.y, coordinate.z + offset_z), note)
+                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
+                                    offset_z++
+                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
+                                    setRedstoneDust(new Coordinate(coordinate.x - 1, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
+                                    setNoteBlock(new Coordinate(coordinate.x - 2, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
                                 }
                                 else {
                                     for (let tick = 0; tick < note.tickOffset - lastTick;) {
                                         if (note.tickOffset - lastTick - tick >= 4) {
-                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), 4, "-z")
+                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), 4, oppositeDirection)
                                             tick += 4
                                         }
                                         else {
-                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick - tick, "-z")
+                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note.tickOffset - lastTick - tick, oppositeDirection)
                                             tick = note.tickOffset - lastTick
                                         }
                                         offset_z++;
                                     }
-                                    setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note)
+                                    setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
                                 }
                                 // setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick, "-z")
                                 lastTick = note.tickOffset
@@ -602,7 +614,7 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             }
                         }
 
-                        generateNoteBlocks(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z + 1), section)
+                        generateNoteBlocks(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z ), section)
                         offset_x++
                         return offset_x;
                     }
@@ -611,7 +623,6 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
 
                     for (let score of song.score) {
 
-                        logger.log("info", offset_x)
                         offset_x += generateBlocksPerSection(new Coordinate(startCoordinate.x + offset_x, startCoordinate.y, startCoordinate.z), score)
                     }
 

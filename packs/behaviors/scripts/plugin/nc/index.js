@@ -188,7 +188,7 @@ system.registerCanonicalGenerator({
     }
 });
 
-let createLineGenerator = new canonicalGeneratorFactory({
+let createLineGenerator = canonicalGeneratorFactory({
     description: new Description("Create a line with given interval.",
         new Usage(
             ["Start point"],

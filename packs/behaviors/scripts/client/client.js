@@ -8,7 +8,7 @@ var buildInstructionsQuery = []
 import { Coordinate, Position, BlockType, Block, Direction, Usage, Description, Generator, BuildInstruction } from '../constructor'
 import { utils } from '../utils'
 
-import { presetBuildings } from '../presetBuildingsInterface'
+import { preset } from '../presetInterface'
 
 let generatorArray = [];
 let coordinatePlayerLookingAt = undefined
@@ -485,21 +485,28 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
 (function () {
     generatorArray.push(utils.generators.canonical.generatorConstrctor(
         {
-            description: new Description("NZ IS JULAO", new Usage([], [], [], [{
-                viewtype: "button",
-                text: "Set branch direction.",
-                key: "branch_direction",
-                data: [
-                    { value: "-z", text: "-z" },
-                    { value: "+z", text: "+z" }
-                ]
-            }])),
+            description: new Description("NZ IS JULAO", new Usage([], [], [], [
+                {
+                    viewtype: "button",
+                    text: "Set branch direction.",
+                    key: "branch_direction",
+                    data: [
+                        { value: "-z", text: "-z" },
+                        { value: "+z", text: "+z" }
+                    ]
+                },
+                {
+                    viewtype: "edittext",
+                    text: "Song number:",
+                    key: "song_number",
+                }
+            ])),
             criteria: { positionArrayLength: 2, blockTypeArrayLength: 0, directionArrayLength: 0 },
-            option: { "branch_direction": "-z" },
+            option: { "branch_direction": "-z", "song_number": 0 },
             method: {
                 UIHandler: function () { }, generate: function () {
                     const positionArray = this.positionArray
-                    const { branch_direction } = this.option
+                    const { branch_direction, song_number } = this.option
                     logger.log("verbose", branch_direction)
                     let blockArray = []
 
@@ -515,7 +522,8 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                     //         [{ pitch: 17, tickOffset: 0, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }]
                     //     ]
                     // }
-                    const song = presetBuildings.song
+                    const song = preset.songs[song_number]
+                    if (song == undefined) throw "No such song!"
                     const tickOfSection = song.tickOfSection
                     logger.log("verbose", "NZ IS JULAO!")
 
@@ -581,7 +589,7 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             let lastTick = 0
                             section.sort((a, b) => { return a.tickOffset < b.tickOffset })
                             function sign(branch_direction) { return branch_direction == "-z" ? -1 : 1 }
-                            
+
                             let oppositeDirection = (branch_direction == "+z" ? "-z" : "+z")
 
                             let offset_z = 1;
@@ -614,7 +622,7 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             }
                         }
 
-                        generateNoteBlocks(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z ), section)
+                        generateNoteBlocks(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), section)
                         offset_x++
                         return offset_x;
                     }
@@ -2425,7 +2433,7 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                 UIHandler: function () { }, generate: function () {
                     let coordinate = this.positionArray[0].coordinate
 
-                    return Array.from(presetBuildings.subway_station, a => new Block(new Position(new Coordinate(
+                    return Array.from(preset.subway_station, a => new Block(new Position(new Coordinate(
                         coordinate.x + a.coordinate.x, coordinate.y + a.coordinate.y, coordinate.z + a.coordinate.z
                     ), this.positionArray[0].tickingArea), a.blockType))
 

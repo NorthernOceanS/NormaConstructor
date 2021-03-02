@@ -8,6 +8,8 @@ import * as re0 from"./song/Etude_in_C_Minor_Revolutionary_0.json"
 import * as re1 from"./song/Etude_in_C_Minor_Revolutionary_1.json"
 import * as sa0 from"./song/Samurai with a Mission_0.json"
 import * as sa1 from"./song/Samurai with a Mission_1.json"
+import * as tf0 from"./song/Time_Foward_0.json"
+import * as tf1 from"./song/Time_Foward_1.json"
 
 const songs = []
 songs.push(bas0,bas1)
@@ -15,4 +17,5 @@ songs.push(croatian0,croatian1)
 songs.push(ha0,ha1)
 songs.push(re0,re1)
 songs.push(sa0,sa1)
+songs.push(tf0,tf1)
 export { songs }

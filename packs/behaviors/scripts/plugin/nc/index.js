@@ -1,5 +1,5 @@
 import system from '../../system.js';
-import {Description, Usage, Block, Coordinate, Position} from '../../constructor.js';
+import { Description, Usage, Block, Coordinate, Position } from '../../constructor.js';
 import { utils } from '../utils.js';
 
 system.registerCanonicalGenerator({
@@ -44,9 +44,9 @@ system.registerCanonicalGenerator({
     },
     method: {
         generate: function (e) {
-            let {state} = e
-            let {positions, blockTypes, directions} = state
-            
+            let { state } = e
+            let { positions, blockTypes, directions } = state
+
             let halt = false
             if (blockTypes.indexOf(undefined) != -1) halt = true
             if (positions.indexOf(undefined) != -1) halt = true
@@ -136,8 +136,8 @@ system.registerCanonicalGenerator({
             }
         },
         UIHandler: function (e) {
-            let {state, data} = e;
-            let {positions, blockTypes, directions} = state;
+            let { state, data } = e;
+            let { positions, blockTypes, directions } = state;
             if (data == "resetAll") {
                 positions.fill(undefined);
                 blockTypes.fill(undefined);
@@ -173,7 +173,7 @@ system.registerCanonicalGenerator({
     },
     method: {
         generate: function (e) {
-            let {state} = e;
+            let { state } = e;
             if (state.generateByServer)
                 return [{
                     "type": "clone",
@@ -238,10 +238,10 @@ let createLineGenerator = canonicalGeneratorFactory({
     },
     method: {
         generate: function (e) {
-            let {state} = e;
+            let { state } = e;
             let blockArray = [];
 
-			//let logger = runtime.logger;
+            //let logger = runtime.logger;
             //logger.log("verbose", "NZ is JULAO!")
 
             let positionArray = state.positions
@@ -320,18 +320,18 @@ let createLineGenerator = canonicalGeneratorFactory({
 })
 
 createLineGenerator.addPosition = function () {
-	let {state, position} = e;
-	if (state.doAcceptNewPosition) {
-		let indexOfVacancy = state.positions.indexOf(undefined)
-		if (indexOfVacancy == -1) {
-			logger.log("warning", `Too many positions!Discarding the old one...`)
-			state.positions = state.positions.slice(1)
-			state.positions.push(position)
-		}
-		else state.positions[indexOfVacancy] = position
-		logger.log("info", `New position accepted.`)
-	}
-	else utils.generators.canonical.addFunction("position", position, state.positions);
+    let { state, position } = e;
+    if (state.doAcceptNewPosition) {
+        let indexOfVacancy = state.positions.indexOf(undefined)
+        if (indexOfVacancy == -1) {
+            logger.log("warning", `Too many positions!Discarding the old one...`)
+            state.positions = state.positions.slice(1)
+            state.positions.push(position)
+        }
+        else state.positions[indexOfVacancy] = position
+        logger.log("info", `New position accepted.`)
+    }
+    else utils.generators.canonical.addFunction("position", position, state.positions);
 }
 
 system.registerGenerator(createLineGenerator);
@@ -397,17 +397,17 @@ system.registerCanonicalGenerator({
         directionArrayLength: 1
     },
     option: {
-		"length": 10,
-		"roadStyle": "NS",
-		"isBarred": false,
-		"numberOfLanesPerSide": 2,
-		"widthOfLanes": 5,
-		"dashLineInterval": 3,
-		"dashLineLength": 4
-	},
+        "length": 10,
+        "roadStyle": "NS",
+        "isBarred": false,
+        "numberOfLanesPerSide": 2,
+        "widthOfLanes": 5,
+        "dashLineInterval": 3,
+        "dashLineLength": 4
+    },
     method: {
         generate: function (e) {
-			let {state} = e;
+            let { state } = e;
             let blockArray = []
 
             //logger.log("verbose", "NZ is JULAO!")
@@ -584,7 +584,7 @@ system.registerCanonicalGenerator({
             return blockArray
         },
         postGenerate: function (e) {
-            let {state} = e;
+            let { state } = e;
             state.positions = [undefined]
             if (state["roadStyle"] == "custom") state.blockTypes = [undefined, undefined, undefined, undefined];
             else state.blockTypeArray = [];
@@ -592,7 +592,7 @@ system.registerCanonicalGenerator({
             state.directions = [undefined];
         },
         UIHandler: function (e) {
-            let {state, data} = e;
+            let { state, data } = e;
             if (data == "custom") {
                 //logger.log("info", "Using custom materials.")
                 //logger.log("info", "First block type for surface.")
@@ -612,27 +612,27 @@ system.registerCanonicalGenerator({
 system.registerCanonicalGenerator({
     description:
         new Description("Construct railway",
-                new Usage(
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            viewtype: "edittext",
-                            text: "Length:",
-                            key: "length",
-                        },
-                        {
-                            viewtype: "checkbox",
-                            text: "加护栏",
-                            key: "isBarred",
-                            data: [
-                                { value: true, text: "是" },
-                                { value: false, text: "否" },
-                            ]
-                        }
-                    ])
-            ),
+            new Usage(
+                [],
+                [],
+                [],
+                [
+                    {
+                        viewtype: "edittext",
+                        text: "Length:",
+                        key: "length",
+                    },
+                    {
+                        viewtype: "checkbox",
+                        text: "加护栏",
+                        key: "isBarred",
+                        data: [
+                            { value: true, text: "是" },
+                            { value: false, text: "否" },
+                        ]
+                    }
+                ])
+        ),
     criteria: {
         positionArrayLength: 1,
         blockTypeArrayLength: 0,
@@ -644,166 +644,166 @@ system.registerCanonicalGenerator({
     },
     method: {
         generate: function (e) {
-                let {state} = e;
-                let blockArray = []
+            let { state } = e;
+            let blockArray = []
 
-                //logger.log("verbose", "NZ is JULAO!")
+            //logger.log("verbose", "NZ is JULAO!")
 
-                let positionArray = state.positions
-                let blockTypeArray = state.blockTypes
-                let directionArray = state.directions
-                //logger.log("verbose", "Yes, NZ is JULAO!")
+            let positionArray = state.positions
+            let blockTypeArray = state.blockTypes
+            let directionArray = state.directions
+            //logger.log("verbose", "Yes, NZ is JULAO!")
 
-                let directionMark = (function () {
-                    if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
-                    else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
-                    else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
-                    else return "-z"
-                }());
+            let directionMark = (function () {
+                if (-45 <= directionArray[0].y && directionArray[0].y <= 45) return "+z"
+                else if (-135 <= directionArray[0].y && directionArray[0].y <= -45) return "+x"
+                else if (45 <= directionArray[0].y && directionArray[0].y <= 135) return "-x"
+                else return "-z"
+            }());
 
-                let materials = {
-                    "glass_pane": new BlockType("minecraft:glass_pane", null),
-                    "iron_block": new BlockType("minecraft:iron_block", null),
-                    "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
-                    "rail": utils.blockGeometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z")
-                }
+            let materials = {
+                "glass_pane": new BlockType("minecraft:glass_pane", null),
+                "iron_block": new BlockType("minecraft:iron_block", null),
+                "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
+                "rail": utils.blockGeometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z")
+            }
 
 
 
-                //This assumes the original facing axis is +x.
-                let transform = (function (facingAxis) {
-                    switch (facingAxis) {
-                        case "+x": {
-                            return utils.coordinateGeometry.transform(
-                                (x, y, z) => x,
-                                (x, y, z) => y,
-                                (x, y, z) => z
-                            )
-                        }
-                        case "-x": {
-                            return utils.coordinateGeometry.transform(
-                                (x, y, z) => 2 * positionArray[0].coordinate.x - x,
-                                (x, y, z) => y,
-                                (x, y, z) => 2 * positionArray[0].coordinate.z - z
-                            )
-                        }
-                        case "+z": {
-                            return utils.coordinateGeometry.transform(
-                                (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
-                                (x, y, z) => y,
-                                (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
-                            )
-                        }
-                        case "-z": {
-                            return utils.coordinateGeometry.transform(
-                                (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
-                                (x, y, z) => y,
-                                (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
-                            )
-                        }
+            //This assumes the original facing axis is +x.
+            let transform = (function (facingAxis) {
+                switch (facingAxis) {
+                    case "+x": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => x,
+                            (x, y, z) => y,
+                            (x, y, z) => z
+                        )
                     }
-                }(directionMark))
-
-                let palette = ["rail", "redstone", "rail"];
-
-                if (state["isBarred"]) {
-                    palette.unshift("edge")
-                    palette.push("edge")
-                }
-
-                const offset = (palette.length - 1) / 2;
-                for (let i = 0; i < palette.length; i++) {
-                    switch (palette[i]) {
-                        case "edge": {
-                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
-                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
-                            ) {
-                                blockArray.push(
-                                    new Block(
-                                        new Position(
-                                            transform(coordinate),
-                                            positionArray[0].tickingArea
-                                        ),
-                                        materials["iron_block"]
-                                    )
-                                )
-                            }
-                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
-                                positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
-                            ) {
-                                blockArray.push(
-                                    new Block(
-                                        new Position(
-                                            transform(coordinate),
-                                            positionArray[0].tickingArea
-                                        ),
-                                        materials["glass_pane"]
-                                    )
-                                )
-                            }
-                            break;
-                        }
-                        case "rail": {
-                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
-                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
-                            ) {
-                                blockArray.push(
-                                    new Block(
-                                        new Position(
-                                            transform(coordinate),
-                                            positionArray[0].tickingArea
-                                        ),
-                                        materials["iron_block"]
-                                    )
-                                )
-                            }
-                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
-                                positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
-                            ) {
-                                blockArray.push(
-                                    new Block(
-                                        new Position(
-                                            transform(coordinate),
-                                            positionArray[0].tickingArea
-                                        ),
-                                        materials["rail"]
-                                    )
-                                )
-                            }
-                            break;
-                        }
-                        case "redstone": {
-                            for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
-                                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
-                                positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
-                            ) {
-                                blockArray.push(
-                                    new Block(
-                                        new Position(
-                                            transform(coordinate),
-                                            positionArray[0].tickingArea
-                                        ),
-                                        materials["iron_block"]
-                                    )
-                                )
-                            }
-                            for (let j = 0; j < state["length"] - 1; j++) {
-                                let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
-                                if (j % 15 == 0) blockArray.push(new Block(position, materials["red_stone_torch"]))
-                            }
-                            break;
-                        }
+                    case "-x": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => 2 * positionArray[0].coordinate.x - x,
+                            (x, y, z) => y,
+                            (x, y, z) => 2 * positionArray[0].coordinate.z - z
+                        )
+                    }
+                    case "+z": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => positionArray[0].coordinate.x - (z - positionArray[0].coordinate.z),
+                            (x, y, z) => y,
+                            (x, y, z) => positionArray[0].coordinate.z + (x - positionArray[0].coordinate.x)
+                        )
+                    }
+                    case "-z": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => positionArray[0].coordinate.x + (z - positionArray[0].coordinate.z),
+                            (x, y, z) => y,
+                            (x, y, z) => positionArray[0].coordinate.z - (x - positionArray[0].coordinate.x)
+                        )
                     }
                 }
+            }(directionMark))
 
-                return blockArray
-            },
+            let palette = ["rail", "redstone", "rail"];
+
+            if (state["isBarred"]) {
+                palette.unshift("edge")
+                palette.push("edge")
+            }
+
+            const offset = (palette.length - 1) / 2;
+            for (let i = 0; i < palette.length; i++) {
+                switch (palette[i]) {
+                    case "edge": {
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["iron_block"]
+                                )
+                            )
+                        }
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["glass_pane"]
+                                )
+                            )
+                        }
+                        break;
+                    }
+                    case "rail": {
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["iron_block"]
+                                )
+                            )
+                        }
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["rail"]
+                                )
+                            )
+                        }
+                        break;
+                    }
+                    case "redstone": {
+                        for (let coordinate of utils.coordinateGeometry.generateLineWithTwoPoints(
+                            positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset,
+                            positionArray[0].coordinate.x + state["length"] - 1, positionArray[0].coordinate.y, positionArray[0].coordinate.z + i - offset)
+                        ) {
+                            blockArray.push(
+                                new Block(
+                                    new Position(
+                                        transform(coordinate),
+                                        positionArray[0].tickingArea
+                                    ),
+                                    materials["iron_block"]
+                                )
+                            )
+                        }
+                        for (let j = 0; j < state["length"] - 1; j++) {
+                            let position = new Position(transform(new Coordinate(positionArray[0].coordinate.x + j, positionArray[0].coordinate.y + 1, positionArray[0].coordinate.z + i - offset)), positionArray[0].tickingArea)
+                            if (j % 15 == 0) blockArray.push(new Block(position, materials["red_stone_torch"]))
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return blockArray
+        },
         postGenerate: function (e) {
-            let {state} = e;
+            let { state } = e;
             state.positionArray = [undefined];
             state.blockTypeArray = [];
             state.directionArray = [undefined];
@@ -831,7 +831,7 @@ system.registerCanonicalGenerator({
     },
     method: {
         generate: function (e) {
-            let {state} = e;
+            let { state } = e;
             let blockArray = []
 
             //logger.log("verbose", "NZ is JULAO!")
@@ -857,9 +857,9 @@ system.registerCanonicalGenerator({
             }
 
             return blockArray;
-         }
+        }, 
         postGenerate: function (e) {
-            let {state} = e;
+            let { state } = e;
             state.positions = [undefined];
             state.blockTypes = [];
             state.directions = [undefined];

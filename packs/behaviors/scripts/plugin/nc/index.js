@@ -582,6 +582,14 @@ system.registerCanonicalGenerator({
 
             return blockArray
         },
+        postGenerate: function (e) {
+            let {state} = e;
+            state.positions = [undefined]
+            if (state["roadStyle"] == "custom") state.blockTypes = [undefined, undefined, undefined, undefined];
+            else state.blockTypeArray = [];
+            state.blockTypes = [];
+            state.directions = [undefined];
+        },
         UIHandler: function (e) {
             let {state, data} = e;
             if (data == "custom") {

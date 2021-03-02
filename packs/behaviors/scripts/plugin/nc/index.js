@@ -1,5 +1,6 @@
 import system from '../../system.js';
 import {Description, Usage, Block, Coordinate, Position} from '../../constructor.js';
+import { utils } from '../utils.js';
 
 system.registerCanonicalGenerator({
     description:
@@ -811,3 +812,58 @@ system.registerCanonicalGenerator({
     }
 });
 
+system.registerCanonicalGenerator({
+    description:
+        new Description("Create a triangle.(Broken)",
+            new Usage(
+                [],
+                [],
+                [],
+                []
+            )
+        ),
+    criteria: {
+        positionArrayLength: 3,
+        blockTypeArrayLength: 1,
+        directionArrayLength: 0
+    },
+    option: {
+    },
+    method: {
+        generate: function (e) {
+            let {state} = e;
+            let blockArray = []
+
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions
+            let blockTypeArray = state.blockTypes
+
+            //logger.log("verbose", "Yes, NZ is JULAO!")
+
+            let coordinateArray = utils.coordinateGeometry.generateFilledPlanarTriangle(
+                positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z,
+                positionArray[1].coordinate.x, positionArray[1].coordinate.y, positionArray[1].coordinate.z,
+                positionArray[2].coordinate.x, positionArray[2].coordinate.y, positionArray[2].coordinate.z)
+
+            for (const coordinate of coordinateArray) {
+                blockArray.push(new Block(
+                    new Position(
+                        coordinate,
+                        positionArray[0].tickingArea
+                    ),
+                    blockTypeArray[0])
+                )
+            }
+
+            return blockArray;
+         }
+        postGenerate: function (e) {
+            let {state} = e;
+            state.positions = [undefined];
+            state.blockTypes = [];
+            state.directions = [undefined];
+        },
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

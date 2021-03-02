@@ -217,7 +217,7 @@ export function canonicalGeneratorFactory({
     },
     option,
     method: {
-        generate, UIHandler
+        generate, postGenerate, UIHandler
     }
 }) {
     function onAdd(type, arrayname) {
@@ -242,6 +242,18 @@ export function canonicalGeneratorFactory({
             }
             if (index >= 0) array[index] = undefined;
         };
+    }
+    function createGenerate(generate, postGenerate) {
+        return function (e) {
+            generate(e);
+            postGenerate(e);
+        };
+    }
+    function defaultPostGenerate(e) {
+        let {state} = e;
+        state.positions.fill(undefined);
+        state.blockTypes.fill(undefined);
+        state.directions.fill(undefined);
     }
     return {
         name: description.name,
@@ -268,7 +280,7 @@ export function canonicalGeneratorFactory({
             if (state.directions.indexOf(undefined) != -1) return false;
             return true;
         },
-        generate,
+        generate: createGenerate(generate, postGenerate || defaultPostGenerate),
         UIHandler,
         onExit(e) { /* no-op */ },
     }

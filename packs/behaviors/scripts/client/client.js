@@ -250,13 +250,7 @@ clientSystem.initialize = function () {
                 case "command": {
                     switch (uiData.data) {
                         case "reload": {
-                            let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
-                            sendUIEventData.data.eventIdentifier = "NormaConstructor:reload"
-                            sendUIEventData.data.data = JSON.stringify({
-                                description: generatorArray[generatorIndex].description,
-                                option: generatorArray[generatorIndex].option
-                            }, null, '    ')
-                            clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
+                            reload_ui()
                             break;
                         }
                         case "execute": {
@@ -403,6 +397,16 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
     clientSystem.broadcastEvent("NZConstructor:setBlock", setBlockEventData)
     logger.logObject("verbose", setBlockEventData)
 }
+
+function reload_ui() {
+    let sendUIEventData = clientSystem.createEventData("minecraft:send_ui_event")
+    sendUIEventData.data.eventIdentifier = "NormaConstructor:reload"
+    sendUIEventData.data.data = JSON.stringify({
+        description: generatorArray[generatorIndex].description,
+        option: generatorArray[generatorIndex].option
+    }, null, '    ')
+    clientSystem.broadcastEvent("minecraft:send_ui_event", sendUIEventData)
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Generators://////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -499,10 +503,11 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                     viewtype: "edittext",
                     text: "Song number:",
                     key: "song_number",
+                    dataForUIHandler: ""
                 }
             ])),
             criteria: { positionArrayLength: 2, blockTypeArrayLength: 0, directionArrayLength: 0 },
-            option: { "branch_direction": "-z", "song_number": 0 },
+            option: { "branch_direction": "-z", "song_number": 0, "song_name": "" },
             method: {
                 UIHandler: function () { }, generate: function () {
                     const positionArray = this.positionArray
@@ -539,13 +544,12 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5, offset_y = 0
                             logger.log("verbose", "Err...NZ IS JULAO!")
                             // if (instrument != null) blockArray.push(new Block(new Position(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z), positionArray[0].tickingArea), new BlockType(instrument, {})))
-                            switch(instrument)
-                            {
-                                case "higher": offset_y=2;break;
-                                case "high": offset_y=1;break;
-                                case null: offset_y=0;break;
-                                case "low": offset_y=-1;break;
-                                case "lower": offset_y=-2;break;
+                            switch (instrument) {
+                                case "higher": offset_y = 2; break;
+                                case "high": offset_y = 1; break;
+                                case null: offset_y = 0; break;
+                                case "low": offset_y = -1; break;
+                                case "lower": offset_y = -2; break;
                             }
                             blockArray.push(new BuildInstruction("clone",
                                 {

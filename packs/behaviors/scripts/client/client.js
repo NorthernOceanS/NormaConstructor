@@ -523,7 +523,10 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                     //     ]
                     // }
                     const song = preset.songs[song_number]
-                    if (song == undefined) throw "No such song!"
+                    if (song == undefined) {
+                        logger.log("error", "No such song!")
+                        throw "But still, NZ IS JULAO!"
+                    }
                     const tickOfSection = song.tickOfSection
                     logger.log("verbose", "NZ IS JULAO!")
 
@@ -536,8 +539,14 @@ function setBlock(x, y, z, blockIdentifier, tileData) {
                             let offset_z = Math.floor(pitch / 5), offset_x = pitch % 5, offset_y = 0
                             logger.log("verbose", "Err...NZ IS JULAO!")
                             // if (instrument != null) blockArray.push(new Block(new Position(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z), positionArray[0].tickingArea), new BlockType(instrument, {})))
-                            if (instrument == "high") offset_y = 1
-                            else if (instrument == "low") offset_y = -1
+                            switch(instrument)
+                            {
+                                case "higher": offset_y=2;break;
+                                case "high": offset_y=1;break;
+                                case null: offset_y=0;break;
+                                case "low": offset_y=-1;break;
+                                case "lower": offset_y=-2;break;
+                            }
                             blockArray.push(new BuildInstruction("clone",
                                 {
                                     startCoordinate: new Coordinate(noteBlockSourceCoordinate.x + offset_x, noteBlockSourceCoordinate.y + offset_y, noteBlockSourceCoordinate.z + offset_z),

@@ -2598,7 +2598,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -2742,7 +2742,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -2978,7 +2978,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -3030,146 +3030,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
-                "tickOffset": 12
-            }
-        ],
-        [
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 3
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 3
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 3
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 5
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 5
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 5
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 7
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 7
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 7
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 8
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 8
-            },
-            {
-                "pitch": 13,
-                "instrument": null,
-                "tickOffset": 8
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 10
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 10
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 10
-            }
-        ],
-        [
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 13,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 2
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 2
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 2
-            },
-            {
-                "pitch": 13,
-                "instrument": "low",
-                "tickOffset": 8
-            },
-            {
-                "pitch": 22,
-                "instrument": "low",
-                "tickOffset": 8
-            },
-            {
-                "pitch": 18,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -3308,7 +3169,146 @@
             },
             {
                 "pitch": 18,
+                "instrument": "lower",
+                "tickOffset": 12
+            }
+        ],
+        [
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 3
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 3
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 3
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 5
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 5
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 5
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 7
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 7
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 7
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 8
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 8
+            },
+            {
+                "pitch": 13,
+                "instrument": null,
+                "tickOffset": 8
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 10
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 10
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 10
+            }
+        ],
+        [
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 13,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 2
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 2
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 2
+            },
+            {
+                "pitch": 13,
                 "instrument": "low",
+                "tickOffset": 8
+            },
+            {
+                "pitch": 22,
+                "instrument": "low",
+                "tickOffset": 8
+            },
+            {
+                "pitch": 18,
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -5042,7 +5042,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -5186,7 +5186,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -5484,146 +5484,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
-                "tickOffset": 12
-            }
-        ],
-        [
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 3
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 3
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 3
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 5
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 5
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 5
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 7
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 7
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 7
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 8
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 8
-            },
-            {
-                "pitch": 13,
-                "instrument": null,
-                "tickOffset": 8
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 10
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 10
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 10
-            }
-        ],
-        [
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 13,
-                "instrument": null,
-                "tickOffset": 0
-            },
-            {
-                "pitch": 1,
-                "instrument": null,
-                "tickOffset": 2
-            },
-            {
-                "pitch": 6,
-                "instrument": null,
-                "tickOffset": 2
-            },
-            {
-                "pitch": 10,
-                "instrument": null,
-                "tickOffset": 2
-            },
-            {
-                "pitch": 13,
-                "instrument": "low",
-                "tickOffset": 8
-            },
-            {
-                "pitch": 22,
-                "instrument": "low",
-                "tickOffset": 8
-            },
-            {
-                "pitch": 18,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -5762,7 +5623,146 @@
             },
             {
                 "pitch": 18,
+                "instrument": "lower",
+                "tickOffset": 12
+            }
+        ],
+        [
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 3
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 3
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 3
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 5
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 5
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 5
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 7
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 7
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 7
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 8
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 8
+            },
+            {
+                "pitch": 13,
+                "instrument": null,
+                "tickOffset": 8
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 10
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 10
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 10
+            }
+        ],
+        [
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 13,
+                "instrument": null,
+                "tickOffset": 0
+            },
+            {
+                "pitch": 1,
+                "instrument": null,
+                "tickOffset": 2
+            },
+            {
+                "pitch": 6,
+                "instrument": null,
+                "tickOffset": 2
+            },
+            {
+                "pitch": 10,
+                "instrument": null,
+                "tickOffset": 2
+            },
+            {
+                "pitch": 13,
                 "instrument": "low",
+                "tickOffset": 8
+            },
+            {
+                "pitch": 22,
+                "instrument": "low",
+                "tickOffset": 8
+            },
+            {
+                "pitch": 18,
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -6055,7 +6055,7 @@
             },
             {
                 "pitch": 18,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -6592,7 +6592,7 @@
             },
             {
                 "pitch": 18,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -6731,7 +6731,7 @@
             },
             {
                 "pitch": 18,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],
@@ -6875,7 +6875,7 @@
             },
             {
                 "pitch": 16,
-                "instrument": "low",
+                "instrument": "lower",
                 "tickOffset": 12
             }
         ],

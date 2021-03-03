@@ -31,7 +31,7 @@ songs.push(re0,re1)//6,7
 songs.push(sa0,sa1)//8,9
 songs.push(tf0,tf1)//10,11
 songs.push(jl0,jl1)//12,13
-songs.push(as0,as1,as2,as3)//14,15
-songs.push(ws0,ws1)//16,17
-songs.push(fd0,fd1)//18,19
+songs.push(as0,as1,as2,as3)//14,15,16,17
+songs.push(ws0,ws1)//18,19
+songs.push(fd0,fd1)//20,21
 export { songs }

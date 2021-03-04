@@ -244,9 +244,10 @@ export function canonicalGeneratorFactory({
         };
     }
     function createGenerate(generate, postGenerate) {
-        return function (e) {
-            generate(e);
-            postGenerate(e);
+        return async function (e) {
+            let result = await generate(e);
+            await postGenerate(e);
+            return result;
         };
     }
     function defaultPostGenerate(e) {

@@ -324,12 +324,12 @@ createLineGenerator.addPosition = function () {
     if (state.doAcceptNewPosition) {
         let indexOfVacancy = state.positions.indexOf(undefined)
         if (indexOfVacancy == -1) {
-            logger.log("warning", `Too many positions!Discarding the old one...`)
+            //logger.log("warning", `Too many positions!Discarding the old one...`)
             state.positions = state.positions.slice(1)
             state.positions.push(position)
         }
         else state.positions[indexOfVacancy] = position
-        logger.log("info", `New position accepted.`)
+        //logger.log("info", `New position accepted.`)
     }
     else utils.generators.canonical.addFunction("position", position, state.positions);
 }

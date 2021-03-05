@@ -1,7 +1,7 @@
 // Block.js a custom implimentation to get block's id or data
 // Bedrock v1.14
 // by WavePlayz
-import * as TranslatorData from 'translator-data.json';
+import * as TranslatorData from './translator-data.json';
 
 let blockStateTranslator = {
     getID: function (blockName) {

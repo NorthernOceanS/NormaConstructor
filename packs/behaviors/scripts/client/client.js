@@ -607,6 +607,7 @@ function reload_ui() {
 
                             let offset_z = 1;
                             for (let note of section) {
+                                note.tickOffset=Math.floor(note.tickOffset)
                                 if (note.tickOffset == lastTick) {
                                     setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
                                     offset_z++

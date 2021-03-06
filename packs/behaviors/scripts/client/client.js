@@ -607,7 +607,7 @@ function reload_ui() {
 
                             let offset_z = 1;
                             for (let note of section) {
-                                note.tickOffset=Math.floor(note.tickOffset)
+                                note.tickOffset = Math.floor(note.tickOffset)
                                 if (note.tickOffset == lastTick) {
                                     setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
                                     offset_z++
@@ -2457,3 +2457,55 @@ function reload_ui() {
     ))
 })();
 
+(function () {
+    generatorArray.push(utils.generators.canonical.generatorConstrctor({
+        description: new Description("Create ellipsoid", new Usage([], [], [], [
+
+            {
+                viewtype: "edittext",
+                text: "a:",
+                key: "a",
+            },
+            {
+                viewtype: "edittext",
+                text: "b:",
+                key: "b",
+            },
+            {
+                viewtype: "edittext",
+                text: "c:",
+                key: "c",
+            }
+        ])),
+        criteria: { positionArrayLength: 1, blockTypeArrayLength: 1, directionArrayLength: 0 },
+        option: { a: 0, b: 0, c: 0 },
+        method: {
+            UIHandler: function () { },
+            generate: function () {
+                let blockArray = []
+
+
+
+                logger.log("verbose", "NZ is JULAO!")
+
+                let positionArray = this.positionArray
+                let {x,y,z}=this.positionArray[0].coordinate
+                let blockTypeArray = this.blockTypeArray
+                let {a,b,c}=this.option
+
+                let coordinateArray =  utils.coordinateGeometry.generateWithConstraint([-a,a],[-b,b],[-c,c],(x,y,z)=>{return x*x/(a*a)+y*y/(b*b)+z*z/(c*c)<=1})
+
+                for (let coordinate of coordinateArray)
+                    blockArray.push(new Block(
+                        new Position(
+                            new Coordinate(x+coordinate.x,y+coordinate.y,z+coordinate.z),
+                            positionArray[0].tickingArea
+                        ),
+                        blockTypeArray[0]
+                    ))
+
+                return blockArray
+            }
+        }
+    }))
+})();

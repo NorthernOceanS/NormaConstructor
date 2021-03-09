@@ -66,6 +66,7 @@ clientSystem.initialize = function () {
     clientSystem.listenForEvent("minecraft:hit_result_continuous", (eventData) => { coordinatePlayerLookingAt = eventData.data.position })
     clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
         logger.logObject("debug", eventData.data.player)
+        logger.log("verbose", `${generatorArray.length} generator(s) loaded.`)
 
         playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
 
@@ -2489,16 +2490,16 @@ function reload_ui() {
                 logger.log("verbose", "NZ is JULAO!")
 
                 let positionArray = this.positionArray
-                let {x,y,z}=this.positionArray[0].coordinate
+                let { x, y, z } = this.positionArray[0].coordinate
                 let blockTypeArray = this.blockTypeArray
-                let {a,b,c}=this.option
+                let { a, b, c } = this.option
 
-                let coordinateArray =  utils.coordinateGeometry.generateWithConstraint([-a,a],[-b,b],[-c,c],(x,y,z)=>{return x*x/(a*a)+y*y/(b*b)+z*z/(c*c)<=1})
+                let coordinateArray = utils.coordinateGeometry.generateWithConstraint([-a, a], [-b, b], [-c, c], (x, y, z) => { return x * x / (a * a) + y * y / (b * b) + z * z / (c * c) <= 1 })
 
                 for (let coordinate of coordinateArray)
                     blockArray.push(new Block(
                         new Position(
-                            new Coordinate(x+coordinate.x,y+coordinate.y,z+coordinate.z),
+                            new Coordinate(x + coordinate.x, y + coordinate.y, z + coordinate.z),
                             positionArray[0].tickingArea
                         ),
                         blockTypeArray[0]

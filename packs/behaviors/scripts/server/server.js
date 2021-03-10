@@ -1,10 +1,7 @@
 var serverSystem = server.registerSystem(0, 0);
 
 import { Coordinate, Position, BlockType, Direction, Block } from '../constructor';
-import { blockStateTranslator } from './translator'
 import { utils } from '../utils'
-
-let blockStateToTileDataTable = new Map()
 
 let compiler = {
     raw: function (blockArray) {
@@ -73,15 +70,7 @@ let compiler = {
             endCoordinate.z = temp
         }
 
-        let tileData = undefined
 
-        if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-            tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-        }
-        else {
-            tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-            blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
-        }
 
         //Bypass the restriction of 32767 blocks
         for (let x = startCoordinate.x; x <= endCoordinate.x; x += 32)
@@ -92,7 +81,7 @@ let compiler = {
                     ${Math.min(y + 31, endCoordinate.y)} 
                     ${Math.min(z + 31, endCoordinate.z)} 
                     ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
-                    ${tileData} replace`, (commandResultData) => { }
+                    [${blockType.blockState.slice(1, -1)}] replace`, (commandResultData) => { }
                     );
 
         return []
@@ -312,22 +301,14 @@ function setBlock(block) {
     let blockType = block.blockType
     let position = block.position
     let coordinate = position.coordinate
-    //Thank you, WavePlayz!
+    // STILL thank you, WavePlayz!
 
-    let tileData = undefined
-
-    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-        tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-    }
-    else {
-        tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
-    }
 
     //TODO:
     //It currently use destroy mode to force replace the old block, but will leave tons of items.
     //Might change to set air block first.
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
+    //NEW TODO: UNDERSTANDING WHAT THE FUDGE I WAS TALKING ABOUT HERE.
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} [${blockType.blockState.slice(1, -1)}] replace`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

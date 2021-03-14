@@ -1085,3 +1085,71 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Create sphere.",
+        new Usage(
+            [],
+            [],
+            [],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Radius:",
+                    key: "r",
+                },
+                {
+                    viewtype: "button",
+                    text: "Hollow",
+                    key: "isHollow",
+                    data: [
+                        { value: true, text: "Yes" },
+                        { value: false, text: "No" }
+                    ]
+                }
+            ])
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 1,
+        directionArrayLength: 0
+    },
+    option: {
+        "r": 10,
+        "isHollow": false,
+    },
+    method: {
+        generate: function (e) {
+            let { state } = e;
+            let blockArray = []
+
+
+
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions
+            let blockTypeArray = state.blockTypes
+
+            let coordinateArray = state.isHollow ?
+                utils.coordinateGeometry.generateHollowSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, state.r) :
+                utils.coordinateGeometry.generateSphere(positionArray[0].coordinate.x, positionArray[0].coordinate.y, positionArray[0].coordinate.z, state.r)
+
+            for (let coordinate of coordinateArray)
+                blockArray.push(new Block(
+                    new Position(
+                        coordinate,
+                        positionArray[0].tickingArea
+                    ),
+                    blockTypeArray[0]
+                ))
+
+            return blockArray
+        },
+        postGenerate: function (e) {
+            let { state } = e;
+            state.positions = [undefined]
+            state.blockTypes = [undefined]
+        }
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

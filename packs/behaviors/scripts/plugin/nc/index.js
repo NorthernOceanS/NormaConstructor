@@ -1155,6 +1155,70 @@ system.registerCanonicalGenerator({
 });
 
 system.registerCanonicalGenerator({
+    description: new Description("Generate The Flag of Norma Federal Republic",
+        new Usage(
+            [],
+            [],
+            [],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Height:(Must be even)",
+                    key: "height",
+                }
+            ])
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 0
+    },
+    option: {
+        "height": 10,
+    },
+    method: {
+        isValidParameter: function (e) {
+            let { state } = e;
+            let result = "";
+            if (state.blockTypes.indexOf(undefined) != -1)
+                result += "Too few blockTypes!Refusing to execute.\n"
+            if (state.positions.indexOf(undefined) != -1)
+                result += "Too few positions!Refusing to execute."
+            if (state.height % 2 != 0) result += "The height is odd!"
+            if (result == "") result = "success"
+
+            return result;
+        },
+        generate: function (e) {
+            let { state } = e;
+            let blockArray = []
+            let positionArray = state.positions;
+            let option = state;
+
+            for (let x = positionArray[0].coordinate.x; x < positionArray[0].coordinate.x + option.height; x++)
+                for (let y = positionArray[0].coordinate.y; y > positionArray[0].coordinate.y - option.height; y--) {
+                    let z = x - positionArray[0].coordinate.x + positionArray[0].coordinate.z;
+                    let blockType = (function () {
+                        if ((x - positionArray[0].coordinate.x <= positionArray[0].coordinate.y - y) && (positionArray[0].coordinate.y - y < option.height - (x - positionArray[0].coordinate.x))) return new BlockType("minecraft:wool", { "color": "blue" })
+                        else if (positionArray[0].coordinate.y - y < option.height / 2) return new BlockType("minecraft:wool", { "color": "yellow" })
+                        else return new BlockType("minecraft:wool", { "color": "red" })
+                    })()
+                    blockArray.push(new Block(new Position(new Coordinate(x, y, z), positionArray[0].tickingArea), blockType))
+                }
+
+
+            return blockArray
+        },
+        postGenerate: function (e) {
+            let { state } = e;
+            state.positions = [undefined]
+            state.blockTypes = [undefined]
+        },
+        UIHandler: function (e) { /* no-op */ },
+    }
+});
+
+system.registerCanonicalGenerator({
     description: new Description("Construct subway",
         new Usage(
             [],

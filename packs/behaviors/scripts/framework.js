@@ -217,7 +217,7 @@ export function canonicalGeneratorFactory({
     },
     option,
     method: {
-        generate, postGenerate, UIHandler
+        isValidParameter, generate, postGenerate, UIHandler
     }
 }) {
     function onAdd(type, arrayname) {
@@ -256,6 +256,13 @@ export function canonicalGeneratorFactory({
         state.blockTypes.fill(undefined);
         state.directions.fill(undefined);
     }
+    function defaultIsValidParameter(e) {
+        let {state} = e;
+        if (state.blockTypes.indexOf(undefined) != -1) return false;
+        if (state.positions.indexOf(undefined) != -1) return false;
+        if (state.directions.indexOf(undefined) != -1) return false;
+        return true;
+    }
     return {
         name: description.name,
         ui: description.usage.optionUsage,
@@ -274,13 +281,7 @@ export function canonicalGeneratorFactory({
         onRemovePoistion: onRemove("position", "positions"),
         onRemoveBlockType: onRemove("blockType", "blockTypes"),
         onRemoveDirection: onRemove("direction", "directions"),
-        isValidParameter(e) {
-            let {state} = e;
-            if (state.blockTypes.indexOf(undefined) != -1) return false;
-            if (state.positions.indexOf(undefined) != -1) return false;
-            if (state.directions.indexOf(undefined) != -1) return false;
-            return true;
-        },
+        isValidParameter: isValidParameter || defaultIsValidParameter,
         generate: createGenerate(generate, postGenerate || defaultPostGenerate),
         UIHandler,
         onExit(e) { /* no-op */ },

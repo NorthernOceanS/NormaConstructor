@@ -1023,3 +1023,65 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Create circle.(on xz plane)",
+        new Usage(
+            [],
+            [],
+            [],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Radius:(Must be integer?)",
+                    key: "r",
+                }
+            ])
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 1,
+        directionArrayLength: 0
+    },
+    option: {
+        "r": 10,
+    },
+    method: {
+        generate: function () {
+            let {state} = e;
+            let blockArray = []
+
+
+
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions
+            let blockTypeArray = state.blockTypes
+
+            let coordinateArray = []
+
+            utils.coordinateGeometry.withBresenhamAlgorithm.generate2DCircle(positionArray[0].coordinate.x, positionArray[0].coordinate.z, state.r)
+                .forEach((coordinate) => {
+                    coordinateArray.push(new Coordinate(coordinate.x, positionArray[0].coordinate.y, coordinate.y))
+                })
+
+
+            for (let coordinate of coordinateArray)
+                blockArray.push(new Block(
+                    new Position(
+                        coordinate,
+                        positionArray[0].tickingArea
+                    ),
+                    blockTypeArray[0]
+                ))
+
+            return blockArray
+        },
+        postGenerate: function (e) {
+            let { state } = e;
+            state.positions = [undefined]
+            state.blockTypes = [undefined]
+        }
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

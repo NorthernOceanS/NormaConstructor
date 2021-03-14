@@ -1198,7 +1198,7 @@ system.registerCanonicalGenerator({
         "useColorfulGlass": false,
     },
     method: {
-        generate: function () {
+        generate: function (e) {
             let { state } = e;
             let blockArray = []
 

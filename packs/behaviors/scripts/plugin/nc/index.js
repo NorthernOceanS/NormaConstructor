@@ -956,3 +956,70 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Create polygon.",
+        new Usage(
+            [],
+            [],
+            [],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Number of sides:",
+                    key: "numberOfSides",
+                },
+                {
+                    viewtype: "edittext",
+                    text: "Radius:",
+                    key: "r",
+                }
+            ])
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 0
+    },
+    option: {
+        "numberOfSides": 6,
+        "r": 10,
+    },
+    method: {
+        generate: function (e) {
+            let { state } = e;
+            let blockArray = [];
+
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions
+
+            let coordinateArray = []
+
+            for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / state.numberOfSides) {
+                coordinateArray = coordinateArray.concat(utils.coordinateGeometry.withBresenhamAlgorithm.generateLineWithTwoPoints(
+                    positionArray[0].coordinate.x + state.r * Math.cos(theta), positionArray[0].coordinate.y, positionArray[0].coordinate.z + state.r * Math.sin(theta),
+                    positionArray[0].coordinate.x + state.r * Math.cos(theta + 2 * Math.PI / state.numberOfSides), positionArray[0].coordinate.y, positionArray[0].coordinate.z + state.r * Math.sin(theta + 2 * Math.PI / state.numberOfSides)
+                ))
+            }
+
+
+            for (let coordinate of coordinateArray)
+                blockArray.push(new Block(
+                    new Position(
+                        coordinate,
+                        positionArray[0].tickingArea
+                    ),
+                    new BlockType("minecraft:stained_hardened_clay", { "color": "cyan" })
+                ))
+
+            return blockArray
+        },
+        postGenerate: function (e) {
+            let { state } = e;
+            state.positions = [undefined]
+            state.blockTypes = []
+        }
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

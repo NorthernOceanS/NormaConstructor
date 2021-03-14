@@ -867,3 +867,92 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Clear terrain",
+        new Usage(
+            [],
+            [],
+            [],
+            []
+        )
+    ),
+    criteria: {
+        positionArrayLength: 2,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 0
+    },
+    option: {
+            "generateByServer": true,
+    },
+    method: {
+        generate: function (e) {
+            let { state } = e;
+            if (state.generateByServer) {
+                //logger.log("verbose", "NZ is JULAO!")
+
+                let x_min = Math.min(state.positions[0].coordinate.x, state.positions[1].coordinate.x)
+                let z_min = Math.min(state.positions[0].coordinate.z, state.positions[1].coordinate.z)
+
+                let x_max = Math.max(state.positions[0].coordinate.x, state.positions[1].coordinate.x)
+                let z_max = Math.max(state.positions[0].coordinate.z, state.positions[1].coordinate.z)
+
+                let y_start = (Math.abs(state.positions[0].coordinate.y - 69) < Math.abs(state.positions[1].coordinate.y - 69)) ? state.positions[0].coordinate.y : state.positions[1].coordinate.y
+
+                return [{
+                    "type": "fill",
+                    "data": {
+                        "startCoordinate": new Coordinate(x_min, y_start + 1, z_min),
+                        "endCoordinate": new Coordinate(x_max, 255, z_max),
+                        "blockType": {
+                            "blockIdentifier": "minecraft:air",
+                            "blockState": null
+                        }
+                    }
+                }]
+            }
+            else {
+                let blockArray = []
+
+                //logger.log("verbose", "NZ is JULAO!")
+
+                let positionArray = state.positions
+                let blockTypeArray = state.blockTypes
+
+                let x_min = Math.min(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+                let z_min = Math.min(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+                let x_max = Math.max(positionArray[0].coordinate.x, positionArray[1].coordinate.x)
+                let z_max = Math.max(positionArray[0].coordinate.z, positionArray[1].coordinate.z)
+
+                let y_start = (Math.abs(positionArray[0].coordinate.y - 69) < Math.abs(positionArray[1].coordinate.y - 69)) ? positionArray[0].coordinate.y : positionArray[1].coordinate.y
+
+                for (let x = x_min; x <= x_max; x++) {
+                    for (let y = y_start; y <= 256; y++) {
+                        for (let z = z_min; z <= z_max; z++) {
+
+                            blockArray.push(new Block(
+                                new Position(
+                                    new Coordinate(x, y, z),
+                                    positionArray[0].tickingArea
+                                ),
+                                {
+                                    "blockIdentifier": "minecraft:air",
+                                    "blockState": null
+                                })
+                            )
+                        }
+                    }
+                }
+
+                return blockArray
+            }
+        },
+        postGenerate: function (e) {
+            let { state } = e;
+            state.positions = [undefined, undefined]
+            state.blockTypes = []
+        }
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

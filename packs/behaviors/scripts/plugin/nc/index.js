@@ -1047,7 +1047,7 @@ system.registerCanonicalGenerator({
         "r": 10,
     },
     method: {
-        generate: function () {
+        generate: function (e) {
             let {state} = e;
             let blockArray = []
 

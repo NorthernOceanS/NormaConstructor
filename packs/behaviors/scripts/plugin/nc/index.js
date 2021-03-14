@@ -1187,7 +1187,7 @@ system.registerCanonicalGenerator({
             if (state.height % 2 != 0) result += "The height is odd!"
             if (result == "") result = "success"
 
-            return result;
+            return result === "success";
         },
         generate: function (e) {
             let { state } = e;

@@ -1153,3 +1153,250 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Construct subway",
+        new Usage(
+            [],
+            [],
+            [],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Length:",
+                    key: "length",
+                },
+                {
+                    viewtype: "checkbox",
+                    text: "Use glass",
+                    key: "useGlass",
+                    data: [
+                        { value: true, text: "Yes" },
+                        { value: false, text: "No" },
+                    ]
+                },
+                {
+                    viewtype: "checkbox",
+                    text: "Carnival!\(Require \' Use glass\' to be opened\)",
+                    key: "useColorfulGlass",
+                    data: [
+                        { value: true, text: "Yes" },
+                        { value: false, text: "No" },
+                    ]
+
+                }
+            ])
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 1,
+    },
+    option: {
+        "length": 10,
+        "useGlass": false,
+        "useColorfulGlass": false,
+    },
+    method: {
+        generate: function () {
+            let { state } = e;
+            let blockArray = []
+
+            //logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions;
+            let blockTypeArray = state.blockTypes;
+            let directionArray = state.directions;
+            let option = state;
+            //logger.log("verbose", "Yes, NZ is JULAO!")
+
+            const directionMark = utils.geometry.getDirectionMark.horizontal(directionArray[0].y)
+
+
+            const materials = {
+                "glass": new BlockType("minecraft:glass", null),
+                "brick": new BlockType("minecraft:stonebrick", { "stone_brick_type": "default" }),
+                "prismarine": new BlockType("minecraft:prismarine", { "prismarine_block_type": "bricks" }),
+                "lantern": new BlockType("minecraft:seaLantern", null),
+                "air": new BlockType("minecraft:air", null),
+                "red_stone_torch": new BlockType("minecraft:redstone_torch", { "torch_facing_direction": "top" }),
+                "rail": utils.blockGeometry.setBlockDirection(new BlockType("minecraft:golden_rail", { "rail_data_bit": false, "rail_direction": 0 }), (directionMark == "+x" || directionMark == "-x") ? "x" : "z"),
+                "sponge": new BlockType("minecraft:sponge", { "sponge_type": "dry" })
+            }
+
+            const schematics = [
+                ["void", "ceiling", "ceiling", "ceiling", "ceiling", "ceiling", "void"],
+                ["wall", "void", "void", "void", "void", "void", "wall"],
+                ["wall/light", "void", "void", "void", "void", "void", "wall/light"],
+                ["wall", "void", "void", "void", "void", "void", "wall"],
+                ["wall", "void", "rail", "void/redstone", "rail", "void", "wall"],
+                ["ground", "ground", "ground", "ground", "ground", "ground", "ground"]
+            ]
+
+            let offset = { x: 0, y: -5, z: 3 }
+            function getRandomColor() {
+                const colorSet = ["white",
+                    "orange",
+                    "magenta",
+                    "light_blue",
+                    "yellow",
+                    "lime",
+                    "pink",
+                    "gray",
+                    "silver",
+                    "cyan",
+                    "purple",
+                    "blue",
+                    "brown",
+                    "green",
+                    "red",
+                    "black"]
+                return colorSet[Math.floor(Math.random() * colorSet.length)]
+            }
+            //Assuming the building is in +x direction.
+            const recipe = {
+                "void": function (coordinate) { return materials["air"] },
+                "wall": function (coordinate) { return option.useGlass ? (option.useColorfulGlass ? new BlockType("minecraft:stained_glass", { color: getRandomColor() }) : materials["glass"]) : materials["brick"] },
+                "ceiling": function (coordinate) { return option.useGlass ? (option.useColorfulGlass ? new BlockType("minecraft:stained_glass", { color: getRandomColor() }) : materials["glass"]) : materials["brick"] },
+                "ground": function (coordinate) {
+                    return option.useGlass ? materials["prismarine"] : materials["brick"]
+                },
+                "wall/light": function (coordinate) {
+                    if (coordinate.x % 5 == 0) return materials["lantern"]
+                    else return option.useGlass ? (option.useColorfulGlass ? new BlockType("minecraft:stained_glass", { color: getRandomColor() }) : materials["glass"]) : materials["brick"]
+                },
+                "rail": function (coordinate) { return materials["rail"] },
+                "void/redstone": function (coordinate) {
+                    //logger.logObject("debug", coordinate)
+                    if (coordinate.x % 16 == 0) return materials["red_stone_torch"]
+                    else return materials["air"]
+                }
+            }
+            blockArray = (function (position, length, directionMark, schematics, offset, recipe, y_sequence) {
+                let blockArray = []
+                if (y_sequence == undefined) {
+                    y_sequence = new Array(schematics.length)
+                    for (let i = 0; i < schematics.length; i++) y_sequence[i] = i
+                }
+                let transform = (function (facingAxis) {
+                    switch (facingAxis) {
+                        case "+x": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => x,
+                                (x, y, z) => y,
+                                (x, y, z) => z
+                            )
+                        }
+                        case "-x": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => - x,
+                                (x, y, z) => y,
+                                (x, y, z) => - z
+                            )
+                        }
+                        case "+z": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => -z,
+                                (x, y, z) => y,
+                                (x, y, z) => x
+                            )
+                        }
+                        case "-z": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => z,
+                                (x, y, z) => y,
+                                (x, y, z) => -x
+                            )
+                        }
+                    }
+                }(directionMark))
+                for (let x = 0; x < length; x++)
+                    for (let y of y_sequence)
+                        for (let z = 0; z < schematics[y].length; z++) {
+                            let rawCoordinate = new Coordinate(x - offset.x, -y - offset.y, z - offset.z)
+                            let relativeCoordinate = transform(rawCoordinate)
+                            let absoluteCordinate = new Coordinate(
+                                relativeCoordinate.x + position.coordinate.x,
+                                relativeCoordinate.y + position.coordinate.y,
+                                relativeCoordinate.z + position.coordinate.z,
+                            )
+                            blockArray.push(new Block(
+                                new Position(absoluteCordinate, position.tickingArea),
+                                recipe[schematics[y][z]](rawCoordinate)
+                            ))
+                        }
+                return blockArray
+            }(positionArray[0], option.length, directionMark, schematics, offset, recipe, [0, 1, 2, 3, 5, 4]))
+
+            let transform = (function (facingAxis) {
+                switch (facingAxis) {
+                    case "+x": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => x,
+                            (x, y, z) => y,
+                            (x, y, z) => z
+                        )
+                    }
+                    case "-x": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => - x,
+                            (x, y, z) => y,
+                            (x, y, z) => - z
+                        )
+                    }
+                    case "+z": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => -z,
+                            (x, y, z) => y,
+                            (x, y, z) => x
+                        )
+                    }
+                    case "-z": {
+                        return utils.coordinateGeometry.transform(
+                            (x, y, z) => z,
+                            (x, y, z) => y,
+                            (x, y, z) => -x
+                        )
+                    }
+                }
+            }(directionMark))
+
+            let fillStartCoordinate = (function () {
+                let position = positionArray[0]
+                let rawCoordinate = new Coordinate(0, 5, -3)
+                let relativeCoordinate = transform(rawCoordinate)
+                let absoluteCordinate = new Coordinate(
+                    relativeCoordinate.x + position.coordinate.x,
+                    relativeCoordinate.y + position.coordinate.y,
+                    relativeCoordinate.z + position.coordinate.z,
+                )
+                return absoluteCordinate
+            })()
+            let fillEndCoordinate = (function () {
+                let position = positionArray[0]
+                let rawCoordinate = new Coordinate(option.length - 1, 0, 3)
+                let relativeCoordinate = transform(rawCoordinate)
+                let absoluteCordinate = new Coordinate(
+                    relativeCoordinate.x + position.coordinate.x,
+                    relativeCoordinate.y + position.coordinate.y,
+                    relativeCoordinate.z + position.coordinate.z,
+                )
+                return absoluteCordinate
+            })()
+            blockArray.splice(0, 0, new BuildInstruction("fill", {
+                blockType: new BlockType("minecraft:sponge", { "sponge_type": "dry" }),
+                startCoordinate: fillStartCoordinate,
+                endCoordinate: fillEndCoordinate
+            })
+            )
+            return blockArray
+        },
+        postGenerate: function (e) {
+            let { state } = e;
+            state.positions = [undefined];
+            state.blockTypes = [];
+            state.directions = [undefined];
+        }
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

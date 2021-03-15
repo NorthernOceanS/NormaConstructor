@@ -953,7 +953,7 @@ system.registerCanonicalGenerator({
             let { state } = e;
             state.positions = [undefined, undefined]
             state.blockTypes = []
-        }
+        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1020,7 +1020,7 @@ system.registerCanonicalGenerator({
             let { state } = e;
             state.positions = [undefined]
             state.blockTypes = []
-        }
+        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1082,7 +1082,7 @@ system.registerCanonicalGenerator({
             let { state } = e;
             state.positions = [undefined]
             state.blockTypes = [undefined]
-        }
+        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1150,7 +1150,7 @@ system.registerCanonicalGenerator({
             let { state } = e;
             state.positions = [undefined]
             state.blockTypes = [undefined]
-        }
+        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1461,7 +1461,7 @@ system.registerCanonicalGenerator({
             state.positions = [undefined];
             state.blockTypes = [];
             state.directions = [undefined];
-        }
+        },
         UIHandler: function (e) { /* no-op */ },
     }
 });

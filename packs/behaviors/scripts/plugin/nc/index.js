@@ -1,5 +1,6 @@
 import system from '../../system.js';
 import { Description, Usage, Block, Coordinate, Position } from '../../constructor.js';
+import { canonicalGeneratorFactory } from '../../framework.js';
 import { utils } from './utils.js';
 
 system.registerCanonicalGenerator({

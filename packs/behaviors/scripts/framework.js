@@ -257,11 +257,18 @@ export function canonicalGeneratorFactory({
         state.directions.fill(undefined);
     }
     function defaultIsValidParameter(e) {
-        let {state} = e;
-        if (state.blockTypes.indexOf(undefined) != -1) return false;
-        if (state.positions.indexOf(undefined) != -1) return false;
-        if (state.directions.indexOf(undefined) != -1) return false;
-        return true;
+        let { state, runtime } = e;
+        let result = "";
+        if (state.blockTypes.indexOf(undefined) != -1)
+            result += "Too few blockTypes!Refusing to execute.\n"
+        if (state.positions.indexOf(undefined) != -1)
+            result += "Too few positions!Refusing to execute.\n"
+        if (state.directions.indexOf(undefined) != -1)
+            result += "Too few directions!Refusing to execute."
+        if (result == "") return true;
+        let { logger } = runtime;
+        if(logger) logger.log("error", result);
+        return false;
     }
     return {
         name: description.name,

@@ -246,7 +246,7 @@ export function canonicalGeneratorFactory({
                      index--);
             }
             if (index >= 0) array[index] = undefined;
-            logger && logger.logObject("info", target)
+            logger && logger.logObject("info", array)
         };
     }
     function createGenerate(generate, postGenerate) {

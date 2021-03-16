@@ -1601,3 +1601,20 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Record structure", new Usage([], [], [], [])),
+    criteria: { positionArrayLength: 3, blockTypeArrayLength: 0, directionArrayLength: 0 },
+    option: {},
+    method: {
+        UIHandler: function () { }, generate: function (e) {
+            let { state } = e;
+            return new BuildInstruction("writeBuildingStructureToLog", {
+                startCoordinate: state.positions[0].coordinate,
+                endCoordinate: state.positions[1].coordinate,
+                referenceCoordinate: state.positions[2].coordinate,
+                tickingArea: state.positions[2].tickingArea
+            })
+        }
+    }
+});

@@ -1465,3 +1465,139 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description("Construct blue ice \"railway\"",
+        new Usage(
+            [],
+            [],
+            [],
+            [
+                {
+                    viewtype: "edittext",
+                    text: "Length:",
+                    key: "length",
+                },
+                {
+                    viewtype: "edittext",
+                    text: "Width of the ice:",
+                    key: "widthOfIce"
+                }
+            ]
+        )
+    ),
+    criteria: {
+        positionArrayLength: 1,
+        blockTypeArrayLength: 0,
+        directionArrayLength: 1,
+    },
+    option: {
+        "length": 10,
+        "useGlass": false,
+        "widthOfIce": 2
+    },
+    method: {
+        generate: function (e) {
+            let { state, runtime } = e;
+            let { logger } = runtime;
+            logger && logger.log("verbose", "NZ is JULAO!")
+
+            let positionArray = state.positions;
+            let blockTypeArray = state.blockTypes;
+            let directionArray = state.directions;
+            let option = state;
+            logger && logger.log("verbose", "Yes, NZ is JULAO!")
+
+            const directionMark = utils.geometry.getDirectionMark.horizontal(directionArray[0].y)
+
+
+            const materials = {
+                "glass_pane": new BlockType("minecraft:glass_pane", null),
+                "iron_block": new BlockType("minecraft:iron_block", null),
+                "air": new BlockType("minecraft:air", null),
+                "blue_ice": new BlockType("minecraft:blue_ice", null)
+            }
+
+            let schematics = [[], []]
+
+            schematics[0].push("glass_pane")
+            schematics[1].push("iron_block")
+
+            schematics[0].push(...(new Array(option.widthOfIce)).fill("air"))
+            schematics[1].push(...(new Array(option.widthOfIce)).fill("blue_ice"))
+
+            schematics[0].push("glass_pane")
+            schematics[1].push("iron_block")
+
+            let offset = { x: 0, y: -1, z: Math.ceil(option.widthOfIce / 2) }
+            //Assuming the building is in +x direction.
+            const recipe = {
+                "glass_pane": (coordinate) => materials["glass_pane"],
+                "iron_block": (coordinate) => materials["iron_block"],
+                "air": (coordinate) => materials["air"],
+                "blue_ice": (coordinate) => materials["blue_ice"]
+            }
+            let blockArray = (function (position, length, directionMark, schematics, offset, recipe, y_sequence) {
+                let blockArray = []
+                if (y_sequence == undefined) {
+                    y_sequence = new Array(schematics.length)
+                    for (let i = 0; i < schematics.length; i++) y_sequence[i] = i
+                }
+                let transform = (function (facingAxis) {
+                    switch (facingAxis) {
+                        case "+x": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => x,
+                                (x, y, z) => y,
+                                (x, y, z) => z
+                            )
+                        }
+                        case "-x": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => - x,
+                                (x, y, z) => y,
+                                (x, y, z) => - z
+                            )
+                        }
+                        case "+z": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => -z,
+                                (x, y, z) => y,
+                                (x, y, z) => x
+                            )
+                        }
+                        case "-z": {
+                            return utils.coordinateGeometry.transform(
+                                (x, y, z) => z,
+                                (x, y, z) => y,
+                                (x, y, z) => -x
+                            )
+                        }
+                    }
+                }(directionMark))
+                for (let x = 0; x < length; x++)
+                    for (let y of y_sequence)
+                        for (let z = 0; z < schematics[y].length; z++) {
+                            let rawCoordinate = new Coordinate(x - offset.x, -y - offset.y, z - offset.z)
+
+                            let relativeCoordinate = transform(rawCoordinate)
+                            let absoluteCordinate = new Coordinate(
+                                relativeCoordinate.x + position.coordinate.x,
+                                relativeCoordinate.y + position.coordinate.y,
+                                relativeCoordinate.z + position.coordinate.z,
+                            )
+                            blockArray.push(new Block(
+                                new Position(absoluteCordinate, position.tickingArea),
+                                recipe[schematics[y][z]](rawCoordinate)
+                            ))
+                        }
+                return blockArray
+            }(positionArray[0], option.length, directionMark, schematics, offset, recipe))
+
+
+
+            return blockArray
+        },
+        UIHandler: function (e) { /* no-op */ },
+    }
+});

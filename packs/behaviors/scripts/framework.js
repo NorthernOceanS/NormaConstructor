@@ -237,7 +237,8 @@ export function canonicalGeneratorFactory({
     }
     function onRemove(type, arrayname) {
         return function (e) {
-            let { state, index } = e
+            let { state, index, runtime } = e
+            let { logger } = runtime;
             let array = state[arrayname];
             if (index === undefined) {
 			    for (index = array.length - 1;
@@ -245,6 +246,7 @@ export function canonicalGeneratorFactory({
                      index--);
             }
             if (index >= 0) array[index] = undefined;
+            logger && logger.logObject("info", target)
         };
     }
     function createGenerate(generate, postGenerate) {

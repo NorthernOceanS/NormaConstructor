@@ -1618,3 +1618,20 @@ system.registerCanonicalGenerator({
         }
     }
 });
+
+system.registerCanonicalGenerator({
+    description: new Description(" aspdf vhfdwvgcmfs", new Usage([], [], [], [])),
+    criteria: { positionArrayLength: 1, blockTypeArrayLength: 0, directionArrayLength: 0 },
+    option: {},
+    method: {
+        generate: function (e) {
+            let { state } = e;
+            let coordinate = state.positions[0].coordinate
+
+            return Array.from(presetBuildings.subway_station, a => new Block(new Position(new Coordinate(
+                coordinate.x + a.coordinate.x, coordinate.y + a.coordinate.y, coordinate.z + a.coordinate.z
+            ), state.positions[0].tickingArea), a.blockType))
+
+        }
+    }
+});

@@ -222,12 +222,16 @@ export function canonicalGeneratorFactory({
 }) {
     function onAdd(type, arrayname) {
         return function (e) {
-            let { state } = e
+            let { state, runtime } = e
+            let { logger } = runtime;
             let data = e[type]
             let array = state[arrayname]
             let indexOfVacancy = array.indexOf(undefined)
             if (indexOfVacancy !== -1) {
                 array[indexOfVacancy] = data
+                logger && logger.log("info", `New ${type} accepted.`);
+            } else {
+                logger && logger.log("warning", `Too many ${type}s!New one is ignored`);
             }
         };
     }

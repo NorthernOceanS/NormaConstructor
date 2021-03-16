@@ -432,7 +432,7 @@ const platform = {
     createRuntime(id) {
         let user = system.getUser(id);
         return {
-            logger: loggerFactory(user);
+            logger: loggerFactory(user),
         };
     }
 }

@@ -1,4 +1,3 @@
 node_modules
 out
-packs/behaviors/scripts/client/jsconfig.json
-packs/behaviors/scripts/preset
+packs/behaviors/scripts/jsconfig.json

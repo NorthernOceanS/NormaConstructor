@@ -1,8 +1,8 @@
 import system from '../../system.js';
-import { Description, Usage, Block, Coordinate, Position, BlockType } from '../../constructor.js';
+import { Description, Usage, Block, Coordinate, Position, BlockType, BuildInstruction } from '../../constructor.js';
 import { canonicalGeneratorFactory } from '../../framework.js';
 import { utils } from './utils.js';
-import { presetBuildings } from '../../presetBuildingsInterface.js';
+import * as preset from './presetBuildingsInterface.js';
 
 system.registerCanonicalGenerator({
     description:
@@ -859,7 +859,7 @@ system.registerCanonicalGenerator({
             }
 
             return blockArray;
-        }, 
+        },
         postGenerate: function (e) {
             let { state } = e;
             state.positions = [undefined];
@@ -885,7 +885,7 @@ system.registerCanonicalGenerator({
         directionArrayLength: 0
     },
     option: {
-            "generateByServer": true,
+        "generateByServer": true,
     },
     method: {
         generate: function (e) {
@@ -1050,7 +1050,7 @@ system.registerCanonicalGenerator({
     },
     method: {
         generate: function (e) {
-            let {state} = e;
+            let { state } = e;
             let blockArray = []
 
 
@@ -1338,6 +1338,7 @@ system.registerCanonicalGenerator({
                     else return materials["air"]
                 }
             }
+
             blockArray = (function (position, length, directionMark, schematics, offset, recipe, y_sequence) {
                 let blockArray = []
                 if (y_sequence == undefined) {
@@ -1386,6 +1387,7 @@ system.registerCanonicalGenerator({
                                 relativeCoordinate.y + position.coordinate.y,
                                 relativeCoordinate.z + position.coordinate.z,
                             )
+                            e.runtime.logger.log("verbose", "NZ IS JULAO")
                             blockArray.push(new Block(
                                 new Position(absoluteCordinate, position.tickingArea),
                                 recipe[schematics[y][z]](rawCoordinate)
@@ -1393,7 +1395,7 @@ system.registerCanonicalGenerator({
                         }
                 return blockArray
             }(positionArray[0], option.length, directionMark, schematics, offset, recipe, [0, 1, 2, 3, 5, 4]))
-
+            e.runtime.logger.log("verbose", "NZ IS JUJULAO")
             let transform = (function (facingAxis) {
                 switch (facingAxis) {
                     case "+x": {
@@ -1449,6 +1451,7 @@ system.registerCanonicalGenerator({
                 )
                 return absoluteCordinate
             })()
+            e.runtime.logger.log("verbose", "NZ IS JUJUJULAO")
             blockArray.splice(0, 0, new BuildInstruction("fill", {
                 blockType: new BlockType("minecraft:sponge", { "sponge_type": "dry" }),
                 startCoordinate: fillStartCoordinate,
@@ -1629,7 +1632,7 @@ system.registerCanonicalGenerator({
             let { state } = e;
             let coordinate = state.positions[0].coordinate
 
-            return Array.from(presetBuildings.subway_station, a => new Block(new Position(new Coordinate(
+            return Array.from(preset.presetBuildings.subway_station, a => new Block(new Position(new Coordinate(
                 coordinate.x + a.coordinate.x, coordinate.y + a.coordinate.y, coordinate.z + a.coordinate.z
             ), state.positions[0].tickingArea), a.blockType))
 

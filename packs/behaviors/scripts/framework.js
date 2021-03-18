@@ -217,7 +217,7 @@ export function canonicalGeneratorFactory({
     },
     option,
     method: {
-        generate, postGenerate, UIHandler
+        generate, UIHandler
     }
 }) {
     function onAdd(type, arrayname) {
@@ -295,7 +295,7 @@ export function canonicalGeneratorFactory({
         onRemoveBlockType: onRemove("blockType", "blockTypes"),
         onRemoveDirection: onRemove("direction", "directions"),
         isValidParameter: defaultIsValidParameter,
-        generate: createGenerate(generate, postGenerate || defaultPostGenerate),
+        generate: createGenerate(generate, defaultPostGenerate),
         UIHandler,
         onExit(e) { /* no-op */ },
     }

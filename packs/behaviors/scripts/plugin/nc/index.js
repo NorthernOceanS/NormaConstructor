@@ -1147,18 +1147,6 @@ let flagGenerator = canonicalGeneratorFactoryanonicalGenerator({
         "height": 10,
     },
     method: {
-        isValidParameter: function (e) {
-            let { state } = e;
-            let result = "";
-            if (state.blockTypes.indexOf(undefined) != -1)
-                result += "Too few blockTypes!Refusing to execute.\n"
-            if (state.positions.indexOf(undefined) != -1)
-                result += "Too few positions!Refusing to execute."
-            if (state.height % 2 != 0) result += "The height is odd!"
-            if (result == "") result = "success"
-
-            return result === "success";
-        },
         generate: function (e) {
             let { state } = e;
             let blockArray = []
@@ -1182,6 +1170,19 @@ let flagGenerator = canonicalGeneratorFactoryanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+flagGenerator.isValidParameter = function (e) {
+    let { state } = e;
+    let result = "";
+    if (state.blockTypes.indexOf(undefined) != -1)
+        result += "Too few blockTypes!Refusing to execute.\n"
+    if (state.positions.indexOf(undefined) != -1)
+        result += "Too few positions!Refusing to execute."
+    if (state.height % 2 != 0) result += "The height is odd!"
+    if (result == "") result = "success"
+
+    return result === "success";
+};
 
 system.registerGenerator(flagGenerator);
 

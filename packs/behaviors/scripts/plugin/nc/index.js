@@ -1124,7 +1124,7 @@ system.registerCanonicalGenerator({
     }
 });
 
-system.registerCanonicalGenerator({
+let flagGenerator = canonicalGeneratorFactoryanonicalGenerator({
     description: new Description("Generate The Flag of Norma Federal Republic",
         new Usage(
             [],
@@ -1182,6 +1182,8 @@ system.registerCanonicalGenerator({
         UIHandler: function (e) { /* no-op */ },
     }
 });
+
+system.registerGenerator(flagGenerator);
 
 system.registerCanonicalGenerator({
     description: new Description("Construct subway",

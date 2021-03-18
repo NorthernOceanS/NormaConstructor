@@ -322,16 +322,16 @@ let createLineGenerator = canonicalGeneratorFactory({
 })
 
 createLineGenerator.addPosition = function () {
-    let { state, position } = e;
+    let { state, position, runtime } = e;
     if (state.doAcceptNewPosition) {
         let indexOfVacancy = state.positions.indexOf(undefined)
         if (indexOfVacancy == -1) {
-            //logger.log("warning", `Too many positions!Discarding the old one...`)
+            runtime.logger && runtime.logger.log("warning", `Too many positions!Discarding the old one...`)
             state.positions = state.positions.slice(1)
             state.positions.push(position)
         }
         else state.positions[indexOfVacancy] = position
-        //logger.log("info", `New position accepted.`)
+        runtime.logger && runtime.logger.log("info", `New position accepted.`)
     }
     else utils.generators.canonical.addFunction("position", position, state.positions);
 }

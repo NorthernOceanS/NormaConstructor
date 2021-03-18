@@ -583,15 +583,13 @@ system.registerCanonicalGenerator({
                 }
             }
 
-            return blockArray
-        },
-        postGenerate: function (e) {
-            let { state } = e;
+            // following are postGenerate
             state.positions = [undefined]
             if (state["roadStyle"] == "custom") state.blockTypes = [undefined, undefined, undefined, undefined];
             else state.blockTypeArray = [];
             state.blockTypes = [];
             state.directions = [undefined];
+            return blockArray
         },
         UIHandler: function (e) {
             let { state, data } = e;

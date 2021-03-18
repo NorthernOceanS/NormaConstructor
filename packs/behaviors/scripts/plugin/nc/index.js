@@ -804,12 +804,6 @@ system.registerCanonicalGenerator({
 
             return blockArray
         },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positionArray = [undefined];
-            state.blockTypeArray = [];
-            state.directionArray = [undefined];
-        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -859,12 +853,6 @@ system.registerCanonicalGenerator({
             }
 
             return blockArray;
-        },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined];
-            state.blockTypes = [];
-            state.directions = [undefined];
         },
         UIHandler: function (e) { /* no-op */ },
     }
@@ -950,11 +938,6 @@ system.registerCanonicalGenerator({
                 return blockArray
             }
         },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined, undefined]
-            state.blockTypes = []
-        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1017,11 +1000,6 @@ system.registerCanonicalGenerator({
 
             return blockArray
         },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined]
-            state.blockTypes = []
-        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1078,11 +1056,6 @@ system.registerCanonicalGenerator({
                 ))
 
             return blockArray
-        },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined]
-            state.blockTypes = [undefined]
         },
         UIHandler: function (e) { /* no-op */ },
     }
@@ -1147,11 +1120,6 @@ system.registerCanonicalGenerator({
 
             return blockArray
         },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined]
-            state.blockTypes = [undefined]
-        },
         UIHandler: function (e) { /* no-op */ },
     }
 });
@@ -1210,11 +1178,6 @@ system.registerCanonicalGenerator({
 
 
             return blockArray
-        },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined]
-            state.blockTypes = [undefined]
         },
         UIHandler: function (e) { /* no-op */ },
     }
@@ -1459,12 +1422,6 @@ system.registerCanonicalGenerator({
             })
             )
             return blockArray
-        },
-        postGenerate: function (e) {
-            let { state } = e;
-            state.positions = [undefined];
-            state.blockTypes = [];
-            state.directions = [undefined];
         },
         UIHandler: function (e) { /* no-op */ },
     }

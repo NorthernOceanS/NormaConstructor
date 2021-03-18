@@ -1172,16 +1172,17 @@ let flagGenerator = canonicalGeneratorFactoryanonicalGenerator({
 });
 
 flagGenerator.isValidParameter = function (e) {
-    let { state } = e;
+    let { state, runtime } = e;
     let result = "";
     if (state.blockTypes.indexOf(undefined) != -1)
         result += "Too few blockTypes!Refusing to execute.\n"
     if (state.positions.indexOf(undefined) != -1)
         result += "Too few positions!Refusing to execute."
     if (state.height % 2 != 0) result += "The height is odd!"
-    if (result == "") result = "success"
+    if (result == "") return true;
 
-    return result === "success";
+    runtime.logger && runtime.logger.log("info", result);
+    return false;
 };
 
 system.registerGenerator(flagGenerator);

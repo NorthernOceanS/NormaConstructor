@@ -1122,7 +1122,7 @@ system.registerCanonicalGenerator({
     }
 });
 
-let flagGenerator = canonicalGeneratorFactoryanonicalGenerator({
+let flagGenerator = canonicalGeneratorFactory({
     description: new Description("Generate The Flag of Norma Federal Republic",
         new Usage(
             [],

@@ -7,7 +7,7 @@
     "installaddon": "gulp install",
     "uninstalladdon": "gulp uninstall",
     "packageaddon": "gulp package",
-    "test": "gulp build && node test.js",
+    "test": "gulp build && node test.js"
   },
   "devDependencies": {
     "minecraft-addon-toolchain": "^1.0.3",

@@ -1,8 +1,7 @@
 import system from '../system.js';
 import '../plugin/index.js';
-import { emptyPlatform } from '../framework.js';
+import { emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
 
-import { Coordinate, Position, BlockType, Direction, Block } from '../constructor.js';
 import { blockStateTranslator } from '../translator.js'
 import { utils } from '../utils.js'
 

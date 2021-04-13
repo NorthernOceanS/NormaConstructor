@@ -12,5 +12,8 @@
   "devDependencies": {
     "minecraft-addon-toolchain": "^1.0.3",
     "minecraft-addon-toolchain-browserify": "^1.0.3"
+  },
+  "dependencies": {
+    "norma-core": "^0.1.2"
   }
 }

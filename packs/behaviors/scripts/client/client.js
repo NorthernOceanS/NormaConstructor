@@ -1,9 +1,8 @@
 import system from '../system.js';
 import '../plugin/index.js';
-import { UserSystem } from '../framework.js';
+import {Coordinate, Position, BlockType, Direction, Block, UserSystem } from 'norma-core';
 
 
-import { Coordinate, Position, BlockType, Direction, Block } from '../constructor.js';
 import { utils } from '../utils.js'
 
 const platform = {

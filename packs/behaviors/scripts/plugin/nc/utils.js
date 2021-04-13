@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { Coordinate, BlockType, Direction, Generator } from "../../constructor.js";
+import { Coordinate, BlockType, Direction, Generator } from "norma-core";
 const blockDirectionTable = {
 	"huge_mushroom_bits": {
 		"default": {

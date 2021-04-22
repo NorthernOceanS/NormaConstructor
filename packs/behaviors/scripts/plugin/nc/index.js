@@ -1,6 +1,5 @@
 import system from '../../system.js';
-import { Description, Usage, Block, Coordinate, Position, BlockType, BuildInstruction } from '../../constructor.js';
-import { canonicalGeneratorFactory } from '../../framework.js';
+import { Description, Usage, Block, Coordinate, Position, BlockType, BuildInstruction, canonicalGeneratorFactory } from 'norma-core';
 import { utils } from './utils.js';
 import * as preset from './presetBuildingsInterface.js';
 

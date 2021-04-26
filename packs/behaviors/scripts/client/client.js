@@ -516,19 +516,19 @@ function reload_ui() {
                     logger.log("verbose", branch_direction)
                     let blockArray = []
 
-                    // const song = {
-                    //     tickOfSection: 4,
-                    //     score: [
-                    //         [{ pitch: 6, tickOffset: 0, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }],
-                    //         [{ pitch: 8, tickOffset: 0, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }],
-                    //         [{ pitch: 10, tickOffset: 0, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }],
-                    //         [{ pitch: 11, tickOffset: 0, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }],
-                    //         [{ pitch: 13, tickOffset: 0, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }],
-                    //         [{ pitch: 15, tickOffset: 0, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }],
-                    //         [{ pitch: 17, tickOffset: 0, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }]
-                    //     ]
-                    // }
-                    const song = preset.songs[song_number]
+                    const song = {
+                        tickOfSection: 8,
+                        score: [
+                            [{ pitch: 6, tickOffset: 0, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 2, instrument: null }],
+                            [{ pitch: 8, tickOffset: 0, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }],
+                            [{ pitch: 10, tickOffset: 0, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }],
+                            [{ pitch: 11, tickOffset: 0, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }],
+                            [{ pitch: 13, tickOffset: 0, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }],
+                            [{ pitch: 15, tickOffset: 0, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }],
+                            [{ pitch: 17, tickOffset: 0, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }]
+                        ]
+                    }
+                    // const song = preset.songs[song_number]
                     if (song == undefined) {
                         logger.log("error", "No such song!")
                         throw "But still, NZ IS JULAO!"
@@ -607,7 +607,7 @@ function reload_ui() {
                             let oppositeDirection = (branch_direction == "+z" ? "-z" : "+z")
 
                             let offset_z = 1;
-                            for (let note of section) {
+                            /* for (let note of section) {
                                 note.tickOffset = Math.floor(note.tickOffset)
                                 if (note.tickOffset == lastTick) {
                                     setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
@@ -634,6 +634,35 @@ function reload_ui() {
                                 lastTick = note.tickOffset
                                 logger.log("verbose", "So...NZ IS JULAO!")
                                 offset_z++
+                            }*/
+
+
+
+                            for (let i = 0; i < section.length;) {
+
+                                let note = section[i]
+                                if (lastTick != note.tickOffset) {
+                                    while (lastTick != note.tickOffset) {
+                                        const redstoneRelayTickDelay = (note.tickOffset - lastTick >= 4) ? 4 : note.tickOffset - lastTick
+                                        setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), redstoneRelayTickDelay, oppositeDirection)
+                                        lastTick += redstoneRelayTickDelay
+                                        offset_z++;
+                                    }
+                                }
+                                else {
+                                    setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), 0, oppositeDirection)
+                                    offset_z++;
+                                }
+
+                                setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
+                                note = section[++i]
+                                if (note&&note.tickOffset == lastTick) {
+                                    setNoteBlock(new Coordinate(coordinate.x - 1, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
+                                    i++
+                                }
+                                offset_z++
+
+                                logger.log("verbose", "Code can be modified, but NZ is ALWAYS JULAO!")
                             }
                         }
 

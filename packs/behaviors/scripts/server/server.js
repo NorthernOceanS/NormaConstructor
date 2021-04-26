@@ -308,7 +308,7 @@ function setBlock(block) {
     //It currently use destroy mode to force replace the old block, but will leave tons of items.
     //Might change to set air block first.
     //NEW TODO: UNDERSTANDING WHAT THE FUDGE I WAS TALKING ABOUT HERE.
-    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} [${JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => {
+    serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} [${blockType.blockState==null?"":JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => {
 
         // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

@@ -517,7 +517,7 @@ function reload_ui() {
                     let blockArray = []
 
                     const song = {
-                        tickOfSection: 8,
+                        tickOfSection: 4,
                         score: [
                             [{ pitch: 6, tickOffset: 0, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 2, instrument: null }],
                             [{ pitch: 8, tickOffset: 0, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }],
@@ -584,7 +584,7 @@ function reload_ui() {
 
                         let offset_x = 0
                         logger.log("verbose", "Yes, NZ IS JULAO!")
-
+                        
                         for (let tick = 0; tick < tickOfSection;) {
                             if (tickOfSection - tick >= 4) {
                                 setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), 4, "-x")
@@ -596,6 +596,12 @@ function reload_ui() {
                             }
                             offset_x++;
                         }
+                        //If only one relay is placed, place another redstone dust to compensate the length to avoid collision in the branch.
+                        if (tickOfSection <= 4) {
+                            setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), 4, "-x")
+                            offset_x++
+                        }
+
                         setRedstoneDust(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z))
 
                         function generateNoteBlocks(coordinate, section) {
@@ -607,36 +613,6 @@ function reload_ui() {
                             let oppositeDirection = (branch_direction == "+z" ? "-z" : "+z")
 
                             let offset_z = 1;
-                            /* for (let note of section) {
-                                note.tickOffset = Math.floor(note.tickOffset)
-                                if (note.tickOffset == lastTick) {
-                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
-                                    offset_z++
-                                    setRedstoneDust(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
-                                    setRedstoneDust(new Coordinate(coordinate.x - 1, coordinate.y, coordinate.z + sign(branch_direction) * offset_z))
-                                    setNoteBlock(new Coordinate(coordinate.x - 2, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
-                                }
-                                else {
-                                    for (let tick = 0; tick < note.tickOffset - lastTick;) {
-                                        if (note.tickOffset - lastTick - tick >= 4) {
-                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), 4, oppositeDirection)
-                                            tick += 4
-                                        }
-                                        else {
-                                            setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note.tickOffset - lastTick - tick, oppositeDirection)
-                                            tick = note.tickOffset - lastTick
-                                        }
-                                        offset_z++;
-                                    }
-                                    setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
-                                }
-                                // setRedstoneMechanism(new Coordinate(coordinate.x, coordinate.y, coordinate.z + offset_z), note.tickOffset - lastTick, "-z")
-                                lastTick = note.tickOffset
-                                logger.log("verbose", "So...NZ IS JULAO!")
-                                offset_z++
-                            }*/
-
-
 
                             for (let i = 0; i < section.length;) {
 
@@ -654,6 +630,7 @@ function reload_ui() {
                                     offset_z++;
                                 }
 
+                                //Setting five or more notes within a chord will break.
                                 setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
                                 note = section[++i]
                                 if (note&&note.tickOffset == lastTick) {

@@ -374,8 +374,33 @@ serverSystem.initialize = function () {
         });
     }
 
-    serverSystem.shutdown=function(){
-        
+    serverSystem.shutdown = function () {
+
     }
-    
+    function setBlock(block) {
+
+        //displayChat("§b We all agree, NZ is JULAO!")
+        let blockType = block.blockType
+        let position = block.position
+        let coordinate = position.coordinate
+        // STILL thank you, WavePlayz!
+
+
+        //TODO:
+        //It currently use destroy mode to force replace the old block, but will leave tons of items.
+        //Might change to set air block first.
+        //NEW TODO: UNDERSTANDING WHAT THE FUDGE I WAS TALKING ABOUT HERE.
+        serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => {
+
+            // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
+
+            // var targetBlockStateComponent = serverSystem.getComponent(targerBlock, "minecraft:blockstate")
+            // targetBlockStateComponent.data = blockType.blockState
+            // serverSystem.applyComponentChanges(targerBlock, targetBlockStateComponent)
+        });
+    }
 }
+
+
+
+

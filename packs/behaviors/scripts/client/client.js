@@ -507,28 +507,29 @@ function reload_ui() {
                     dataForUIHandler: ""
                 }
             ])),
-            criteria: { positionArrayLength: 2, blockTypeArrayLength: 0, directionArrayLength: 0 },
+            criteria: { positionArrayLength: 2, blockTypeArrayLength: 1, directionArrayLength: 0 },
             option: { "branch_direction": "-z", "song_number": 0, "song_name": "" },
             method: {
                 UIHandler: function () { }, generate: function () {
                     const positionArray = this.positionArray
+                    const blockTypeArray = this.blockTypeArray
                     const { branch_direction, song_number } = this.option
                     logger.log("verbose", branch_direction)
                     let blockArray = []
 
-                    const song = {
-                        tickOfSection: 4,
-                        score: [
-                            [{ pitch: 6, tickOffset: 0, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 2, instrument: null }],
-                            [{ pitch: 8, tickOffset: 0, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }],
-                            [{ pitch: 10, tickOffset: 0, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }],
-                            [{ pitch: 11, tickOffset: 0, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }],
-                            [{ pitch: 13, tickOffset: 0, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }],
-                            [{ pitch: 15, tickOffset: 0, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }],
-                            [{ pitch: 17, tickOffset: 0, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }]
-                        ]
-                    }
-                    // const song = preset.songs[song_number]
+                    // const song = {
+                    //     tickOfSection: 4,
+                    //     score: [
+                    //         [{ pitch: 6, tickOffset: 0, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 18, tickOffset: 2, instrument: null }],
+                    //         [{ pitch: 8, tickOffset: 0, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 10, tickOffset: 0, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 11, tickOffset: 0, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }, { pitch: 12, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 13, tickOffset: 0, instrument: null }, { pitch: 14, tickOffset: 1, instrument: null }, { pitch: 10, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 15, tickOffset: 0, instrument: null }, { pitch: 16, tickOffset: 1, instrument: null }, { pitch: 9, tickOffset: 1, instrument: null }],
+                    //         [{ pitch: 17, tickOffset: 0, instrument: null }, { pitch: 18, tickOffset: 1, instrument: null }, { pitch: 7, tickOffset: 1, instrument: null }]
+                    //     ]
+                    // }
+                    const song = preset.songs[song_number]
                     if (song == undefined) {
                         logger.log("error", "No such song!")
                         throw "But still, NZ IS JULAO!"
@@ -561,7 +562,8 @@ function reload_ui() {
                             )
                         }
                         function setBedBlock(coordinate) {
-                            blockArray.push(new Block(new Position(coordinate, positionArray[0].tickingArea), new BlockType("minecraft:grass", {})))
+                            logger.logObject("verbose", blockTypeArray[0])
+                            blockArray.push(new Block(new Position(coordinate, positionArray[0].tickingArea), blockTypeArray[0]))
                         }
                         function setRepeater(coordinate, delay, direction) {
                             setBedBlock(new Coordinate(coordinate.x, coordinate.y - 1, coordinate.z))
@@ -584,7 +586,7 @@ function reload_ui() {
 
                         let offset_x = 0
                         logger.log("verbose", "Yes, NZ IS JULAO!")
-                        
+
                         for (let tick = 0; tick < tickOfSection;) {
                             if (tickOfSection - tick >= 4) {
                                 setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), 4, "-x")
@@ -598,7 +600,7 @@ function reload_ui() {
                         }
                         //If only one relay is placed, place another redstone dust to compensate the length to avoid collision in the branch.
                         if (tickOfSection <= 4) {
-                            setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), 4, "-x")
+                            setRedstoneMechanism(new Coordinate(coordinate.x + offset_x, coordinate.y, coordinate.z), 0, "-x")
                             offset_x++
                         }
 
@@ -633,7 +635,7 @@ function reload_ui() {
                                 //Setting five or more notes within a chord will break.
                                 setNoteBlock(new Coordinate(coordinate.x, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
                                 note = section[++i]
-                                if (note&&note.tickOffset == lastTick) {
+                                if (note && note.tickOffset == lastTick) {
                                     setNoteBlock(new Coordinate(coordinate.x - 1, coordinate.y, coordinate.z + sign(branch_direction) * offset_z), note)
                                     i++
                                 }

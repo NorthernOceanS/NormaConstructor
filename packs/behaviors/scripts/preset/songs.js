@@ -43,4 +43,7 @@ import * as ml0 from "./song/Undertale_-_Megalovania_Piano_ver._3_0.json"
 import * as ml1 from "./song/Undertale_-_Megalovania_Piano_ver._3_1.json"
 songs.push(ml0, ml1)//26,27
 */
+import * as ml0 from "./song/Undertale_-_Megalovania_Piano_ver._3_0.json"
+import * as ml1 from "./song/Undertale_-_Megalovania_Piano_ver._3_1.json"
+songs.push(ml0, ml1)
 export { songs }

@@ -24,26 +24,7 @@ const platform = {
             setServerSideOptionEventData.data.option.value = value
             clientSystem.broadcastEvent("NormaConstructor:setServerSideOption", setServerSideOptionEventData)
         }
-        function loggerFactory(user) {
-            return {
-                displayChat, displayObject,
-                log: function (level, message) {
-                    const colorMap = new Map([
-                        ["verbose", { num: 0, color: "§a" }],
-                        ["debug", { num: 1, color: "§6" }],
-                        ["info", { num: 2, color: "§b" }],
-                        ["warning", { num: 3, color: "§e" }],
-                        ["error", { num: 4, color: "§c" }],
-                        ["fatal", { num: 5, color: "§4" }]
-                    ])
-                    if (colorMap.get(level).num >= colorMap.get(user.session["__logLevel"]).num)
-                        this.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
-                },
-                logObject: function (level, object) {
-                    this.log(level, JSON.stringify(object, null, '    '))
-                }
-            }
-        }
+        
         this._loggerFactory = loggerFactory;
 
 

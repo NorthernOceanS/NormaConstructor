@@ -1,0 +1,22 @@
+{
+  "format_version": "1.8.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "worldedit:execute",
+      "materials": {"default": "slime"},
+      "textures": {
+        "default": "textures/entity/slime/slime"
+      },
+      "geometry": {
+        "default": "geometry.worldeditTool"
+      },
+      "render_controllers": [ "controller.render.default" ],
+      
+      "spawn_egg": {
+        "base_color": "# ff00f200 ",
+        "overlay_color": "# ffff8d00 "
+      }
+      
+    }
+  }
+}

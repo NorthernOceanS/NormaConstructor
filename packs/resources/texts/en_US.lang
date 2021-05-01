@@ -1,7 +1,5 @@
 ﻿item.normaconstructor:execute.name=Execute
 item.normaconstructor:get_air.name=Get Air
-item.normaconstructor:get_position.name=Get Position
-item.normaconstructor:get_direction.name=Get Direction
 item.normaconstructor:remove_last_position.name=Remove Last Position
 item.normaconstructor:remove_last_direction.name=Remove Last Direction
 item.normaconstructor:remove_last_blocktype.name=Remove Last BlockType
@@ -10,8 +8,8 @@ item.normaconstructor:show_menu.name=Show Menu
 item.normaconstructor:show_saved_data.name=Show Saved Data
 item.normaconstructor:read_tag.name=Read Tag
 
-entity.worldedit:select.name=select
-item.spawn_egg.entity.worldedit:select.name=select
+entity.normaconstructor:get_position.name=get_position
+item.spawn_egg.entity.normaconstructor:get_position.name=get_position
 
-entity.worldedit:execute.name=execute
-item.spawn_egg.entity.worldedit:execute.name=execute
+entity.normaconstructor:get_direction.name=get_direction
+item.spawn_egg.entity.normaconstructor:get_direction.name=get_direction

@@ -2,7 +2,6 @@ import system from '../system.js';
 import '../plugin/index.js';
 import { emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
 
-import { blockStateTranslator } from '../translator.js'
 import { utils } from '../utils.js'
 
 emptyPlatform.use(system);
@@ -21,7 +20,7 @@ serverSystem.initialize = function () {
     scriptLoggerConfig.data.log_errors = true;
     scriptLoggerConfig.data.log_information = true;
     scriptLoggerConfig.data.log_warnings = true;
-    serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);    
+    serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
 
     serverSystem.listenForEvent("minecraft:player_placed_block", (eventData) => {
         //TODO: Break down the parameter.
@@ -52,79 +51,106 @@ serverSystem.initialize = function () {
             direction = serverSystem.getComponent(eventData.data.player, "minecraft:rotation").data
             return direction
         }
-        let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
-        serveDataEventData.data.blockType = getBlockType(eventData)
         let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-        let user = system.getUser(playerID)
-        if (user.session["__requestAdditionalPosition"]) serveDataEventData.data.position = getPosition(eventData)
-        if (user.session["__requestAdditionalDirection"]) serveDataEventData.data.direction = getDirection(eventData)
-        serveDataEventData.data.playerID = playerID
-        serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
-    })
-    serverSystem.listenForEvent("NormaConstructor:queryBlockType", (eventData) => {
-        let blockType = new BlockType(undefined, undefined)
-        let block = serverSystem.getBlock(eventData.data.position.tickingArea, eventData.data.position.coordinate)
-        blockType.blockIdentifier = block.__identifier__
-        blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
-
-        let serveDataEventData = serverSystem.createEventData("NormaConstructor:serveData")
-        serveDataEventData.data.blockType = blockType
-        serveDataEventData.data.playerID = eventData.data.playerID
-        serverSystem.broadcastEvent("NormaConstructor:serveData", serveDataEventData)
+        let user = getUser(playerID)
+        let logger = loggerFactory(user)
+        handlePlayerRequest({
+            requestType: "get_block_type", playerID, additionalData: {
+                position: getPosition(eventData),
+                blockType: getBlockType(eventData),
+                direction: getDirection(eventData)
+            }
+        })
     })
 
-    
+    serverSystem.listenForEvent("minecraft:entity_hurt", (eventData) => {
+        function getBlockType(eventData) {
+            let blockType = new BlockType(undefined, undefined)
+
+            let position = getPosition(eventData)
+            let block = serverSystem.getBlock(position.tickingArea, position.coordinate)
+            blockType.blockIdentifier = block.__identifier__
+            blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
+
+            return blockType
+
+        }
+        function getPosition(eventData) {
+            let position = new Position(
+                new Coordinate(undefined, undefined, undefined),
+                undefined
+            )
+
+            let { x, y, z } = serverSystem.getComponent(eventData.data.entity, "minecraft:position").data
+            position.coordinate = new Coordinate(Math.floor(x), Math.floor(y), Math.floor(z))
+            position.tickingArea = serverSystem.getComponent(eventData.data.attacker, "minecraft:tick_world").data.ticking_area
+
+            return position
+        }
+        function getDirection(eventData) {
+            let direction = new Direction(undefined, undefined)
+            direction = serverSystem.getComponent(eventData.data.attacker, "minecraft:rotation").data
+            return direction
+        }
+
+        if (eventData.data.entity.__identifier__.startsWith("normaconstructor:") && eventData.data.attacker.__identifier__ == "minecraft:player") {
+            let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.attacker.__unique_id__)
+            let user = getUser(playerID)
+            let logger = loggerFactory(user)
+            let requestType = eventData.data.entity.__identifier__.slice(eventData.data.entity.__identifier__.indexOf(":") + 1)
+            handlePlayerRequest({
+                requestType, playerID, additionalData: {
+                    position: getPosition(eventData),
+                    blockType: getBlockType(eventData),
+                    direction: getDirection(eventData)
+                }
+            })
+        }
+    })
 
     serverSystem.listenForEvent("minecraft:entity_use_item", (eventData) => {
-        function registerNewUser(playerID) {
-            system.createUser(playerID)
-            //TODO:Separate the following initialization process from the function.
-            user.session["__requestAdditionalPosition"] = false;
-            user.session["__requestAdditionalBlockType"] = false;
-            user.session["__requestAdditionalDirection"] = false;
-            user.session["__logLevel"] = "verbose";
-            user.session["__on"] = true;
-        }
-        if (eventData.data.item_stack.__identifier__.startsWith("normaconstructor:")) {
+        displayObject(eventData)
+        if (eventData.data.item_stack.__identifier__.startsWith("normaconstructor:") && eventData.data.use_method == "eat") {
             let playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.entity.__unique_id__)
-            let user = system.hasUser(playerID) ? system.getUser(playerID) : registerNewUser(playerID)
-
+            let user = getUser(playerID)
+            let logger = loggerFactory(user)
             let requestType = eventData.data.item_stack.__identifier__.slice(eventData.data.item_stack.__identifier__.indexOf(":") + 1)
-            //TODO: Explain how 'get_air' works.
-
-            if (requestType == "get_position" || requestType == "get_direction" || requestType == "get_air") {
-                let additionalData = {
-                    direction: serverSystem.getComponent(eventData.data.entity, "minecraft:rotation").data,
-                    tickingArea: serverSystem.getComponent(eventData.data.entity, "minecraft:tick_world").data.ticking_area,
-                    playerRequest: {
-                        "position": ((requestType == "get_position") || user.session["__requestAdditionalPosition"]),
-                        "direction": ((requestType == "get_direction") || user.session["__requestAdditionalDirection"]),
-                        "blockType": ((requestType == "get_air") ? false : user.session["__requestAdditionalBlockType"])
-                    },
-                    isGetAir: (requestType == "get_air")
-                }
-                handlePlayerRequest("get_data", playerID)
-            }
-            else if (requestType == "read_tag") {
-                handlePlayerRequest(
-                    requestType, playerID,
-                    Array.from(serverSystem.getComponent(eventData.data.entity, "minecraft:tag").data, (tag) => {
-                        if (tag.startsWith("nc:")) {
-                            return tag.slice(3)
-                        }
-                    })
-                )
-            }
-            else handlePlayerRequest(requestType, playerID)
+            handlePlayerRequest({ requestType, playerID })
         }
     })
 }
-function handlePlayerRequest({ requestType, playerID }) {
-    let user = system.getUser(playerID)
-    switch (requestType) {
-        case "get_data": {
 
-            storeData(user, serveData.blockType, serveData.position, serveData.direction)
+function registerNewUser(playerID) {
+    let user = system.createUser(playerID)
+    //TODO:Separate the following initialization process from this function.
+    user.session["__requestAdditionalPosition"] = false;
+    user.session["__requestAdditionalBlockType"] = false;
+    user.session["__requestAdditionalDirection"] = false;
+    user.session["__logLevel"] = "verbose";
+    user.session["__on"] = true;
+
+    return user;
+}
+function getUser(playerID) {
+    return system.hasUser(playerID) ? system.getUser(playerID) : registerNewUser(playerID)
+}
+
+function handlePlayerRequest({ requestType, playerID, additionalData }) {
+    let user = getUser(playerID)
+    const logger = loggerFactory(user)
+    logger.log("verbose", "NZ IS JULAO!")
+    logger.logObject("verbose", { requestType, playerID, additionalData })
+    switch (requestType) {
+        case "get_position":
+        case "get_direction":
+        case "get_block_type": {
+            if (requestType == "get_position" || user.session["__requestAdditionalPosition"]) user.addPosition(additionalData.position)
+            if (requestType == "get_direction" || user.session["__requestAdditionalDirection"]) user.addDirection(additionalData.direction)
+            if (requestType == "get_block_type" || user.session["__requestAdditionalBlockType"]) user.addBlockType(additionalData.blockType)
+            break;
+        }
+        case "get_air": {
+            user.addBlockType(new BlockType("minecraft:air", {}))
             break;
         }
         case "remove_last_position": {
@@ -146,7 +172,7 @@ function handlePlayerRequest({ requestType, playerID }) {
             logger.log("info", "Choosing next generator...")
             user.nextGenerator()
             logger.log("debug", "Current generator:")
-            logger.logObject("debug", null)
+            logger.logObject("debug", user.getCurrentGeneratorName())
             break;
         }
         case "show_saved_data": {
@@ -240,16 +266,6 @@ const compiler = {
             endCoordinate.z = temp
         }
 
-        let tileData = undefined
-
-        if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-            tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-        }
-        else {
-            tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-            blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
-        }
-
         //Bypass the restriction of 32767 blocks
         for (let x = startCoordinate.x; x <= endCoordinate.x; x += 32)
             for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
@@ -259,7 +275,7 @@ const compiler = {
                     ${Math.min(y + 31, endCoordinate.y)} 
                     ${Math.min(z + 31, endCoordinate.z)} 
                     ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
-                    ${tileData} replace`, (commandResultData) => { }
+                    [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { }
                     );
 
         return []
@@ -280,16 +296,27 @@ const compiler = {
         return []
     }
 }
-function execute() {
-    
-    for (let buildInstruction of eventData.data.buildInstructions) {
-        //I know it looks silly... "Compatibility reason".
-        if (!buildInstruction.hasOwnProperty("type")) setBlock(buildInstruction)
-        else {
-            //Another compromise...
-            //'Compliers' don't just complie: the fill() method can be invoked in which block will be placed directly.
-            let blocks = compiler[buildInstruction.type](buildInstruction.data)
-            for (let block of blocks) setBlock(block)
+async function execute(user) {
+    let logger = loggerFactory(user);
+    logger.log("info", "Start validating parameters...");
+    let isVaild = await user.isValidParameter();
+    if (isVaild) {
+        logger.log("info", "Now Execution started.");
+
+        let buildInstructions = await user.generate();
+        if (buildInstructions === undefined) return;
+
+        logger.logObject("verbose", buildInstructions)
+
+        for (let buildInstruction of buildInstructions) {
+            //I know it looks silly... "Compatibility reason".
+            if (!buildInstruction.hasOwnProperty("type")) setBlock(buildInstruction)
+            else {
+                //Another compromise...
+                //'Compliers' don't just complie: the fill() method can be invoked in which block will be placed directly.
+                let blocks = compiler[buildInstruction.type](buildInstruction.data)
+                for (let block of blocks) setBlock(block)
+            }
         }
     }
 }
@@ -339,10 +366,10 @@ function loggerFactory(user) {
                 ["fatal", { num: 5, color: "§4" }]
             ])
             if (colorMap.get(level).num >= colorMap.get(user.session["__logLevel"]).num)
-                serverSystem.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
+                this.displayChat(colorMap.get(level).color + "[" + level + "]" + message)
         },
         logObject: function (level, object) {
-            serverSystem.log(level, JSON.stringify(object, null, '    '))
+            this.log(level, JSON.stringify(object, null, '    '))
         }
     }
 }

@@ -8,9 +8,6 @@
       "showSavedData": {
         "textures": "textures/items/showSavedData"
       },
-      "getPosition": {
-        "textures": "textures/items/getPosition"
-      },
       "removeLastBlockType": {
         "textures": "textures/items/removeLastBlockType"
       },
@@ -19,9 +16,6 @@
       },
       "removeLastPosition": {
         "textures": "textures/items/removeLastPosition"
-      },
-      "getDirection": {
-        "textures": "textures/items/getDirection"
       },
       "showMenu": {
         "textures": "textures/items/showMenu"

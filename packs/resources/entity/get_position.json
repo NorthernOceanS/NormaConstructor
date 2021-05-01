@@ -2,7 +2,7 @@
   "format_version": "1.8.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "worldedit:select",
+      "identifier": "normaconstructor:get_position",
       "materials": {"default": "slime"},
       "textures": {
         "default": "textures/entity/slime/slime"

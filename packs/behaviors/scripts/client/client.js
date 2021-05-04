@@ -186,7 +186,7 @@ const platform = {
                             logger.log("info", "Choosing next generator...")
                             user.nextGenerator()
                             logger.log("debug", "Current generator:")
-                            logger.logObject("debug", null)
+                            logger.logObject("debug", user.getCurrentGeneratorName())
                             break;
                         }
                         case "show_saved_data": {

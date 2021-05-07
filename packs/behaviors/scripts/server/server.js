@@ -2,7 +2,6 @@ import system from '../system.js';
 import '../plugin/index.js';
 import { emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
 
-import { blockStateTranslator } from '../translator.js'
 import { utils } from '../utils.js'
 
 emptyPlatform.use(system);
@@ -19,8 +18,6 @@ const platform = {
             scriptLoggerConfig.data.log_information = true;
             scriptLoggerConfig.data.log_warnings = true;
             serverSystem.broadcastEvent("minecraft:script_logger_config", scriptLoggerConfig);
-
-            let blockStateToTileDataTable = new Map()
 
             let compiler = {
                 raw: function (blockArray) {
@@ -72,16 +69,6 @@ const platform = {
                         let temp = startCoordinate.z
                         startCoordinate.z = endCoordinate.z
                         endCoordinate.z = temp
-                    }
-
-                    let tileData = undefined
-
-                    if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-                        tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-                    }
-                    else {
-                        tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-                        blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
                     }
 
                     //Bypass the restriction of 32767 blocks
@@ -305,16 +292,6 @@ const platform = {
                 let position = block.position
                 let coordinate = position.coordinate
                 //Thank you, WavePlayz!
-
-                let tileData = undefined
-
-                if (blockStateToTileDataTable.has(JSON.stringify(blockType.blockState))) {
-                    tileData = blockStateToTileDataTable.get(JSON.stringify(blockType.blockState))
-                }
-                else {
-                    tileData = blockStateTranslator.getData(blockType.blockIdentifier, { "data": blockType.blockState })
-                    blockStateToTileDataTable.set(JSON.stringify(blockType.blockState), tileData)
-                }
 
                 //TODO:
                 //It currently use destroy mode to force replace the old block, but will leave tons of items.

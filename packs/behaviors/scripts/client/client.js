@@ -1,6 +1,6 @@
 import system from '../system.js';
 import '../plugin/index.js';
-import {Coordinate, Position, BlockType, Direction, Block, UserSystem } from 'norma-core';
+import {Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
 
 
 import { utils } from '../utils.js'
@@ -76,7 +76,7 @@ const platform = {
             clientSystem.listenForEvent("minecraft:client_entered_world", (eventData) => {
 
                 playerID = utils.misc.generatePlayerIDFromUniqueID(eventData.data.player.__unique_id__)
-                let user = new UserSystem(system, playerID);
+                let user = system.createUser(playerID);
 
                 let logger = loggerFactory(user);
                 user.session.__logLevel = "verbose";

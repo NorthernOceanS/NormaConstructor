@@ -68,7 +68,7 @@ const platform = {
                 y: undefined,
                 z: undefined,
                 blockIdentifier: undefined,
-                tileData: undefined,
+                blockState: undefined,
                 playerID: undefined
             })
 
@@ -420,11 +420,11 @@ const platform = {
             let blockType = await blockFetch.get(tickingArea, x, y, z)
             return blockType
         }
-        function setBlock(user, x, y, z, blockIdentifier, tileData) {
+        function setBlock(user, x, y, z, blockIdentifier, blockState) {
             let logger = loggerFactory(user);
             logger.log("verbose", "NZ is JULAO")
             let setBlockEventData = clientSystem.createEventData("NZConstructor:setBlock")
-            setBlockEventData.data = { x: x, y: y, z: z, blockIdentifier: blockIdentifier, tileData: tileData, playerID: playerID }
+            setBlockEventData.data = { x: x, y: y, z: z, blockIdentifier: blockIdentifier, blockState: blockState, playerID: playerID }
             clientSystem.broadcastEvent("NZConstructor:setBlock", setBlockEventData)
             logger.logObject("verbose", setBlockEventData)
         }

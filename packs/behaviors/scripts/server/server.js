@@ -93,7 +93,7 @@ const platform = {
                         ${Math.min(y + 31, endCoordinate.y)} 
                         ${Math.min(z + 31, endCoordinate.z)} 
                         ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
-                        ${tileData} replace`, (commandResultData) => { }
+                        [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { }
                                 );
 
                     return []
@@ -218,8 +218,8 @@ const platform = {
                 serverSystem.broadcastEvent("NZConstructor:blockFetchResponse", blockFetchResponseEventData)
             })
             serverSystem.listenForEvent("NZConstructor:setBlock", (eventData) => {
-                let { x, y, z, blockIdentifier, tileData } = eventData.data
-                serverSystem.executeCommand(`/setblock ${x} ${y} ${z} ${blockIdentifier.slice(blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => { })
+                let { x, y, z, blockIdentifier, blockState } = eventData.data
+                serverSystem.executeCommand(`/setblock ${x} ${y} ${z} ${blockIdentifier.slice(blockIdentifier.indexOf(":") + 1)} [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { })
             })
 
             //I suppose I have to make an explanation.
@@ -319,7 +319,7 @@ const platform = {
                 //TODO:
                 //It currently use destroy mode to force replace the old block, but will leave tons of items.
                 //Might change to set air block first.
-                serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} ${tileData} replace`, (commandResultData) => {
+                serverSystem.executeCommand(`/setblock ${coordinate.x} ${coordinate.y} ${coordinate.z} ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => {
 
                     // var targerBlock = serverSystem.getBlock(position.tickingArea, coordinate.x, coordinate.y, coordinate.z)
 

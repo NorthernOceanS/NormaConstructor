@@ -2,19 +2,33 @@ let {channel} = require('./create-channel.js');
 
 class FakeClientSystem{
 	constructor(port){
+		let that = this;
 		this._port = port;
+		this.eventDataMap = new Map();
+		this.eventMap = new Map();
+		this._port.onmessage = function(event){
+			let {data} = event;
+			let {eventIdentifier, eventData} = data;
+			let eventCallback = that.eventMap.get(eventIdentifier);
+			if(eventCallback !== undefined) {
+				eventCallback(eventData);
+			}
+		}
 	}
-	createEventData(){
-		// no-op
+	createEventData(eventIdentifier){
+		return this.eventDataMap.get(eventIdentifier);
 	}
-	broadcastEvent(){
-		// no-op
+	broadcastEvent(eventIdentifier, eventData){
+		this._port.postMessage({eventIdentifier, eventData});
+		return true;
 	}
-	listenForEvent(){
-		// no-op
+	listenForEvent(eventIdentifier, eventCallback){
+		this.eventMap.set(eventIdentifier, eventCallback);
+		return true;
 	}
-	registerEventData(){
-		// no-op
+	registerEventData(eventIdentifier, eventData){
+		this.eventDataMap.set(eventIdentifier, eventData);
+		return true;
 	}
 }
 

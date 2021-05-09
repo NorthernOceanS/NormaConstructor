@@ -1,6 +1,8 @@
+let {channel} = require('./create-channel.js');
+
 class FakeServerSystem{
-	constructor(){
-		// no-op
+	constructor(port){
+		this._port = port;
 	}
 	createEventData(){
 		// no-op
@@ -14,15 +16,15 @@ class FakeServerSystem{
 }
 
 class FakeServer{
-	constructor(){
-		// no-op
+	constructor(port){
+		this._port = port;
 	}
 	log(){
 		// no-op
 	}
 	registerSystem(){
-		return new FakeServerSystem();
+		return new FakeServerSystem(this._port);
 	}
 }
 
-global.server = new FakeServer();
+global.server = new FakeServer(channel.port2);

@@ -13,6 +13,9 @@ class FakeServerSystem{
 	listenForEvent(){
 		// no-op
 	}
+	registerEventData(){
+		// no-op
+	}
 }
 
 class FakeServer{

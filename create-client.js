@@ -13,6 +13,9 @@ class FakeClientSystem{
 	listenForEvent(){
 		// no-op
 	}
+	registerEventData(){
+		// no-op
+	}
 }
 
 class FakeClient{

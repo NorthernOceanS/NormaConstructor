@@ -1,5 +1,3 @@
-let {Event} = require('events')
-
 class FakeChannel{
 	constructor(){
 		this.port1 = new FakePort(null);
@@ -17,8 +15,8 @@ class FakePort{
 	}
 	postMessage(data){
 		let that = this;
-		let event = new Event('post message');
-		e.data = data;
+		let event = {};
+		event.data = data;
 		setTimeout(()=> that._opposite.onmessage(event), 0);
 	}
 }

@@ -16,7 +16,12 @@ class FakeServerSystem{
 		}
 	}
 	createEventData(eventIdentifier){
-		return this.eventDataMap.get(eventIdentifier);
+		let eventData = this.eventDataMap.get(eventIdentifier);
+		if(eventData === undefined) {
+			return {data: {}};
+		} else {
+			return {data: eventData};
+		}
 	}
 	broadcastEvent(eventIdentifier, eventData){
 		this._port.postMessage({eventIdentifier, eventData});

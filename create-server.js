@@ -40,7 +40,9 @@ class FakeServer{
 		// no-op
 	}
 	registerSystem(){
-		return new FakeServerSystem(this._port);
+		let serverSystem =  new FakeServerSystem(this._port);
+		this._serverSystem = serverSystem;
+		return serverSystem;
 	}
 }
 

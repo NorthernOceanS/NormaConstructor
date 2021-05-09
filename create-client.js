@@ -40,7 +40,9 @@ class FakeClient{
 		// no-op
 	}
 	registerSystem(){
-		return new FakeClientSystem(this._port);
+		let clientSystem =  new FakeClientSystem(this._port);
+		this._clientSystem = clientSystem;
+		return clientSystem;
 	}
 }
 

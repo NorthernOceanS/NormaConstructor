@@ -214,13 +214,7 @@ const platform = {
                         }
                         case "read_tag": {
                             function parseTag(tag) {
-                                let command = tag.split(' ')
-                                if (command[0] == "add" && command[1] == "b") {
-                                    storeData(user, new BlockType(command[2], JSON.parse(command[3])), undefined, undefined)
-                                }
-                                else if (command[0] == "set" && command[1] == "o") {
-                                    user.getCurrentState()[command[2]] = command[3]
-                                }
+                                user.runNOS(tag, undefined);
                             }
                             eventData.data.additionalData.forEach((tag) => {
                                 if (tag) parseTag(tag)

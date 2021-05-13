@@ -3,6 +3,13 @@ let {channel} = require('./create-channel.js');
 let serverSystem = server._serverSystem;
 let clientSystem = client._clientSystem;
 
+function TimeoutPromise(ms) {
+	return new Promise((reslove, reject) => {
+		setTimeout(()=>{reslove()}, ms);
+	});
+}
+
+(async function(){
 serverSystem.initialize();
 clientSystem.initialize();
 channel.port2.postMessage({
@@ -13,3 +20,4 @@ channel.port2.postMessage({
 //clientSystem.update();
 clientSystem.shutdown();
 serverSystem.shutdown();
+})();

@@ -9,7 +9,7 @@ class FakeEventCenter{
 	}
 	broadcastMessage(data){
 		for(let port of this.ports) {
-			setTimeout(()=> port.onmessage(event), 0);
+			setTimeout(()=> port.onmessage(data), 0);
 		}
 	}
 }

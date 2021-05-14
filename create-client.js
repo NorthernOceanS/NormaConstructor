@@ -1,4 +1,4 @@
-let {channel} = require('./create-channel.js');
+let {eventCenter} = require('./create-event-center.js');
 
 class FakeClientSystem{
 	constructor(port){
@@ -51,4 +51,4 @@ class FakeClient{
 	}
 }
 
-global.client = new FakeClient(channel.port1);
+global.client = new FakeClient(eventCenter.createPort());

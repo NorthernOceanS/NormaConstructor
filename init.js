@@ -1,4 +1,4 @@
-let {channel} = require('./create-channel.js');
+let {eventCenter} = require('./create-event-center.js');
 
 let serverSystem = server._serverSystem;
 let clientSystem = client._clientSystem;
@@ -13,7 +13,7 @@ function TimeoutPromise(ms) {
 	serverSystem.initialize();
 	clientSystem.initialize();
 	await TimeoutPromise(0)
-	channel.port2.postMessage({
+	eventCenter.broadcastMessage({
 		eventIdentifier: "minecraft:client_entered_world",
 		eventData: {data: {player:{__unique_id__: 1}}}
 	});

@@ -2510,3 +2510,30 @@ function reload_ui() {
         }
     }))
 })();
+
+(function () {
+    generatorArray.push(utils.generators.canonical.generatorConstrctor({
+        description: new Description("NZ IS JUJUJULAO", new Usage([], [], [], [])),
+        criteria: { positionArrayLength: 3, blockTypeArrayLength: 0, directionArrayLength: 0 },
+        option: {},
+        method: {
+            UIHandler: function () { },
+            generate: function () {
+                let blockInstructions = []
+
+                let setblock = function (x, y, z, blockIdentifier, tiledata) {
+                    this.push(new BuildInstruction("setblockWithTiledata", { x, y, z, blockIdentifier, tiledata }))
+                }.bind(blockInstructions)
+
+                logger.log("verbose", "NZ IS JUJUJULAO")
+
+                for (const position of this.positionArray)
+                    setblock(position.coordinate.x, position.coordinate.y + 1, position.coordinate.z, "minecraft:wool", 5)
+
+                logger.log("verbose", "NZ IS JUJUJUJULAO")
+
+                return blockInstructions
+            }
+        }
+    }))
+})();

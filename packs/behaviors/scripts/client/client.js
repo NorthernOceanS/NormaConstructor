@@ -2512,13 +2512,38 @@ function reload_ui() {
 })();
 
 (function () {
-    generatorArray.push(utils.generators.canonical.generatorConstrctor({
-        description: new Description("NZ IS JUJUJULAO", new Usage([], [], [], [])),
-        criteria: { positionArrayLength: 3, blockTypeArrayLength: 0, directionArrayLength: 0 },
-        option: {},
-        method: {
-            UIHandler: function () { },
-            generate: function () {
+    generatorArray.push(
+        new Generator(
+            new Description("NZ IS JUJUJULAO", new Usage([], [], [], [])),
+            [],
+            [],
+            [],
+            {
+                "mininumPositionRequired": 3
+            },
+            function (position) {
+                this.positionArray.push(position)
+            },
+            function (blockType) { },
+            function (direction) { },
+            function (index) {
+                if (index === undefined)
+                    for (index = this.positionArray.length - 1; index >= 0 && this.positionArray[index] == undefined; index--);
+                if (index >= 0) this.positionArray[index] = undefined
+                logger.logObject("info", this.positionArray)
+            },
+            function (index) { },
+            function (index) { },
+            function () {
+                let result = new String()
+                this.positionArray = this.positionArray.filter((e) => e != undefined || e != null)
+                if (this.positionArray.length < 3) result += "Too few positions!Refusing to execute.\n"
+                if (result == "") result = "success"
+                else logger.log("error", result)
+
+                return result;
+            },
+            function () {
                 let blockInstructions = []
 
                 let setblock = function (x, y, z, blockIdentifier, tiledata) {
@@ -2533,7 +2558,13 @@ function reload_ui() {
                 logger.log("verbose", "NZ IS JUJUJUJULAO")
 
                 return blockInstructions
-            }
-        }
-    }))
+            },
+            function () {
+                this.positionArray = []
+                this.blockTypeArray = []
+                this.directionArray = []
+            },
+            function () { }
+        )
+    )
 })();

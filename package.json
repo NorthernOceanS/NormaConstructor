@@ -9,6 +9,7 @@
     "packageaddon": "gulp package"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
     "minecraft-addon-toolchain": "^1.0.3",
     "minecraft-addon-toolchain-browserify": "^1.0.3"
   }

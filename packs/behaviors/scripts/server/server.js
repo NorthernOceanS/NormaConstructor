@@ -81,7 +81,7 @@ let compiler = {
                     ${Math.min(y + 31, endCoordinate.y)} 
                     ${Math.min(z + 31, endCoordinate.z)} 
                     ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
-                    [${JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { }
+                    [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { }
                     );
 
         return []

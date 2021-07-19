@@ -2598,7 +2598,7 @@ function reload_ui() {
                         }
                     }
                     Equals(n) {
-                        return n.id == this.id && n.data == this.data;
+                        return n.id === this.id && n.data === this.data;
                     }
                 }
                 class myCoordinate {
@@ -2608,7 +2608,10 @@ function reload_ui() {
                         this.z = z;
                     }
                     Equals(n) {
-                        return n.x == this.x && n.y == this.y;
+                        return n.x === this.x && n.z === this.z;
+                    }
+                    toString() {
+                        return "(" + this.x.toString() + "," + this.z.toString() + ")";
                     }
                 }
                 class node {
@@ -3681,6 +3684,8 @@ function reload_ui() {
                             height = levels * this.WallConfig[wall_kind].length;
                         else if (building_version === 2)
                             height = levels * this.WallConfig_v2[wall_kind].length;
+
+                        logger.log("debug", coordinates);
 
                         for (let coordinate of coordinates) {
                             //新的

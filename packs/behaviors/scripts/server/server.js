@@ -1,6 +1,5 @@
-import system from '../system.js';
 import '../plugin/index.js';
-import { emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
+import {systemInstance as system, emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
 
 import { utils } from '../utils.js'
 

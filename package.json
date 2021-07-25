@@ -10,6 +10,7 @@
     "test": "gulp build && node test.js"
   },
   "devDependencies": {
+    "gulp": "^4.0.2",
     "minecraft-addon-toolchain": "^1.0.3",
     "minecraft-addon-toolchain-browserify": "^1.0.3"
   },

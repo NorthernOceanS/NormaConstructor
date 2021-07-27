@@ -156,10 +156,6 @@ class AutoFileGenerationSupport {
 					}
 				}).join('');
 				if(this.writeBack && isModified) {
-					console.log(path.join(
-						sourceDir,
-						'scripts/plugin/plugins.json'
-					), JSON.stringify(pluginJSON, null, '\t'));
 					fs.writeFileSync(path.join(
 						sourceDir,
 						'scripts/plugin/plugins.json'

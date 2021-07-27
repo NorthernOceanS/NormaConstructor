@@ -319,7 +319,7 @@ let createLineGenerator = canonicalGeneratorFactory({
     }
 })
 
-createLineGenerator.addPosition = function () {
+createLineGenerator.onAddPosition = function () {
     let { state, position, runtime } = e;
     if (state.doAcceptNewPosition) {
         let indexOfVacancy = state.positions.indexOf(undefined)

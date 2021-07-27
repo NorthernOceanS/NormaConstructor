@@ -111,8 +111,13 @@ class AutoFileGenerationSupport {
 				if(havePluginJsSync()) {
 					return packDone();
 				}
-				let pluginJSON = getPluginsJSONSync() || {};
+				let pluginJSON = getPluginsJSONSync();
 				let pluginDirs = getPluginDirsSync();
+				let isModified = false;
+				if(pluginJSON === null) {
+					pluginJSON = {};
+					isModified = true;
+				}
 				for(let dirName of pluginDirs) {
 					if(pluginJSON[dirName] === undefined) {
 						console.log(`Add dir ${dirName}`);
@@ -120,6 +125,7 @@ class AutoFileGenerationSupport {
 							type: "inner",
 							enable: true
 						};
+						isModified = true;
 					}
 				}
 				let pluginJs = `
@@ -149,15 +155,11 @@ class AutoFileGenerationSupport {
 						break;
 					}
 				}).join('');
-				if(this.writeBack) {
-					console.log(path.join(
-						sourceDir,
-						'scripts/plugin/plugins.json'
-					), JSON.stringify(pluginJSON, null, '\t'));
+				if(this.writeBack && isModified) {
 					fs.writeFileSync(path.join(
 						sourceDir,
 						'scripts/plugin/plugins.json'
-					), JSON.stringify(pluginJSON, null, '\t'));
+					), JSON.stringify(pluginJSON, null, '\t').concat('\n'));
 				}
 				fs.writeFileSync(path.join(
 					destination,

@@ -159,7 +159,7 @@ class AutoFileGenerationSupport {
 					fs.writeFileSync(path.join(
 						sourceDir,
 						'scripts/plugin/plugins.json'
-					), JSON.stringify(pluginJSON, null, '\t'));
+					), JSON.stringify(pluginJSON, null, '\t').concat('\n'));
 				}
 				fs.writeFileSync(path.join(
 					destination,

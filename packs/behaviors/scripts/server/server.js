@@ -275,9 +275,10 @@ serverSystem.initialize = function () {
             }
         }
     })
-    serverSystem.listenForEvent("minecraft:projectile_hit", (eventData) => { displayObject(eventData);
-        //  displayObject(serverSystem.getComponent(eventData.data.owner, "minecraft:tag")) 
-        })
+    serverSystem.listenForEvent("minecraft:projectile_hit", (eventData) => {
+        displayObject(eventData);
+        displayObject(serverSystem.getComponent(eventData.data.owner, "minecraft:tag"))
+    })
 
 }
 

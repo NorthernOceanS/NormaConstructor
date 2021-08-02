@@ -214,7 +214,7 @@ function handlePlayerRequest({ requestType, playerID, additionalData }) {
     }
 }
 
-const compiler = {
+let compiler = {
     raw: function (blockArray) {
         return blockArray
     },
@@ -238,13 +238,13 @@ const compiler = {
             for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
                 for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32)
                     serverSystem.executeCommand(`/clone ${x} ${y} ${z} 
-                    ${Math.min(x + 31, endCoordinate.x)} 
-                    ${Math.min(y + 31, endCoordinate.y)} 
-                    ${Math.min(z + 31, endCoordinate.z)} 
-                    ${targetCoordinate.x + x - startCoordinate.x} 
-                    ${targetCoordinate.y + y - startCoordinate.y} 
-                    ${targetCoordinate.z + z - startCoordinate.z} 
-                    masked force`, (commandResultData) => { });
+            ${Math.min(x + 31, endCoordinate.x)} 
+            ${Math.min(y + 31, endCoordinate.y)} 
+            ${Math.min(z + 31, endCoordinate.z)} 
+            ${targetCoordinate.x + x - startCoordinate.x} 
+            ${targetCoordinate.y + y - startCoordinate.y} 
+            ${targetCoordinate.z + z - startCoordinate.z} 
+            masked force`, (commandResultData) => { });
 
         return []
     },
@@ -271,11 +271,11 @@ const compiler = {
             for (let y = startCoordinate.y; y <= endCoordinate.y; y += 32)
                 for (let z = startCoordinate.z; z <= endCoordinate.z; z += 32)
                     serverSystem.executeCommand(`/fill ${x} ${y} ${z} 
-                    ${Math.min(x + 31, endCoordinate.x)} 
-                    ${Math.min(y + 31, endCoordinate.y)} 
-                    ${Math.min(z + 31, endCoordinate.z)} 
-                    ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
-                    [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { }
+            ${Math.min(x + 31, endCoordinate.x)} 
+            ${Math.min(y + 31, endCoordinate.y)} 
+            ${Math.min(z + 31, endCoordinate.z)} 
+            ${blockType.blockIdentifier.slice(blockType.blockIdentifier.indexOf(":") + 1)} 
+            [${blockType.blockState == null ? "" : JSON.stringify(blockType.blockState).slice(1, -1)}] replace`, (commandResultData) => { }
                     );
 
         return []

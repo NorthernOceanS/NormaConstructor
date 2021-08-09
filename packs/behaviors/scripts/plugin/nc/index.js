@@ -1569,7 +1569,7 @@ system.registerCanonicalGenerator({
     method: {
         UIHandler: function () { }, generate: function (e) {
             let { state, runtime } = e;
-            return new BuildInstruction("writeBuildingStructureToLog", {
+            return new BuildInstruction("writeBuildingStructure", {
                 startCoordinate: state.positions[0].coordinate,
                 endCoordinate: state.positions[1].coordinate,
                 referenceCoordinate: state.positions[2].coordinate,

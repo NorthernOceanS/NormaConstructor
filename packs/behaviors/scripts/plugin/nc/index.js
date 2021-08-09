@@ -1176,7 +1176,7 @@ flagGenerator.isValidParameter = function (e) {
     if (state.height % 2 != 0) result += "The height is odd!"
     if (result == "") return true;
 
-    runtime.logger && runtime.logger.log("info", result);
+    runtime.logger && runtime.logger.log("error", result);
     return false;
 };
 

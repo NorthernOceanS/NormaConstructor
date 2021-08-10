@@ -1176,7 +1176,7 @@ flagGenerator.isValidParameter = function (e) {
     if (state.height % 2 != 0) result += "The height is odd!"
     if (result == "") return true;
 
-    runtime.logger && runtime.logger.log("info", result);
+    runtime.logger && runtime.logger.log("error", result);
     return false;
 };
 
@@ -1569,7 +1569,7 @@ system.registerCanonicalGenerator({
     method: {
         UIHandler: function () { }, generate: function (e) {
             let { state, runtime } = e;
-            return new BuildInstruction("writeBuildingStructureToLog", {
+            return new BuildInstruction("writeBuildingStructure", {
                 startCoordinate: state.positions[0].coordinate,
                 endCoordinate: state.positions[1].coordinate,
                 referenceCoordinate: state.positions[2].coordinate,

@@ -1540,7 +1540,7 @@ function reload_ui() {
                         )(text[i], mcfont))
                     }
                     return rawTextArray
-                })(option["keyText"], presetBuildings.mcfont)
+                })(option["keyText"], preset.mcfont)
                 /*let rawText = (function (text,mcfont) {
                     let l
                     l = []

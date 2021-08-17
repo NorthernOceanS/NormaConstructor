@@ -15,7 +15,7 @@ import { systemInstance as system, Description, Usage, Block, Coordinate, Positi
             if (index === undefined)
                 for (index = e.state.positions.length - 1; index >= 0 && e.state.positions[index] == undefined; index--);
             if (index >= 0) e.state.positions[index] = undefined
-            logger.logObject("info", e.state.positions)
+            e.runtime.logger.logObject("info", e.state.positions)
         },
         onRemoveBlockType(e) { /* no-op */ },
         onRemoveDirection(e) { /* no-op */ },

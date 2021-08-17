@@ -24,7 +24,7 @@ import { systemInstance as system, Description, Usage, Block, Coordinate, Positi
             e.state.positions = e.state.positions.filter((e) => e != undefined || e != null)
             if (e.state.positions.length < 3) result += "Too few positions!Refusing to execute.\n"
             if (result == "") result = "success"
-            else logger.log("error", result)
+            else e.runtime.logger.log("error", result)
 
             return result;
         },

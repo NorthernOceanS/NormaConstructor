@@ -8,6 +8,7 @@ const builder = new MinecraftAddonBuilder("NormaConstructor");
 const browserifySupport = new BrowserifySupport();
 const autoFileGenerationSupport = new AutoFileGenerationSupport();
 browserifySupport.bundleSources.push("scripts/**/*.*");
+browserifySupport.babelOptions.plugins.push("@babel/plugin-proposal-class-properties");
 autoFileGenerationSupport.bundleDir = browserifySupport.intermediateDir;
 
 builder.addPlugin(autoFileGenerationSupport);

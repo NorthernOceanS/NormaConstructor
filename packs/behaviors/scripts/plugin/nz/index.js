@@ -26,7 +26,7 @@ import { systemInstance as system, Description, Usage, Block, Coordinate, Positi
             if (result == "") result = "success"
             else e.runtime.logger.log("error", result)
 
-            return result;
+            return result === "success";
         },
         generate(e) {
             let { logger } = e.runtime

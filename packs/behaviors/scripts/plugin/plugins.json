@@ -2,5 +2,9 @@
 	"nc": {
 		"type": "inner",
 		"enable": true
+	},
+	"zaofu": {
+		"type": "inner",
+		"enable": true
 	}
 }

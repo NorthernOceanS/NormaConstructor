@@ -3,6 +3,10 @@
 		"type": "inner",
 		"enable": true
 	},
+	"nz": {
+    "type": "inner",
+		"enable": true
+	},
 	"zaofu": {
 		"type": "inner",
 		"enable": true

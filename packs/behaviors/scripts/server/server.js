@@ -1,5 +1,5 @@
 import '../plugin/index.js';
-import {systemInstance as system, emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
+import { systemInstance as system, emptyPlatform, Coordinate, Position, BlockType, Direction, Block } from 'norma-core';
 
 import { utils } from '../utils.js'
 
@@ -97,6 +97,11 @@ const platform = {
                                 blockType.blockState = serverSystem.getComponent(block, "minecraft:blockstate").data
                                 server.log(JSON.stringify({ coordinate: new Coordinate(x - referenceCoordinate.x, y - referenceCoordinate.y, z - referenceCoordinate.z), blockType: blockType }, null, '    '))
                             }
+                    return []
+                },
+                setblockWithTiledata: function ({ x, y, z, blockIdentifier, tiledata }) {
+                    serverSystem.executeCommand(`/setblock ${x} ${y} ${z} ${blockIdentifier.slice(blockIdentifier.indexOf(":") + 1)} ${tiledata} replace`, (commandResultData) => {
+                    });
                     return []
                 }
             }

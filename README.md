@@ -1,5 +1,13 @@
 # NormaConstructor
 
+**The version is not the latest!**
+
+**这个版本不是最新的!**
+
+To see the latest version, refer to [branch origin](https://github.com/NorthernOceanS/NormaConstructor/tree/origin).
+
+要查看最新版本，请参见[origin分支](https://github.com/NorthernOceanS/NormaConstructor/tree/origin)。
+
 ![CI](https://github.com/NorthernOceanS/NormaConstructor/workflows/CI/badge.svg)
 
 Speed up your construction.Created by NorthernOceanS.

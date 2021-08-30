@@ -14,11 +14,7 @@
 class AutoFileGenerationSupport {
 	constructor() {
 		this.intermediateDir = "./out/before-plugin";
-		this.bundleSources = [
-			"scripts/plugin/index.js",
-			"scripts/plugin/*/index.js",
-			"scripts/plugin/plugins.json"
-		];
+		this.bundleSources = "";
 		this.writeBack = true;
 		this.bundleDir = undefined;
 
@@ -59,10 +55,6 @@ class AutoFileGenerationSupport {
 					this._builder.sourceDir,
 					pack.relativePath
 				);
-				const packDir = path.join(
-					this.intermediateDir,
-					pack.relativePath
-				);
 				const destination = path.join(
 					this.bundleDir || this._builder.bundleDir,
 					pack.relativePath
@@ -70,7 +62,7 @@ class AutoFileGenerationSupport {
 				function getPluginsJSONSync() {
 					try {
 						let jsonData = fs.readFileSync(path.join(
-							packDir,
+							sourceDir,
 							'scripts/plugin/plugins.json'
 						));
 						return JSON.parse(jsonData);
@@ -81,7 +73,7 @@ class AutoFileGenerationSupport {
 				function havePluginJsSync() {
 					try {
 						fs.accessSync(path.join(
-							packDir,
+							sourceDir,
 							'scripts/plugin/index.js'
 						));
 						return true;
@@ -91,13 +83,13 @@ class AutoFileGenerationSupport {
 				}
 				function getPluginDirsSync() {
 					let dirs = fs.readdirSync(path.join(
-						packDir,
+						sourceDir,
 						'scripts/plugin'
 					));
 					return dirs.filter((dir) => {
 						try {
 							fs.accessSync(path.join(
-								packDir,
+								sourceDir,
 								'scripts/plugin',
 								dir,
 								'index.js'

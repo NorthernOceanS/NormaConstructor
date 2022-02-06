@@ -1,12 +1,8 @@
 # NormaConstructor
 
-To read the document, see <http://callstackexceed.com/_book/>.
+Everything that has a begin has an end. The scripting engine of bedrock [will be deprecated](https://www.minecraft.net/en-us/creator/article/removing-the-additional-modding-capabilities-feature), so the scripting backend of **NormaConstructor** will be deprecated at that time. We really miss the scripting engine and the scripting backend of **NormaConstructor**. However, **NormaConstructor** is designed to run in multiple platform, so the developing of **NormaConstructor** will still going on, on LiteLoader, bdsx, and gametest, the successor of scripting engine. If you want know more about **NormaConstructor**, see <https://nc-wiki.netlify.app/en/>.
 
-要阅读文档，请参见<http://callstackexceed.com/_book/>。
-
-Notice it is a temporarily deploymented URL, the everlasting URL is not decided.
-
-注意这是一个临时部署的URL，永久的URL还没有决定。
+一切有开始的东西也有结束。基岩版的scripting引擎[将被弃用](https://www.minecraft.net/en-us/creator/article/removing-the-additional-modding-capabilities-feature)，所以**NormaConstructor**的scripting后端也将被弃用。我们真的很想念scripting引擎和**NormaConstructor**的scripting后端。然而，**NormaConstructor**是设计为在多个平台上运行的，所以**NormaConstructor**的开发仍将在LiteLoader，bdsx和gametest，scripting引擎的继承者上继续。如果你想了解更多关于**NormaConstructor**的信息，请参见<https://nc-wiki.netlify.app/zh-hans/>。
 
 ![CI](https://github.com/NorthernOceanS/NormaConstructor/workflows/CI/badge.svg)
 
